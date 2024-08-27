@@ -1,32 +1,35 @@
 import React from 'react';
 import { Container, Box, TextField, Button, Typography, Checkbox, FormControlLabel, Link } from '@mui/material';
+import Logo from './Logo';
+import { useTheme } from '@mui/material/styles';
+import { pxToRem } from '../utils/pxToRem';
 
 function SignUp({ onSignInClick }) {
+  const theme = useTheme();
+
   return (
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
-          marginTop: 8,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          backgroundColor: '#1c1c1c',
-          padding: '20px',
-          borderRadius: '8px',
+          backgroundColor: theme.colors.backgroundLight,
+          padding: `${pxToRem(20)} ${pxToRem(32.38)} ${pxToRem(28)} ${pxToRem(24)}`,
+          borderRadius: pxToRem(8),
+          boxShadow: `0px ${pxToRem(4)} ${pxToRem(10)} rgba(0, 0, 0, 0.3)`,
         }}
       >
         {/* Logo */}
-        <Typography component="h1" variant="h5" sx={{ color: '#ffffff' }}>
-          Sitemark
-        </Typography>
+        <Logo />
 
         {/* Sign Up Title */}
-        <Typography component="h2" variant="h6" sx={{ color: '#ffffff', marginTop: '20px' }}>
+        <Typography component="h2" variant="h6" sx={{ color: theme.colors.textPrimary, marginTop: pxToRem(20) }}>
           Sign up
         </Typography>
 
         {/* Form */}
-        <Box component="form" noValidate sx={{ mt: 1 }}>
+        <Box component="form" noValidate sx={{ mt: pxToRem(16) }}>
           <TextField
             variant="outlined"
             margin="normal"
@@ -37,8 +40,11 @@ function SignUp({ onSignInClick }) {
             name="fullName"
             autoComplete="name"
             autoFocus
-            InputLabelProps={{ style: { color: '#ffffff' } }}
-            InputProps={{ style: { color: '#ffffff' } }}
+            InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
+            InputProps={{
+              style: { color: '#FFFFFF', borderColor: theme.colors.textSecondary },
+              sx: { backgroundColor: theme.colors.backgroundDark, },
+            }}
           />
           <TextField
             variant="outlined"
@@ -49,8 +55,11 @@ function SignUp({ onSignInClick }) {
             label="Email"
             name="email"
             autoComplete="email"
-            InputLabelProps={{ style: { color: '#ffffff' } }}
-            InputProps={{ style: { color: '#ffffff' } }}
+            InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
+            InputProps={{
+              style: { color: '#FFFFFF', borderColor: theme.colors.textSecondary },
+              sx: { backgroundColor: theme.colors.backgroundDark },
+            }}
           />
           <TextField
             variant="outlined"
@@ -62,47 +71,50 @@ function SignUp({ onSignInClick }) {
             type="password"
             id="password"
             autoComplete="current-password"
-            InputLabelProps={{ style: { color: '#ffffff' } }}
-            InputProps={{ style: { color: '#ffffff' } }}
+            InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
+            InputProps={{
+              style: { color: '#FFFFFF', borderColor: theme.colors.textSecondary },
+              sx: { backgroundColor: theme.colors.backgroundDark },
+            }}
           />
           <FormControlLabel
             control={<Checkbox value="allowExtraEmails" color="primary" />}
             label="I want to receive updates via email."
-            sx={{ color: '#ffffff' }}
+            sx={{ color: theme.colors.textPrimary }}
           />
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{
-              mt: 3,
-              mb: 2,
-              backgroundColor: '#ffffff',
-              color: '#1c1c1c',
+              mt: pxToRem(24),
+              mb: pxToRem(16),
+              backgroundColor: theme.colors.primary,
+              color: theme.colors.textOnPrimary,
               '&:hover': {
-                backgroundColor: '#e0e0e0',
+                backgroundColor: theme.colors.primaryHover,
               },
             }}
           >
             Sign up
           </Button>
 
-          <Typography component="p" variant="body2" sx={{ color: '#ffffff' }}>
-            Already have an account? <Link href="#" variant="body2" sx={{ color: '#ffffff' }} onClick={onSignInClick}>Sign in</Link>
+          <Typography component="p" variant="body2" sx={{ color: theme.colors.textPrimary }}>
+            Already have an account? <Link href="#" variant="body2" sx={{ color: theme.colors.primary }} onClick={onSignInClick}>Sign in</Link>
           </Typography>
 
-          <Box sx={{ mt: 3 }}>
+          <Box sx={{ mt: pxToRem(24) }}>
             <Button
               variant="contained"
               fullWidth
-              sx={{ backgroundColor: '#4285F4', color: '#ffffff', marginBottom: 2 }}
+              sx={{ backgroundColor: theme.colors.googleButton, color: '#FFFFFF', marginBottom: pxToRem(16) }}
             >
               Sign up with Google
             </Button>
             <Button
               variant="contained"
               fullWidth
-              sx={{ backgroundColor: '#3b5998', color: '#ffffff' }}
+              sx={{ backgroundColor: theme.colors.facebookButton, color: '#FFFFFF' }}
             >
               Sign up with Facebook
             </Button>
