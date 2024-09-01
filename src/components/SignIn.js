@@ -1,4 +1,5 @@
-import React from "react";
+// src/components/SignIn.js
+import React, { useContext } from "react";
 import {
   Container,
   Box,
@@ -6,13 +7,17 @@ import {
   Button,
   Typography,
   Link,
+  IconButton,
 } from "@mui/material";
+import { Brightness4, Brightness7 } from "@mui/icons-material"; // Importa le icone per la commutazione del tema
 import Logo from "./Logo";
 import { useTheme } from "@mui/material/styles";
 import { pxToRem } from "../utils/pxToRem";
+import { ThemeContext } from "../context/ThemeContext"; // Importa il contesto del tema
 
-function SignIn({ onSignUpClick }) {
+function SignIn({ onSignUpClick, onDebugClick }) {
   const theme = useTheme();
+  const { toggleTheme, mode } = useContext(ThemeContext); // Usa il contesto del tema
 
   return (
     <Container component="main" maxWidth="xs">
@@ -21,7 +26,7 @@ function SignIn({ onSignUpClick }) {
           display: "flex",
           alignItems: "center",
           flexDirection: "column",
-          backgroundColor: theme.colors.backgroundLight,
+          backgroundColor: theme.palette.background.paper,
           padding: `${pxToRem(20)} ${pxToRem(32.38)} ${pxToRem(28)} ${pxToRem(
             24
           )}`,
@@ -35,7 +40,7 @@ function SignIn({ onSignUpClick }) {
         <Typography
           component="h2"
           variant="h6"
-          sx={{ color: theme.colors.textPrimary, marginTop: pxToRem(20) }}>
+          sx={{ color: theme.palette.text.primary, marginTop: pxToRem(20) }}>
           Sign in
         </Typography>
 
@@ -51,13 +56,13 @@ function SignIn({ onSignUpClick }) {
             name="email"
             autoComplete="email"
             autoFocus
-            InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
+            InputLabelProps={{ style: { color: theme.palette.text.primary } }}
             InputProps={{
               style: {
-                color: "#FFFFFF",
-                borderColor: theme.colors.textSecondary,
+                color: theme.palette.text.primary,
+                borderColor: theme.palette.text.secondary,
               },
-              sx: { backgroundColor: theme.colors.backgroundDark },
+              sx: { backgroundColor: theme.palette.background.default },
             }}
           />
           <TextField
@@ -70,13 +75,13 @@ function SignIn({ onSignUpClick }) {
             type="password"
             id="password"
             autoComplete="current-password"
-            InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
+            InputLabelProps={{ style: { color: theme.palette.text.primary } }}
             InputProps={{
               style: {
-                color: "#FFFFFF",
-                borderColor: theme.colors.textSecondary,
+                color: theme.palette.text.primary,
+                borderColor: theme.palette.text.secondary,
               },
-              sx: { backgroundColor: theme.colors.backgroundDark },
+              sx: { backgroundColor: theme.palette.background.default },
             }}
           />
           <Button
@@ -86,8 +91,8 @@ function SignIn({ onSignUpClick }) {
             sx={{
               mt: pxToRem(24),
               mb: pxToRem(16),
-              backgroundColor: theme.colors.primary,
-              color: theme.colors.textOnPrimary,
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.textOnPrimary,
               "&:hover": {
                 backgroundColor: theme.colors.primaryHover,
               },
@@ -95,15 +100,30 @@ function SignIn({ onSignUpClick }) {
             Sign in
           </Button>
 
+          {/* Pulsante Debug */}
+          <Button
+            type="button"
+            fullWidth
+            variant="outlined"
+            onClick={onDebugClick} // Utilizza la funzione di callback onDebugClick
+            sx={{ mt: pxToRem(2), color: theme.palette.primary.main }}>
+            Debug: Vai alla Dashboard
+          </Button>
+
+          {/* Pulsante di commutazione del tema */}
+          <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>
+            {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
+
           <Typography
             component="p"
             variant="body2"
-            sx={{ color: theme.colors.textPrimary }}>
+            sx={{ color: theme.palette.text.primary }}>
             Don't have an account?{" "}
             <Link
               href="#"
               variant="body2"
-              sx={{ color: theme.colors.primary }}
+              sx={{ color: theme.palette.primary.main }}
               onClick={onSignUpClick}>
               Sign up
             </Link>

@@ -1,36 +1,53 @@
+// src/theme.js
 import { createTheme } from "@mui/material/styles";
 
-const colors = {
-  primary: "#00D4FF", // Blu neon
-  primaryHover: "#00B3CC", // Blu neon scuro
-  secondary: "#F3F4F6", // Grigio chiaro
-  backgroundDark: "#0B0C10", // Nero/Grigio scuro
-  backgroundLight: "#1F2833", // Grigio molto scuro per i componenti
-  textPrimary: "#C5C6C7", // Grigio chiaro per il testo
-  textSecondary: "#66FCF1", // Colore accento (verde lime)
-  textOnPrimary: "#0B0C10", // Nero su sfondo primario
-  googleButton: "#4285F4", // Colore per il pulsante Google
-  facebookButton: "#3b5998", // Colore per il pulsante Facebook
-};
-
-const theme = createTheme({
+const getDesignTokens = (mode) => ({
   palette: {
+    mode,
     primary: {
-      main: colors.primary,
+      main: "#00D4FF", // Blu neon
     },
     secondary: {
-      main: colors.secondary,
+      main: "#F3F4F6", // Grigio chiaro
     },
-    background: {
-      default: colors.backgroundDark,
-      paper: colors.backgroundLight,
-    },
-    text: {
-      primary: colors.textPrimary,
-      secondary: colors.textSecondary,
-    },
+    ...(mode === "light"
+      ? {
+          // Modalità chiara
+          background: {
+            default: "#f5f5f5",
+            paper: "#ffffff",
+          },
+          text: {
+            primary: "#0B0C10", // Nero
+            secondary: "#00B3CC", // Blu neon scuro
+          },
+        }
+      : {
+          // Modalità scura
+          background: {
+            default: "#0B0C10", // Nero/Grigio scuro
+            paper: "#1F2833", // Grigio molto scuro per i componenti
+          },
+          text: {
+            primary: "#C5C6C7", // Grigio chiaro per il testo
+            secondary: "#66FCF1", // Colore accento
+          },
+        }),
   },
-  colors, // Esporta i colori come parte del tema per un facile accesso in tutta l'app
+  colors: {
+    primary: "#00D4FF",
+    primaryHover: "#00B3CC",
+    secondary: "#F3F4F6",
+    backgroundDark: "#0B0C10",
+    backgroundLight: "#1F2833",
+    textPrimary: "#C5C6C7",
+    textSecondary: "#66FCF1",
+    textOnPrimary: "#0B0C10",
+    googleButton: "#4285F4",
+    facebookButton: "#3b5998",
+  },
 });
+
+const theme = (mode) => createTheme(getDesignTokens(mode));
 
 export default theme;

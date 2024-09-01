@@ -1,4 +1,5 @@
-import React from "react";
+// src/components/SignUp.js
+import React, { useContext } from "react";
 import {
   Container,
   Box,
@@ -8,13 +9,17 @@ import {
   Checkbox,
   FormControlLabel,
   Link,
+  IconButton,
 } from "@mui/material";
+import { Brightness4, Brightness7 } from "@mui/icons-material"; // Importa le icone per la commutazione del tema
 import Logo from "./Logo";
 import { useTheme } from "@mui/material/styles";
 import { pxToRem } from "../utils/pxToRem";
+import { ThemeContext } from "../context/ThemeContext"; // Importa il contesto del tema
 
-function SignUp({ onSignInClick }) {
+function SignUp({ onSignInClick, onDebugClick }) {
   const theme = useTheme();
+  const { toggleTheme, mode } = useContext(ThemeContext); // Usa il contesto del tema
 
   return (
     <Container component="main" maxWidth="xs">
@@ -23,7 +28,7 @@ function SignUp({ onSignInClick }) {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          backgroundColor: theme.colors.backgroundLight,
+          backgroundColor: theme.palette.background.paper,
           padding: `${pxToRem(20)} ${pxToRem(32.38)} ${pxToRem(28)} ${pxToRem(
             24
           )}`,
@@ -37,7 +42,7 @@ function SignUp({ onSignInClick }) {
         <Typography
           component="h2"
           variant="h6"
-          sx={{ color: theme.colors.textPrimary, marginTop: pxToRem(20) }}>
+          sx={{ color: theme.palette.text.primary, marginTop: pxToRem(20) }}>
           Sign up
         </Typography>
 
@@ -53,13 +58,13 @@ function SignUp({ onSignInClick }) {
             name="fullName"
             autoComplete="name"
             autoFocus
-            InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
+            InputLabelProps={{ style: { color: theme.palette.text.primary } }}
             InputProps={{
               style: {
-                color: "#FFFFFF",
-                borderColor: theme.colors.textSecondary,
+                color: theme.palette.text.primary,
+                borderColor: theme.palette.text.secondary,
               },
-              sx: { backgroundColor: theme.colors.backgroundDark },
+              sx: { backgroundColor: theme.palette.background.default },
             }}
           />
           <TextField
@@ -71,13 +76,13 @@ function SignUp({ onSignInClick }) {
             label="Email"
             name="email"
             autoComplete="email"
-            InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
+            InputLabelProps={{ style: { color: theme.palette.text.primary } }}
             InputProps={{
               style: {
-                color: "#FFFFFF",
-                borderColor: theme.colors.textSecondary,
+                color: theme.palette.text.primary,
+                borderColor: theme.palette.text.secondary,
               },
-              sx: { backgroundColor: theme.colors.backgroundDark },
+              sx: { backgroundColor: theme.palette.background.default },
             }}
           />
           <TextField
@@ -90,19 +95,19 @@ function SignUp({ onSignInClick }) {
             type="password"
             id="password"
             autoComplete="current-password"
-            InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
+            InputLabelProps={{ style: { color: theme.palette.text.primary } }}
             InputProps={{
               style: {
-                color: "#FFFFFF",
-                borderColor: theme.colors.textSecondary,
+                color: theme.palette.text.primary,
+                borderColor: theme.palette.text.secondary,
               },
-              sx: { backgroundColor: theme.colors.backgroundDark },
+              sx: { backgroundColor: theme.palette.background.default },
             }}
           />
           <FormControlLabel
             control={<Checkbox value="allowExtraEmails" color="primary" />}
             label="I want to receive updates via email."
-            sx={{ color: theme.colors.textPrimary }}
+            sx={{ color: theme.palette.text.primary }}
           />
           <Button
             type="submit"
@@ -111,8 +116,8 @@ function SignUp({ onSignInClick }) {
             sx={{
               mt: pxToRem(24),
               mb: pxToRem(16),
-              backgroundColor: theme.colors.primary,
-              color: theme.colors.textOnPrimary,
+              backgroundColor: theme.palette.primary.main,
+              color: theme.palette.textOnPrimary,
               "&:hover": {
                 backgroundColor: theme.colors.primaryHover,
               },
@@ -120,15 +125,30 @@ function SignUp({ onSignInClick }) {
             Sign up
           </Button>
 
+          {/* Pulsante Debug */}
+          <Button
+            type="button"
+            fullWidth
+            variant="outlined"
+            onClick={onDebugClick} // Utilizza la funzione di callback onDebugClick
+            sx={{ mt: pxToRem(2), color: theme.palette.primary.main }}>
+            Debug: Vai alla Dashboard
+          </Button>
+
+          {/* Pulsante di commutazione del tema */}
+          <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>
+            {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
+
           <Typography
             component="p"
             variant="body2"
-            sx={{ color: theme.colors.textPrimary }}>
+            sx={{ color: theme.palette.text.primary }}>
             Already have an account?{" "}
             <Link
               href="#"
               variant="body2"
-              sx={{ color: theme.colors.primary }}
+              sx={{ color: theme.palette.primary.main }}
               onClick={onSignInClick}>
               Sign in
             </Link>

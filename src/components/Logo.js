@@ -1,3 +1,4 @@
+// src/components/Logo.js
 import React from "react";
 import { Box } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
