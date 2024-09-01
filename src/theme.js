@@ -1,50 +1,59 @@
 // src/theme.js
 import { createTheme } from "@mui/material/styles";
 
+// Definizione dei colori personalizzati
+const colors = {
+  primary: "#635FC7",
+  secondary: "#A8A4FF",
+  darkBlue: "#000112",
+  darkGray: "#2B2C37",
+  gray: "#707070",
+  veryDarkGray: "#20212C",
+  mediumGray: "#828FA3",
+  lightBlue: "#E4EBFA",
+  lightGray: "#F4F7FD",
+  pureWhite: "#FFFFFF",
+  red: "#EA5555",
+  lightRed: "#FF9898",
+};
+
+// Funzione per ottenere i token di design in base alla modalità
 const getDesignTokens = (mode) => ({
   palette: {
     mode,
     primary: {
-      main: "#00D4FF", // Blu neon
+      main: colors.primary,
     },
     secondary: {
-      main: "#F3F4F6", // Grigio chiaro
+      main: colors.secondary,
     },
     ...(mode === "light"
       ? {
           // Modalità chiara
           background: {
-            default: "#f5f5f5",
-            paper: "#ffffff",
+            default: colors.lightGray, // Usa il nome 'lightGray'
+            paper: colors.pureWhite, // Usa il nome 'pureWhite'
           },
           text: {
-            primary: "#0B0C10", // Nero
-            secondary: "#00B3CC", // Blu neon scuro
+            primary: colors.darkBlue, // Usa il nome 'darkBlue'
+            secondary: colors.mediumGray, // Usa il nome 'mediumGray'
           },
         }
       : {
           // Modalità scura
           background: {
-            default: "#0B0C10", // Nero/Grigio scuro
-            paper: "#1F2833", // Grigio molto scuro per i componenti
+            default: colors.veryDarkGray, // Usa il nome 'veryDarkGray'
+            paper: colors.darkGray, // Usa il nome 'darkGray'
           },
           text: {
-            primary: "#C5C6C7", // Grigio chiaro per il testo
-            secondary: "#66FCF1", // Colore accento
+            primary: colors.pureWhite, // Usa il nome 'pureWhite'
+            secondary: colors.mediumGray, // Usa il nome 'mediumGray'
           },
         }),
   },
   colors: {
-    primary: "#00D4FF",
-    primaryHover: "#00B3CC",
-    secondary: "#F3F4F6",
-    backgroundDark: "#0B0C10",
-    backgroundLight: "#1F2833",
-    textPrimary: "#C5C6C7",
-    textSecondary: "#66FCF1",
-    textOnPrimary: "#0B0C10",
-    googleButton: "#4285F4",
-    facebookButton: "#3b5998",
+    ...colors, // Includiamo l'oggetto colors direttamente qui
+    dynamicColor: mode === "light" ? colors.darkBlue : colors.red, // Usa i nomi dei colori personalizzati
   },
 });
 

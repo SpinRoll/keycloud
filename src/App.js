@@ -15,7 +15,6 @@ function App() {
   // Funzioni per cambiare la pagina
   const handleSignUpClick = () => setCurrentPage("signUp");
   const handleSignInClick = () => setCurrentPage("signIn");
-  const handleDashboardClick = () => setCurrentPage("dashboard");
   const handleViewApartmentsClick = () => setCurrentPage("apartments");
   const handleViewApartmentDetailClick = (apartment) => {
     setSelectedApartment(apartment);

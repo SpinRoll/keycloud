@@ -8,7 +8,6 @@ const Dashboard = ({ onViewApartmentsClick }) => {
     <Container component="main" maxWidth="md">
       <Box
         sx={{
-          marginTop: pxToRem(32),
           display: "flex",
           flexDirection: "column",
           alignItems: "center",

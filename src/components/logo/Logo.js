@@ -3,8 +3,8 @@ import React from "react";
 import { Box } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import logoDesktop from "../assets/logo_desktop.png";
-import logoMobile from "../assets/logo_mobile.png";
+import logoDesktop from "../../assets/logo_desktop.png";
+import logoMobile from "../../assets/logo_mobile.png";
 
 function Logo() {
   const theme = useTheme();
