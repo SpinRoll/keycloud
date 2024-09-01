@@ -1,8 +1,17 @@
-import React from 'react';
-import { Container, Box, TextField, Button, Typography, Checkbox, FormControlLabel, Link } from '@mui/material';
-import Logo from './Logo';
-import { useTheme } from '@mui/material/styles';
-import { pxToRem } from '../utils/pxToRem';
+import React from "react";
+import {
+  Container,
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Checkbox,
+  FormControlLabel,
+  Link,
+} from "@mui/material";
+import Logo from "./Logo";
+import { useTheme } from "@mui/material/styles";
+import { pxToRem } from "../utils/pxToRem";
 
 function SignUp({ onSignInClick }) {
   const theme = useTheme();
@@ -11,20 +20,24 @@ function SignUp({ onSignInClick }) {
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
           backgroundColor: theme.colors.backgroundLight,
-          padding: `${pxToRem(20)} ${pxToRem(32.38)} ${pxToRem(28)} ${pxToRem(24)}`,
+          padding: `${pxToRem(20)} ${pxToRem(32.38)} ${pxToRem(28)} ${pxToRem(
+            24
+          )}`,
           borderRadius: pxToRem(8),
           boxShadow: `0px ${pxToRem(4)} ${pxToRem(10)} rgba(0, 0, 0, 0.3)`,
-        }}
-      >
+        }}>
         {/* Logo */}
         <Logo />
 
         {/* Sign Up Title */}
-        <Typography component="h2" variant="h6" sx={{ color: theme.colors.textPrimary, marginTop: pxToRem(20) }}>
+        <Typography
+          component="h2"
+          variant="h6"
+          sx={{ color: theme.colors.textPrimary, marginTop: pxToRem(20) }}>
           Sign up
         </Typography>
 
@@ -42,8 +55,11 @@ function SignUp({ onSignInClick }) {
             autoFocus
             InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
             InputProps={{
-              style: { color: '#FFFFFF', borderColor: theme.colors.textSecondary },
-              sx: { backgroundColor: theme.colors.backgroundDark, },
+              style: {
+                color: "#FFFFFF",
+                borderColor: theme.colors.textSecondary,
+              },
+              sx: { backgroundColor: theme.colors.backgroundDark },
             }}
           />
           <TextField
@@ -57,7 +73,10 @@ function SignUp({ onSignInClick }) {
             autoComplete="email"
             InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
             InputProps={{
-              style: { color: '#FFFFFF', borderColor: theme.colors.textSecondary },
+              style: {
+                color: "#FFFFFF",
+                borderColor: theme.colors.textSecondary,
+              },
               sx: { backgroundColor: theme.colors.backgroundDark },
             }}
           />
@@ -73,7 +92,10 @@ function SignUp({ onSignInClick }) {
             autoComplete="current-password"
             InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
             InputProps={{
-              style: { color: '#FFFFFF', borderColor: theme.colors.textSecondary },
+              style: {
+                color: "#FFFFFF",
+                borderColor: theme.colors.textSecondary,
+              },
               sx: { backgroundColor: theme.colors.backgroundDark },
             }}
           />
@@ -91,31 +113,45 @@ function SignUp({ onSignInClick }) {
               mb: pxToRem(16),
               backgroundColor: theme.colors.primary,
               color: theme.colors.textOnPrimary,
-              '&:hover': {
+              "&:hover": {
                 backgroundColor: theme.colors.primaryHover,
               },
-            }}
-          >
+            }}>
             Sign up
           </Button>
 
-          <Typography component="p" variant="body2" sx={{ color: theme.colors.textPrimary }}>
-            Already have an account? <Link href="#" variant="body2" sx={{ color: theme.colors.primary }} onClick={onSignInClick}>Sign in</Link>
+          <Typography
+            component="p"
+            variant="body2"
+            sx={{ color: theme.colors.textPrimary }}>
+            Already have an account?{" "}
+            <Link
+              href="#"
+              variant="body2"
+              sx={{ color: theme.colors.primary }}
+              onClick={onSignInClick}>
+              Sign in
+            </Link>
           </Typography>
 
           <Box sx={{ mt: pxToRem(24) }}>
             <Button
               variant="contained"
               fullWidth
-              sx={{ backgroundColor: theme.colors.googleButton, color: '#FFFFFF', marginBottom: pxToRem(16) }}
-            >
+              sx={{
+                backgroundColor: theme.colors.googleButton,
+                color: "#FFFFFF",
+                marginBottom: pxToRem(16),
+              }}>
               Sign up with Google
             </Button>
             <Button
               variant="contained"
               fullWidth
-              sx={{ backgroundColor: theme.colors.facebookButton, color: '#FFFFFF' }}
-            >
+              sx={{
+                backgroundColor: theme.colors.facebookButton,
+                color: "#FFFFFF",
+              }}>
               Sign up with Facebook
             </Button>
           </Box>

@@ -1,8 +1,15 @@
-import React from 'react';
-import { Container, Box, TextField, Button, Typography, Link } from '@mui/material';
-import Logo from './Logo';
-import { useTheme } from '@mui/material/styles';
-import { pxToRem } from '../utils/pxToRem';
+import React from "react";
+import {
+  Container,
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Link,
+} from "@mui/material";
+import Logo from "./Logo";
+import { useTheme } from "@mui/material/styles";
+import { pxToRem } from "../utils/pxToRem";
 
 function SignIn({ onSignUpClick }) {
   const theme = useTheme();
@@ -11,20 +18,24 @@ function SignIn({ onSignUpClick }) {
     <Container component="main" maxWidth="xs">
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          flexDirection: 'column',
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
           backgroundColor: theme.colors.backgroundLight,
-          padding: `${pxToRem(20)} ${pxToRem(32.38)} ${pxToRem(28)} ${pxToRem(24)}`,
+          padding: `${pxToRem(20)} ${pxToRem(32.38)} ${pxToRem(28)} ${pxToRem(
+            24
+          )}`,
           borderRadius: pxToRem(8),
           boxShadow: `0px ${pxToRem(4)} ${pxToRem(10)} rgba(0, 0, 0, 0.3)`,
-        }}
-      >
+        }}>
         {/* Logo */}
         <Logo />
 
         {/* Sign In Title */}
-        <Typography component="h2" variant="h6" sx={{ color: theme.colors.textPrimary, marginTop: pxToRem(20) }}>
+        <Typography
+          component="h2"
+          variant="h6"
+          sx={{ color: theme.colors.textPrimary, marginTop: pxToRem(20) }}>
           Sign in
         </Typography>
 
@@ -42,7 +53,10 @@ function SignIn({ onSignUpClick }) {
             autoFocus
             InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
             InputProps={{
-              style: { color: '#FFFFFF', borderColor: theme.colors.textSecondary },
+              style: {
+                color: "#FFFFFF",
+                borderColor: theme.colors.textSecondary,
+              },
               sx: { backgroundColor: theme.colors.backgroundDark },
             }}
           />
@@ -58,7 +72,10 @@ function SignIn({ onSignUpClick }) {
             autoComplete="current-password"
             InputLabelProps={{ style: { color: theme.colors.textPrimary } }}
             InputProps={{
-              style: { color: '#FFFFFF', borderColor: theme.colors.textSecondary },
+              style: {
+                color: "#FFFFFF",
+                borderColor: theme.colors.textSecondary,
+              },
               sx: { backgroundColor: theme.colors.backgroundDark },
             }}
           />
@@ -71,16 +88,25 @@ function SignIn({ onSignUpClick }) {
               mb: pxToRem(16),
               backgroundColor: theme.colors.primary,
               color: theme.colors.textOnPrimary,
-              '&:hover': {
+              "&:hover": {
                 backgroundColor: theme.colors.primaryHover,
               },
-            }}
-          >
+            }}>
             Sign in
           </Button>
 
-          <Typography component="p" variant="body2" sx={{ color: theme.colors.textPrimary }}>
-            Don't have an account? <Link href="#" variant="body2" sx={{ color: theme.colors.primary }} onClick={onSignUpClick}>Sign up</Link>
+          <Typography
+            component="p"
+            variant="body2"
+            sx={{ color: theme.colors.textPrimary }}>
+            Don't have an account?{" "}
+            <Link
+              href="#"
+              variant="body2"
+              sx={{ color: theme.colors.primary }}
+              onClick={onSignUpClick}>
+              Sign up
+            </Link>
           </Typography>
         </Box>
       </Box>
