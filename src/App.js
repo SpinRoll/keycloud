@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
 import Dashboard from "./components/Dashboard";
-import Apartments from "./components/Apartments";
-import ApartmentDetail from "./components/ApartmentDetail";
+import Apartments from "./components/apartments/Apartments";
+import ApartmentDetail from "./components/apartments/ApartmentDetail";
 import Header from "./components/Header"; // Importa il componente Header
 import { ThemeProvider } from "./context/ThemeContext";
 

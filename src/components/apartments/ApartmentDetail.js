@@ -1,7 +1,7 @@
 // src/components/ApartmentDetail.js
 import React from "react";
 import { Container, Box, Typography, Button } from "@mui/material";
-import { pxToRem } from "../utils/pxToRem";
+import { pxToRem } from "../../utils/pxToRem";
 
 const ApartmentDetail = ({ apartment }) => {
   return (
