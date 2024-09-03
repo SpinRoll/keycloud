@@ -1,5 +1,5 @@
 // src/components/Apartments.js
-import React from "react";
+import React, { useState } from "react";
 import {
   Container,
   Box,
@@ -10,11 +10,21 @@ import {
   Typography,
   IconButton,
   Fab,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import { pxToRem } from "../../utils/pxToRem";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useTheme } from "@mui/material/styles";
-import AddIcon from "@mui/icons-material/Add"; // Importa l'icona per il pulsante +
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import CustomButton from "../customComponents/CustomButton"; // Importa il tuo CustomButton
 
 // Lista degli appartamenti con lo stato e il periodo
 const apartments = [
@@ -43,6 +53,17 @@ const apartments = [
 
 const Apartments = ({ onViewApartmentDetail }) => {
   const theme = useTheme(); // Usa il tema corrente
+  const [open, setOpen] = useState(false); // Stato per la modale
+
+  // Funzione per aprire la modale
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  // Funzione per chiudere la modale
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   // Funzione per ottenere il colore dello stato
   const getStatusColor = (status) => {
@@ -136,9 +157,73 @@ const Apartments = ({ onViewApartmentDetail }) => {
           position: "fixed",
           bottom: pxToRem(30),
           right: pxToRem(30),
-        }}>
+        }}
+        onClick={handleClickOpen} // Apre la modale
+      >
         <AddIcon />
       </Fab>
+
+      {/* Modale per l'aggiunta di un nuovo appartamento */}
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle sx={{ fontSize: pxToRem(24), textAlign: "center" }}>
+          Aggiungi Appartamento
+        </DialogTitle>
+        <DialogContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: pxToRem(16),
+            padding: pxToRem(20),
+          }}>
+          {/* Input per nome appartamento */}
+          <CustomButton variant="outlined">Test open</CustomButton>
+          <TextField
+            label="Durata link"
+            variant="outlined"
+            defaultValue="1 gg"
+          />
+          <CustomButton variant="contained">-</CustomButton>
+          <CustomButton variant="contained">+</CustomButton>
+          {/* Switch per il link fisso */}
+          <FormControlLabel
+            control={<Switch color="primary" />}
+            label="Link fisso"
+          />
+          {/* Selettore di periodo */}
+          <TextField
+            label="Seleziona periodo"
+            variant="outlined"
+            InputProps={{
+              endAdornment: <CalendarTodayIcon />,
+            }}
+          />
+          {/* Generazione di link */}
+          <CustomButton variant="contained">Generate</CustomButton>
+          <Box sx={{ display: "flex", alignItems: "center", gap: pxToRem(10) }}>
+            <TextField
+              variant="outlined"
+              defaultValue="HTTP://bitfly.es/45ggdfy"
+            />
+            <IconButton>
+              <ContentCopyIcon />
+            </IconButton>
+          </Box>
+          {/* Azioni della modale */}
+          <CustomButton variant="contained" color="primary">
+            Salva
+          </CustomButton>
+          <CustomButton variant="outlined" color="primary">
+            Edit
+          </CustomButton>
+          <CustomButton
+            variant="outlined"
+            color="error"
+            sx={{ color: theme.colors.red }}
+            startIcon={<DeleteIcon />}>
+            DELETE APARTMENT
+          </CustomButton>
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 };

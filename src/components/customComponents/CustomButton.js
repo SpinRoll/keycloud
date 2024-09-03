@@ -1,4 +1,4 @@
-// src/components/CustomButton.js
+// src/components/customComponents/CustomButton.js
 import React from "react";
 import { Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
