@@ -91,7 +91,7 @@ const Apartments = () => {
   };
 
   return (
-    <Container component="main" maxWidth="m" sx={{ position: "relative" }}>
+    <Container component="main" maxWidth="sm" sx={{ position: "relative" }}>
       <Box
         sx={{
           marginTop: pxToRem(32),
@@ -186,57 +186,68 @@ const Apartments = () => {
             display: "flex",
             flexDirection: "column",
             gap: pxToRem(16),
+            width: pxToRem(300),
             padding: pxToRem(20),
           }}>
-          <CustomButton variant="outlined">Test open</CustomButton>
-          <CustomTextField
-            label="Durata link"
-            variant="outlined"
-            defaultValue="1 gg"
-          />
-          <CustomButton variant="contained">-</CustomButton>
-          <CustomButton variant="contained">+</CustomButton>
-          <FormControlLabel
-            control={<Switch color="primary" />}
-            label="Link fisso"
-          />
-          <CustomTextField
-            label="Seleziona periodo"
-            variant="outlined"
-            InputProps={{
-              endAdornment: <CalendarTodayIcon />,
-            }}
-          />
-          <CustomButton variant="contained">Generate</CustomButton>
-          <Box sx={{ display: "flex", alignItems: "center", gap: pxToRem(10) }}>
-            <CustomTextField
-              variant="outlined"
-              defaultValue="HTTP://bitfly.es/45ggdfy"
-            />
-            <IconButton>
-              <ContentCopyIcon />
-            </IconButton>
-          </Box>
-          <CustomButton variant="contained" color="primary">
-            Salva
-          </CustomButton>
-          <CustomButton variant="outlined" color="primary">
-            Edit
-          </CustomButton>
-          <CustomButton
-            variant="outlined"
-            sx={{
-              color: theme.colors.red,
-              borderColor: theme.colors.red,
-              "&:hover": {
-                backgroundColor: theme.colors.lightRed,
-                borderColor: theme.colors.lightRed,
-                color: theme.colors.red,
-              },
-            }}
-            startIcon={<DeleteIcon />}>
-            DELETE APARTMENT
-          </CustomButton>
+          {/* Mostra i dettagli dell'appartamento selezionato */}
+          {selectedApartment && (
+            <>
+              <CustomButton variant="outlined">Test open</CustomButton>
+              <CustomTextField
+                label="Durata link"
+                variant="outlined"
+                defaultValue="1 gg"
+              />
+              <CustomButton variant="contained">-</CustomButton>
+              <CustomButton variant="contained">+</CustomButton>
+              <FormControlLabel
+                control={<Switch color="primary" />}
+                label="Link fisso"
+              />
+              <CustomTextField
+                label="Seleziona periodo"
+                variant="outlined"
+                InputProps={{
+                  endAdornment: <CalendarTodayIcon />,
+                }}
+              />
+              <CustomButton variant="contained">Generate</CustomButton>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: pxToRem(10),
+                }}>
+                <CustomTextField
+                  variant="outlined"
+                  defaultValue="HTTP://bitfly.es/45ggdfy"
+                />
+                <IconButton>
+                  <ContentCopyIcon />
+                </IconButton>
+              </Box>
+              <CustomButton variant="contained" color="primary">
+                Salva
+              </CustomButton>
+              <CustomButton variant="outlined" color="primary">
+                Edit
+              </CustomButton>
+              <CustomButton
+                variant="outlined"
+                sx={{
+                  color: theme.colors.red,
+                  borderColor: theme.colors.red,
+                  "&:hover": {
+                    backgroundColor: theme.colors.lightRed,
+                    borderColor: theme.colors.lightRed,
+                    color: theme.colors.red,
+                  },
+                }}
+                startIcon={<DeleteIcon />}>
+                DELETE APARTMENT
+              </CustomButton>
+            </>
+          )}
         </DialogContent>
       </Dialog>
     </Container>
