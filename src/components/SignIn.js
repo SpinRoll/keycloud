@@ -8,10 +8,22 @@ import CustomButton from "./customComponents/CustomButton";
 import { useTheme } from "@mui/material/styles";
 import { pxToRem } from "../utils/pxToRem";
 import { ThemeContext } from "../context/ThemeContext";
+import { useNavigate } from "react-router-dom"; // Importa useNavigate
 
-function SignIn({ onSignUpClick, onDebugClick }) {
+function SignIn() {
   const theme = useTheme();
   const { toggleTheme, mode } = useContext(ThemeContext);
+  const navigate = useNavigate(); // Usa useNavigate per la navigazione
+
+  // Funzione per navigare alla pagina di sign-up
+  const handleSignUpClick = () => {
+    navigate("/sign-up");
+  };
+
+  // Funzione di Debug per accedere alla Dashboard
+  const handleDebugClick = () => {
+    navigate("/dashboard");
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -47,7 +59,7 @@ function SignIn({ onSignUpClick, onDebugClick }) {
           <CustomTextField label="Password" name="password" type="password" />
           <CustomButton type="submit">Sign in</CustomButton>
 
-          <CustomButton variant="outlined" onClick={onDebugClick}>
+          <CustomButton variant="outlined" onClick={handleDebugClick}>
             Debug: Vai alla Dashboard
           </CustomButton>
 
@@ -60,15 +72,13 @@ function SignIn({ onSignUpClick, onDebugClick }) {
             variant="body2"
             sx={{
               color: theme.palette.text.primary,
-              mt: pxToRem(16),
-              textAlign: "center",
             }}>
             Don't have an account?{" "}
             <Link
-              href="#"
               variant="body2"
-              sx={{ color: theme.colors.primary }}
-              onClick={onSignUpClick}>
+              sx={{ color: theme.colors.primary, cursor: "pointer" }}
+              onClick={handleSignUpClick} // Usa handleSignUpClick per navigare
+            >
               Sign up
             </Link>
           </Typography>

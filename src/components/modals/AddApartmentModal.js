@@ -1,40 +1,36 @@
-// src/components/apartments/ApartmentDetail.js
+// src/components/modals/AddApartmentModal.js
 import React from "react";
-import { Container, Box, Typography } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Box } from "@mui/material";
 import { pxToRem } from "../../utils/pxToRem";
 import CustomButton from "../customComponents/CustomButton";
-import CustomTextField from "../customComponents/CustomTextField"; // Importa il tuo CustomTextField
+import CustomTextField from "../customComponents/CustomTextField";
 import HomeIcon from "@mui/icons-material/Home"; // Importa un'icona per rappresentare l'appartamento
 
-const ApartmentDetail = ({ onSave }) => {
+const AddApartmentModal = ({ open, onClose }) => {
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
+    <Dialog maxWidth="m" open={open} onClose={onClose}>
+      <DialogTitle sx={{ fontSize: pxToRem(24), textAlign: "center" }}>
+        Aggiungi Appartamento
+      </DialogTitle>
+      <DialogContent
         sx={{
-          marginTop: pxToRem(32),
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
+          gap: pxToRem(16),
+          width: pxToRem(300),
           padding: pxToRem(20),
-          borderRadius: pxToRem(8),
-          boxShadow: `0px ${pxToRem(4)} ${pxToRem(10)} rgba(0, 0, 0, 0.3)`,
         }}>
         {/* Icona e Titolo */}
-        <HomeIcon sx={{ fontSize: pxToRem(60), marginBottom: pxToRem(16) }} />
-        <Typography
-          component="h1"
-          variant="h5"
-          sx={{ marginBottom: pxToRem(24) }}>
-          Aggiungi Appartamento
-        </Typography>
-
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: pxToRem(16),
+          }}>
+          <HomeIcon sx={{ fontSize: pxToRem(60) }} />
+        </Box>
         {/* Form per aggiungere i dettagli dell'appartamento */}
-        <CustomTextField
-          label="Nome"
-          variant="outlined"
-          fullWidth
-          sx={{ mb: pxToRem(16) }}
-        />
+        <CustomTextField label="Nome" variant="outlined" fullWidth />
         <Box sx={{ display: "flex", gap: pxToRem(16), width: "100%" }}>
           <CustomTextField label="Via" variant="outlined" fullWidth />
           <CustomTextField label="N*" variant="outlined" fullWidth />
@@ -69,13 +65,13 @@ const ApartmentDetail = ({ onSave }) => {
         {/* Bottone Salva */}
         <CustomButton
           variant="contained"
-          onClick={onSave}
+          onClick={onClose} // Chiudi la modale quando si salva
           sx={{ mt: pxToRem(24) }}>
           Salva
         </CustomButton>
-      </Box>
-    </Container>
+      </DialogContent>
+    </Dialog>
   );
 };
 
-export default ApartmentDetail;
+export default AddApartmentModal;

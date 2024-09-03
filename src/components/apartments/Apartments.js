@@ -1,4 +1,4 @@
-// src/components/Apartments.js
+// src/components/apartments/Apartments.js
 import React, { useState } from "react";
 import {
   Container,
@@ -6,27 +6,19 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemSecondaryAction,
   Typography,
   IconButton,
   Fab,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Switch,
-  FormControlLabel,
+  ListItemSecondaryAction,
 } from "@mui/material";
 import { pxToRem } from "../../utils/pxToRem";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useTheme } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
-import DeleteIcon from "@mui/icons-material/Delete";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import CustomButton from "../customComponents/CustomButton";
-import CustomTextField from "../customComponents/CustomTextField"; // Importa il tuo CustomTextField
-import ApartmentDetail from "./ApartmentDetail"; // Importa il componente ApartmentDetail
+import EditApartmentModal from "../modals/EditApartmentModal"; // Importa il componente modale
+import AddApartmentModal from "../modals/AddApartmentModal"; // Importa il componente modale
 
+// Dichiaro un array di oggetti per rappresentare gli appartamenti con alcuni dati di esempio
 const apartments = [
   {
     id: 1,
@@ -52,46 +44,36 @@ const apartments = [
 ];
 
 const Apartments = () => {
-  const theme = useTheme();
-  const [openAdd, setOpenAdd] = useState(false); // Stato per la modale di aggiunta
-  const [openEdit, setOpenEdit] = useState(false); // Stato per la modale di modifica
-  const [selectedApartment, setSelectedApartment] = useState(null); // Stato per l'appartamento selezionato
+  const theme = useTheme(); // Uso il tema corrente di Material-UI per ottenere i colori
+  const [openAdd, setOpenAdd] = useState(false); // Stato per gestire l'apertura della modale di aggiunta
+  const [openEdit, setOpenEdit] = useState(false); // Stato per gestire l'apertura della modale di modifica
+  const [selectedApartment, setSelectedApartment] = useState(null); // Stato per l'appartamento selezionato da modificare
 
-  // Funzione per aprire la modale di aggiunta
-  const handleClickOpenAdd = () => {
-    setSelectedApartment(null);
-    setOpenAdd(true);
-  };
-
-  // Funzione per aprire la modale di modifica
-  const handleClickOpenEdit = (apartment) => {
-    setSelectedApartment(apartment);
-    setOpenEdit(true);
+  // Funzione per aprire le modali di aggiunta o modifica
+  const handleOpenModal = (type, apartment = null) => {
+    setSelectedApartment(apartment); // Imposta l'appartamento selezionato per la modifica
+    type === "add" ? setOpenAdd(true) : setOpenEdit(true); // Apri la modale corrispondente
   };
 
   // Funzione per chiudere le modali
   const handleClose = () => {
-    setOpenAdd(false);
-    setOpenEdit(false);
-    setSelectedApartment(null);
+    setOpenAdd(false); // Chiude la modale di aggiunta
+    setOpenEdit(false); // Chiude la modale di modifica
+    setSelectedApartment(null); // Reset dell'appartamento selezionato
   };
 
-  // Funzione per ottenere il colore dello stato
+  // Funzione per ottenere il colore dello stato dell'appartamento in base al tema
   const getStatusColor = (status) => {
-    switch (status) {
-      case "active":
-        return theme.palette.success.main; // Colore verde
-      case "expired":
-        return theme.palette.error.main; // Colore rosso
-      case "inactive":
-        return theme.palette.warning.main; // Colore giallo
-      default:
-        return theme.palette.text.primary; // Colore testo primario
-    }
+    const colors = {
+      active: theme.palette.success.main,
+      expired: theme.palette.error.main,
+      inactive: theme.palette.warning.main,
+    };
+    return colors[status] || theme.palette.text.primary; // Restituisco il colore corrispondente o il colore di testo di default
   };
 
   return (
-    <Container component="main" maxWidth="sm" sx={{ position: "relative" }}>
+    <Container component="main" maxWidth="m" sx={{ position: "relative" }}>
       <Box
         sx={{
           marginTop: pxToRem(32),
@@ -112,20 +94,14 @@ const Apartments = () => {
           {apartments.map((apartment) => (
             <ListItem
               key={apartment.id}
+              button
+              onClick={() => handleOpenModal("edit", apartment)} // Apre la modale di modifica per l'appartamento selezionato
               sx={{
                 borderBottom: `1px solid ${theme.palette.divider}`,
                 display: "flex",
                 alignItems: "center",
               }}>
-              <Box
-                sx={{
-                  width: pxToRem(40),
-                  height: pxToRem(40),
-                  backgroundColor: theme.palette.background.default,
-                  borderRadius: "50%",
-                  marginRight: pxToRem(10),
-                }}
-              />
+              {/* Mostra il nome e il periodo dell'appartamento */}
               <ListItemText
                 primary={<Typography variant="h6">{apartment.name}</Typography>}
                 secondary={
@@ -136,19 +112,18 @@ const Apartments = () => {
                   </Typography>
                 }
               />
+              {/* Mostra lo stato dell'appartamento con il colore corrispondente */}
               <Typography
                 variant="body2"
                 sx={{
-                  color: getStatusColor(apartment.status), // Usa il colore dinamico basato sullo stato
+                  color: getStatusColor(apartment.status),
                   fontWeight: "bold",
                   marginRight: pxToRem(10),
                 }}>
                 {apartment.status.toUpperCase()}
               </Typography>
               <ListItemSecondaryAction>
-                <IconButton
-                  edge="end"
-                  onClick={() => handleClickOpenEdit(apartment)}>
+                <IconButton>
                   <ArrowForwardIosIcon />
                 </IconButton>
               </ListItemSecondaryAction>
@@ -156,6 +131,7 @@ const Apartments = () => {
           ))}
         </List>
       </Box>
+      {/* Pulsante per aggiungere un nuovo appartamento */}
       <Fab
         color="primary"
         aria-label="add"
@@ -164,92 +140,19 @@ const Apartments = () => {
           bottom: pxToRem(30),
           right: pxToRem(30),
         }}
-        onClick={handleClickOpenAdd} // Apre la modale per aggiungere un nuovo appartamento
-      >
+        onClick={() => handleOpenModal("add")}>
         <AddIcon />
       </Fab>
 
       {/* Modale per aggiungere un nuovo appartamento */}
-      <Dialog open={openAdd} onClose={handleClose}>
-        <DialogContent>
-          <ApartmentDetail onSave={handleClose} />
-        </DialogContent>
-      </Dialog>
+      <AddApartmentModal open={openAdd} onClose={handleClose} />
 
       {/* Modale per modificare un appartamento esistente */}
-      <Dialog open={openEdit} onClose={handleClose}>
-        <DialogTitle sx={{ fontSize: pxToRem(24), textAlign: "center" }}>
-          Modifica Appartamento
-        </DialogTitle>
-        <DialogContent
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            gap: pxToRem(16),
-            width: pxToRem(300),
-            padding: pxToRem(20),
-          }}>
-          {/* Mostra i dettagli dell'appartamento selezionato */}
-          {selectedApartment && (
-            <>
-              <CustomButton variant="outlined">Test open</CustomButton>
-              <CustomTextField
-                label="Durata link"
-                variant="outlined"
-                defaultValue="1 gg"
-              />
-              <CustomButton variant="contained">-</CustomButton>
-              <CustomButton variant="contained">+</CustomButton>
-              <FormControlLabel
-                control={<Switch color="primary" />}
-                label="Link fisso"
-              />
-              <CustomTextField
-                label="Seleziona periodo"
-                variant="outlined"
-                InputProps={{
-                  endAdornment: <CalendarTodayIcon />,
-                }}
-              />
-              <CustomButton variant="contained">Generate</CustomButton>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: pxToRem(10),
-                }}>
-                <CustomTextField
-                  variant="outlined"
-                  defaultValue="HTTP://bitfly.es/45ggdfy"
-                />
-                <IconButton>
-                  <ContentCopyIcon />
-                </IconButton>
-              </Box>
-              <CustomButton variant="contained" color="primary">
-                Salva
-              </CustomButton>
-              <CustomButton variant="outlined" color="primary">
-                Edit
-              </CustomButton>
-              <CustomButton
-                variant="outlined"
-                sx={{
-                  color: theme.colors.red,
-                  borderColor: theme.colors.red,
-                  "&:hover": {
-                    backgroundColor: theme.colors.lightRed,
-                    borderColor: theme.colors.lightRed,
-                    color: theme.colors.red,
-                  },
-                }}
-                startIcon={<DeleteIcon />}>
-                DELETE APARTMENT
-              </CustomButton>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+      <EditApartmentModal
+        open={openEdit}
+        onClose={handleClose}
+        apartment={selectedApartment}
+      />
     </Container>
   );
 };

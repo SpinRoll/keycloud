@@ -12,9 +12,9 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Brightness4, Brightness7, AccountCircle } from "@mui/icons-material"; // Icone per commutazione del tema
-import { ThemeContext } from "../context/ThemeContext"; // Contesto del tema
-import Logo from "./logo/Logo";
-import { pxToRem } from "../utils/pxToRem";
+import { ThemeContext } from "../../context/ThemeContext"; // Contesto del tema
+import Logo from "../logo/Logo";
+import { pxToRem } from "../../utils/pxToRem";
 
 function Header() {
   const { toggleTheme, mode } = useContext(ThemeContext); // Usa il contesto del tema
@@ -103,8 +103,9 @@ function Header() {
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}>
           <MenuItem
+            onClick={toggleTheme}
             sx={{ display: "flex", alignItems: "center", gap: pxToRem(10) }}>
-            <IconButton onClick={toggleTheme}>
+            <IconButton>
               {mode === "dark" ? (
                 <Brightness7 sx={{ color: theme.colors.pureWhite }} />
               ) : (
