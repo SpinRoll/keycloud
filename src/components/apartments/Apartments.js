@@ -13,7 +13,6 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  TextField,
   Switch,
   FormControlLabel,
 } from "@mui/material";
@@ -24,45 +23,57 @@ import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import CustomButton from "../customComponents/CustomButton"; // Importa il tuo CustomButton
+import CustomButton from "../customComponents/CustomButton";
+import CustomTextField from "../customComponents/CustomTextField"; // Importa il tuo CustomTextField
+import ApartmentDetail from "./ApartmentDetail"; // Importa il componente ApartmentDetail
 
-// Lista degli appartamenti con lo stato e il periodo
 const apartments = [
   {
     id: 1,
     name: "Appartamento A",
     location: "Roma",
-    period: "7gg da 5 lug", // Periodo per expired
+    period: "7gg da 5 lug",
     status: "expired",
   },
   {
     id: 2,
     name: "Appartamento B",
     location: "Milano",
-    period: "14 al 18 sett.", // Periodo per active
+    period: "14 al 18 sett.",
     status: "active",
   },
   {
     id: 3,
     name: "Appartamento C",
     location: "Firenze",
-    period: "-", // Periodo per inactive
+    period: "-",
     status: "inactive",
   },
 ];
 
-const Apartments = ({ onViewApartmentDetail }) => {
-  const theme = useTheme(); // Usa il tema corrente
-  const [open, setOpen] = useState(false); // Stato per la modale
+const Apartments = () => {
+  const theme = useTheme();
+  const [openAdd, setOpenAdd] = useState(false); // Stato per la modale di aggiunta
+  const [openEdit, setOpenEdit] = useState(false); // Stato per la modale di modifica
+  const [selectedApartment, setSelectedApartment] = useState(null); // Stato per l'appartamento selezionato
 
-  // Funzione per aprire la modale
-  const handleClickOpen = () => {
-    setOpen(true);
+  // Funzione per aprire la modale di aggiunta
+  const handleClickOpenAdd = () => {
+    setSelectedApartment(null);
+    setOpenAdd(true);
   };
 
-  // Funzione per chiudere la modale
+  // Funzione per aprire la modale di modifica
+  const handleClickOpenEdit = (apartment) => {
+    setSelectedApartment(apartment);
+    setOpenEdit(true);
+  };
+
+  // Funzione per chiudere le modali
   const handleClose = () => {
-    setOpen(false);
+    setOpenAdd(false);
+    setOpenEdit(false);
+    setSelectedApartment(null);
   };
 
   // Funzione per ottenere il colore dello stato
@@ -73,14 +84,14 @@ const Apartments = ({ onViewApartmentDetail }) => {
       case "expired":
         return theme.palette.error.main; // Colore rosso
       case "inactive":
-        return theme.palette.warning.main; // Colore arancione
+        return theme.palette.warning.main; // Colore giallo
       default:
         return theme.palette.text.primary; // Colore testo primario
     }
   };
 
   return (
-    <Container component="main" maxWidth="sm" sx={{ position: "relative" }}>
+    <Container component="main" maxWidth="m" sx={{ position: "relative" }}>
       <Box
         sx={{
           marginTop: pxToRem(32),
@@ -106,7 +117,6 @@ const Apartments = ({ onViewApartmentDetail }) => {
                 display: "flex",
                 alignItems: "center",
               }}>
-              {/* Icona per l'appartamento */}
               <Box
                 sx={{
                   width: pxToRem(40),
@@ -116,7 +126,6 @@ const Apartments = ({ onViewApartmentDetail }) => {
                   marginRight: pxToRem(10),
                 }}
               />
-              {/* Testo dell'appartamento */}
               <ListItemText
                 primary={<Typography variant="h6">{apartment.name}</Typography>}
                 secondary={
@@ -127,21 +136,19 @@ const Apartments = ({ onViewApartmentDetail }) => {
                   </Typography>
                 }
               />
-              {/* Stato dell'appartamento */}
               <Typography
                 variant="body2"
                 sx={{
-                  color: getStatusColor(apartment.status),
+                  color: getStatusColor(apartment.status), // Usa il colore dinamico basato sullo stato
                   fontWeight: "bold",
                   marginRight: pxToRem(10),
                 }}>
                 {apartment.status.toUpperCase()}
               </Typography>
-              {/* Icona per i dettagli */}
               <ListItemSecondaryAction>
                 <IconButton
                   edge="end"
-                  onClick={() => onViewApartmentDetail(apartment)}>
+                  onClick={() => handleClickOpenEdit(apartment)}>
                   <ArrowForwardIosIcon />
                 </IconButton>
               </ListItemSecondaryAction>
@@ -149,7 +156,6 @@ const Apartments = ({ onViewApartmentDetail }) => {
           ))}
         </List>
       </Box>
-      {/* Pulsante + per aggiungere nuovi appartamenti */}
       <Fab
         color="primary"
         aria-label="add"
@@ -158,15 +164,22 @@ const Apartments = ({ onViewApartmentDetail }) => {
           bottom: pxToRem(30),
           right: pxToRem(30),
         }}
-        onClick={handleClickOpen} // Apre la modale
+        onClick={handleClickOpenAdd} // Apre la modale per aggiungere un nuovo appartamento
       >
         <AddIcon />
       </Fab>
 
-      {/* Modale per l'aggiunta di un nuovo appartamento */}
-      <Dialog open={open} onClose={handleClose}>
+      {/* Modale per aggiungere un nuovo appartamento */}
+      <Dialog open={openAdd} onClose={handleClose}>
+        <DialogContent>
+          <ApartmentDetail onSave={handleClose} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Modale per modificare un appartamento esistente */}
+      <Dialog open={openEdit} onClose={handleClose}>
         <DialogTitle sx={{ fontSize: pxToRem(24), textAlign: "center" }}>
-          Aggiungi Appartamento
+          Modifica Appartamento
         </DialogTitle>
         <DialogContent
           sx={{
@@ -175,32 +188,28 @@ const Apartments = ({ onViewApartmentDetail }) => {
             gap: pxToRem(16),
             padding: pxToRem(20),
           }}>
-          {/* Input per nome appartamento */}
           <CustomButton variant="outlined">Test open</CustomButton>
-          <TextField
+          <CustomTextField
             label="Durata link"
             variant="outlined"
             defaultValue="1 gg"
           />
           <CustomButton variant="contained">-</CustomButton>
           <CustomButton variant="contained">+</CustomButton>
-          {/* Switch per il link fisso */}
           <FormControlLabel
             control={<Switch color="primary" />}
             label="Link fisso"
           />
-          {/* Selettore di periodo */}
-          <TextField
+          <CustomTextField
             label="Seleziona periodo"
             variant="outlined"
             InputProps={{
               endAdornment: <CalendarTodayIcon />,
             }}
           />
-          {/* Generazione di link */}
           <CustomButton variant="contained">Generate</CustomButton>
           <Box sx={{ display: "flex", alignItems: "center", gap: pxToRem(10) }}>
-            <TextField
+            <CustomTextField
               variant="outlined"
               defaultValue="HTTP://bitfly.es/45ggdfy"
             />
@@ -208,7 +217,6 @@ const Apartments = ({ onViewApartmentDetail }) => {
               <ContentCopyIcon />
             </IconButton>
           </Box>
-          {/* Azioni della modale */}
           <CustomButton variant="contained" color="primary">
             Salva
           </CustomButton>
@@ -217,8 +225,15 @@ const Apartments = ({ onViewApartmentDetail }) => {
           </CustomButton>
           <CustomButton
             variant="outlined"
-            color="error"
-            sx={{ color: theme.colors.red }}
+            sx={{
+              color: theme.colors.red,
+              borderColor: theme.colors.red,
+              "&:hover": {
+                backgroundColor: theme.colors.lightRed,
+                borderColor: theme.colors.lightRed,
+                color: theme.colors.red,
+              },
+            }}
             startIcon={<DeleteIcon />}>
             DELETE APARTMENT
           </CustomButton>

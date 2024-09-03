@@ -21,7 +21,6 @@ const CustomTextField = ({ label, name, type = "text", ...props }) => {
           color: theme.palette.text.primary,
           borderColor: theme.palette.text.secondary,
         },
-        sx: { backgroundColor: theme.palette.background.default },
       }}
       {...props}
     />
