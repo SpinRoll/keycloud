@@ -1,32 +1,31 @@
-// src/components/Header.js
-import React, { useContext, useState } from "react";
+// src/components/header/Header.js
+import React, { useState } from "react";
 import {
   AppBar,
   Toolbar,
   IconButton,
   Typography,
-  Menu,
-  MenuItem,
   Box,
-  useTheme, // Importa useTheme per accedere al tema
+  useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Brightness4, Brightness7, AccountCircle } from "@mui/icons-material"; // Icone per commutazione del tema
-import { ThemeContext } from "../../context/ThemeContext"; // Contesto del tema
-import Logo from "../logo/Logo";
+import Menu from "@mui/material/Menu";
 import { pxToRem } from "../../utils/pxToRem";
+import Logo from "../logo/Logo";
+import ThemeMenuItem from "./ThemeMenuItem";
+import UserProfileMenuItem from "./UserProfileMenuItem";
+import LanguageMenuItem from "./LanguageMenuItem";
 
 function Header() {
-  const { toggleTheme, mode } = useContext(ThemeContext); // Usa il contesto del tema
   const [anchorEl, setAnchorEl] = useState(null);
   const theme = useTheme(); // Usa il tema corrente
 
-  // Funzione per aprire il menu
+  // Funzione per aprire il menu generale
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Funzione per chiudere il menu
+  // Funzione per chiudere il menu generale
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
@@ -38,13 +37,11 @@ function Header() {
         backgroundColor: theme.colors.primary,
         minHeight: pxToRem(70),
       }}>
-      {" "}
-      {/* Usa il colore primario dal tema */}
       <Toolbar
         sx={{
           display: "flex",
           alignItems: "center",
-          backgroundColor: theme.colorsprimary,
+          backgroundColor: theme.colors.primary,
           color: theme.palette.text.primary,
         }}>
         {/* Logo a sinistra */}
@@ -84,17 +81,17 @@ function Header() {
               justifyContent: "flex-end",
               alignItems: "center",
             }}>
+            {/* Icona per il menu generale */}
             <IconButton
               aria-label="menu"
               onClick={handleMenuOpen}
-              sx={{ color: theme.colors.pureWhite }} // Usa il colore dinamico dal tema
-            >
+              sx={{ color: theme.colors.pureWhite }}>
               <MenuIcon />
             </IconButton>
           </Box>
         </Box>
 
-        {/* Menu a discesa */}
+        {/* Menu a discesa per le altre opzioni */}
         <Menu
           sx={{
             top: pxToRem(15),
@@ -102,36 +99,9 @@ function Header() {
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}>
-          <MenuItem
-            onClick={toggleTheme}
-            sx={{ display: "flex", alignItems: "center", gap: pxToRem(10) }}>
-            <IconButton>
-              {mode === "dark" ? (
-                <Brightness7 sx={{ color: theme.colors.pureWhite }} />
-              ) : (
-                <Brightness4 sx={{ color: theme.colors.gray }} />
-              )}
-            </IconButton>
-            <Typography sx={{ color: theme.palette.text.primary }}>
-              {mode === "dark" ? "Dark Mode" : "Light Mode"}
-            </Typography>
-          </MenuItem>
-          <MenuItem
-            sx={{ display: "flex", alignItems: "center", gap: pxToRem(10) }}>
-            <IconButton>
-              <AccountCircle
-                sx={{
-                  color:
-                    mode === "dark"
-                      ? theme.colors.pureWhite
-                      : theme.colors.gray,
-                }}
-              />
-            </IconButton>
-            <Typography sx={{ color: theme.palette.text.primary }}>
-              {mode === "dark" ? "User Profile" : "User Profile"}
-            </Typography>
-          </MenuItem>
+          <ThemeMenuItem onClose={handleMenuClose} />
+          <UserProfileMenuItem onClose={handleMenuClose} />
+          <LanguageMenuItem onClose={handleMenuClose} />
         </Menu>
       </Toolbar>
     </AppBar>

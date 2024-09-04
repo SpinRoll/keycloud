@@ -15,6 +15,11 @@ const Dashboard = () => {
     navigate("/apartments");
   };
 
+  // Funzione per navigare alla pagina dei piani di pagamento
+  const handleViewPricingPlansClick = () => {
+    navigate("/pricing");
+  };
+
   return (
     <Container component="main" maxWidth="md">
       <Box
@@ -26,6 +31,7 @@ const Dashboard = () => {
           borderRadius: pxToRem(8),
           backgroundColor: theme.palette.background.paper, // Usa il colore dal tema
           boxShadow: `0px ${pxToRem(4)} ${pxToRem(10)} rgba(0, 0, 0, 0.3)`,
+          marginBottom: pxToRem(40), // Aggiunge spazio sotto la box per il componente PricingPlans
         }}>
         <Typography
           component="h1"
@@ -46,6 +52,19 @@ const Dashboard = () => {
             "&:hover": { backgroundColor: theme.palette.secondary.main }, // Usa il colore secondario dal tema per l'hover
           }}>
           Appartamenti
+        </CustomButton>
+
+        {/* Nuovo pulsante per i piani di pagamento */}
+        <CustomButton
+          variant="contained"
+          onClick={handleViewPricingPlansClick} // Usa la funzione per navigare
+          sx={{
+            backgroundColor: theme.palette.primary.main, // Usa il colore primario dal tema
+            color: theme.colors.pureWhite, // Usa il colore dal tema
+            marginBottom: pxToRem(16),
+            "&:hover": { backgroundColor: theme.palette.secondary.main }, // Usa il colore secondario dal tema per l'hover
+          }}>
+          Piani di Pagamento
         </CustomButton>
       </Box>
     </Container>

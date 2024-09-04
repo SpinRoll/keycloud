@@ -11,38 +11,25 @@ import SignIn from "./components/SignIn";
 import Dashboard from "./components/Dashboard";
 import Apartments from "./components/apartments/Apartments";
 import ApartmentDetail from "./components/apartments/ApartmentDetail";
-import Header from "./components/header/Header"; // Importa il componente Header
-import { ThemeProvider } from "./context/ThemeContext";
+import Header from "./components/header/Header";
+import PricingPlans from "./components/pricing/PricingPlans"; // Importa PricingPlans
 
 function App() {
   return (
-    <ThemeProvider>
-      <Router>
-        <Header />
-        <div>
-          {/* Definisci le rotte per l'applicazione */}
-          <Routes>
-            {/* Ridirige alla pagina di signup come percorso iniziale */}
-            <Route path="/" element={<Navigate to="/sign-up" />} />
-
-            {/* Percorso per SignUp */}
-            <Route path="/sign-up" element={<SignUp />} />
-
-            {/* Percorso per SignIn */}
-            <Route path="/sign-in" element={<SignIn />} />
-
-            {/* Percorso per Dashboard */}
-            <Route path="/dashboard" element={<Dashboard />} />
-
-            {/* Percorso per Apartments */}
-            <Route path="/apartments" element={<Apartments />} />
-
-            {/* Percorso per ApartmentDetail con parametro id */}
-            <Route path="/apartments/:id" element={<ApartmentDetail />} />
-          </Routes>
-        </div>
-      </Router>
-    </ThemeProvider>
+    <Router>
+      <Header />
+      <div>
+        <Routes>
+          <Route path="/" element={<Navigate to="/sign-up" />} />
+          <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/apartments" element={<Apartments />} />
+          <Route path="/apartments/:id" element={<ApartmentDetail />} />
+          <Route path="/pricing" element={<PricingPlans />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

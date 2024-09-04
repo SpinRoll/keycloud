@@ -1,0 +1,18 @@
+{
+  "en": {
+    "language": "Language",
+    "dark_mode": "Dark Mode",
+    "light_mode": "Light Mode",
+    "user_profile": "User Profile",
+    "english": "English",
+    "italian": "Italiano"
+  },
+  "it": {
+    "language": "Lingua",
+    "dark_mode": "Modalità Scura",
+    "light_mode": "Modalità Chiara",
+    "user_profile": "Profilo Utente",
+    "english": "Inglese",
+    "italian": "Italiano"
+  }
+}
