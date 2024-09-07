@@ -1,34 +1,43 @@
 // src/components/header/ThemeMenuItem.js
-import React, { useContext } from "react";
-import { MenuItem, IconButton, Typography } from "@mui/material";
-import { Brightness4, Brightness7 } from "@mui/icons-material";
-import { ThemeContext } from "../../context/ThemeContext";
-import { pxToRem } from "../../utils/pxToRem";
-import { useTheme } from "@mui/material/styles"; // Importa useTheme per accedere al tema
+import React, { useContext } from "react"; // Importo React e useContext per accedere ai contesti
+import { MenuItem, IconButton, Typography } from "@mui/material"; // Importo i componenti Material-UI necessari
+import { Brightness4, Brightness7 } from "@mui/icons-material"; // Importo le icone per la commutazione del tema
+import { ThemeContext } from "../../context/ThemeContext"; // Importo il contesto del tema personalizzato
+import { pxToRem } from "../../utils/pxToRem"; // Funzione di utilità per convertire px in rem
+import { useTheme } from "@mui/material/styles"; // Importo useTheme per accedere al tema corrente
+import { useTranslation } from "react-i18next"; // Importo il hook useTranslation per la gestione delle traduzioni
 
 const ThemeMenuItem = ({ onClose }) => {
-  const { toggleTheme, mode } = useContext(ThemeContext); // Usa il contesto del tema
-  const theme = useTheme(); // Usa il tema corrente
+  // Creo un componente funzionale per l'elemento di menu del tema
+
+  const { toggleTheme, mode } = useContext(ThemeContext); // Uso il contesto del tema per ottenere la funzione di toggle e la modalità corrente
+  const theme = useTheme(); // Uso il tema corrente per applicare gli stili
+  const { t } = useTranslation(); // Uso il hook useTranslation per ottenere la funzione di traduzione
 
   return (
+    // MenuItem per la selezione del tema
     <MenuItem
       onClick={() => {
-        toggleTheme();
-        onClose(); // Chiude il menu
+        toggleTheme(); // Commutazione del tema tra chiaro e scuro
+        onClose(); // Chiude il menu dopo la selezione
       }}
-      sx={{ display: "flex", alignItems: "center", gap: pxToRem(10) }}>
+      sx={{ display: "flex", alignItems: "center", gap: pxToRem(10) }} // Stili per il menu item
+    >
+      {/* Icona per la selezione del tema */}
       <IconButton>
         {mode === "dark" ? (
-          <Brightness7 sx={{ color: theme.colors.pureWhite }} />
+          <Brightness7 sx={{ color: theme.colors.pureWhite }} /> // Icona del sole per la modalità chiara
         ) : (
-          <Brightness4 sx={{ color: theme.colors.gray }} />
+          <Brightness4 sx={{ color: theme.colors.gray }} /> // Icona della luna per la modalità scura
         )}
       </IconButton>
+      {/* Testo che descrive il tema corrente */}
       <Typography sx={{ color: theme.palette.text.primary }}>
-        {mode === "dark" ? "Dark Mode" : "Light Mode"}
+        {mode === "dark" ? t("light_mode") : t("dark_mode")}{" "}
+        {/* Usa la funzione t per ottenere la traduzione del testo per il tema */}
       </Typography>
     </MenuItem>
   );
 };
 
-export default ThemeMenuItem;
+export default ThemeMenuItem; // Esporto il componente per l'uso in altre parti dell'app
