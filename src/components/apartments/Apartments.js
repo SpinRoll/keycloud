@@ -17,9 +17,10 @@ import { useTheme } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import EditApartmentModal from "../modals/EditApartmentModal"; // Importa il componente modale
 import AddApartmentModal from "../modals/AddApartmentModal"; // Importa il componente modale
+import { useTranslation } from "react-i18next";
 
 // Dichiaro un array di oggetti per rappresentare gli appartamenti con alcuni dati di esempio
-const apartments = [
+const initialApartments = [
   {
     id: 1,
     name: "Appartamento A",
@@ -45,6 +46,8 @@ const apartments = [
 
 const Apartments = () => {
   const theme = useTheme(); // Uso il tema corrente di Material-UI per ottenere i colori
+  const { t } = useTranslation(); // Uso il hook useTranslation per ottenere la funzione di traduzione
+  const [apartments, setApartments] = useState(initialApartments); // Stato per la lista degli appartamenti
   const [openAdd, setOpenAdd] = useState(false); // Stato per gestire l'apertura della modale di aggiunta
   const [openEdit, setOpenEdit] = useState(false); // Stato per gestire l'apertura della modale di modifica
   const [selectedApartment, setSelectedApartment] = useState(null); // Stato per l'appartamento selezionato da modificare
@@ -60,6 +63,12 @@ const Apartments = () => {
     setOpenAdd(false); // Chiude la modale di aggiunta
     setOpenEdit(false); // Chiude la modale di modifica
     setSelectedApartment(null); // Reset dell'appartamento selezionato
+  };
+
+  // Funzione per aggiungere un nuovo appartamento alla lista
+  const handleAddApartment = (newApartment) => {
+    setApartments((prevApartments) => [...prevApartments, newApartment]); // Aggiungi il nuovo appartamento alla lista esistente
+    handleClose(); // Chiudi la modale dopo aver aggiunto l'appartamento
   };
 
   // Funzione per ottenere il colore dello stato dell'appartamento in base al tema
@@ -88,7 +97,7 @@ const Apartments = () => {
           component="h1"
           variant="h4"
           sx={{ marginBottom: pxToRem(24) }}>
-          Appartamenti
+          {t("apartments")}
         </Typography>
         <List sx={{ width: "100%" }}>
           {apartments.map((apartment) => (
@@ -145,7 +154,11 @@ const Apartments = () => {
       </Fab>
 
       {/* Modale per aggiungere un nuovo appartamento */}
-      <AddApartmentModal open={openAdd} onClose={handleClose} />
+      <AddApartmentModal
+        open={openAdd}
+        onClose={handleClose}
+        onAddApartment={handleAddApartment}
+      />
 
       {/* Modale per modificare un appartamento esistente */}
       <EditApartmentModal

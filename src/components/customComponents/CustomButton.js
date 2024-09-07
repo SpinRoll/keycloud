@@ -11,8 +11,6 @@ const CustomButton = ({ children, variant = "contained", ...props }) => {
       fullWidth
       variant={variant}
       sx={{
-        mt: 2,
-        mb: 2,
         backgroundColor: isContained ? theme.colors.primary : "transparent",
         color: isContained ? theme.colors.pureWhite : theme.colors.primary,
         borderColor: theme.colors.primary,
