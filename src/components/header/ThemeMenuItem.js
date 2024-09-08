@@ -26,9 +26,9 @@ const ThemeMenuItem = ({ onClose }) => {
       {/* Icona per la selezione del tema */}
       <IconButton>
         {mode === "dark" ? (
-          <Brightness7 sx={{ color: theme.colors.pureWhite }} /> // Icona del sole per la modalità chiara
+          <Brightness7 sx={{ color: theme.colors.pureWhite }} /> // Icona del sole per la modalità scura
         ) : (
-          <Brightness4 sx={{ color: theme.colors.gray }} /> // Icona della luna per la modalità scura
+          <Brightness4 sx={{ color: theme.colors.gray }} /> // Icona della luna per la modalità chiara
         )}
       </IconButton>
       {/* Testo che descrive il tema corrente */}

@@ -52,11 +52,11 @@ function SignUp() {
         <Typography
           component="h2"
           variant="h6"
-          sx={{ color: theme.palette.text.primary, marginTop: pxToRem(20) }}>
+          sx={{ color: theme.palette.text.primary }}>
           Sign up
         </Typography>
 
-        <Box component="form" noValidate sx={{ mt: pxToRem(16) }}>
+        <Box component="form" noValidate>
           <CustomTextField label="Full name" name="fullName" autoFocus />
           <CustomTextField label="Email" name="email" />
           <CustomTextField label="Password" name="password" type="password" />
@@ -65,10 +65,17 @@ function SignUp() {
             label="I want to receive updates via email."
             sx={{ color: theme.palette.text.primary }}
           />
-          <CustomButton type="submit">Sign up</CustomButton>
-          <CustomButton variant="outlined" onClick={handleDebugClick}>
-            Debug: Vai alla Dashboard
-          </CustomButton>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: pxToRem(16),
+            }}>
+            <CustomButton type="submit">Sign up</CustomButton>
+            <CustomButton variant="outlined" onClick={handleDebugClick}>
+              Debug: Vai alla Dashboard
+            </CustomButton>
+          </Box>
           <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>
             {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
           </IconButton>

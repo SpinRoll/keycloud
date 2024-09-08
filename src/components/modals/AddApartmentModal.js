@@ -38,7 +38,7 @@ const AddApartmentModal = ({ open, onClose, onAddApartment }) => {
       name: formValues.name,
       location: formValues.city,
       period: "-", // Imposta un valore predefinito per il periodo, può essere modificato successivamente
-      status: "active", // Imposta uno stato predefinito
+      status: "inactive", // Imposta uno stato predefinito
     };
     onAddApartment(newApartment); // Chiamo la funzione di callback per aggiungere l'appartamento
     setFormValues({
@@ -50,7 +50,7 @@ const AddApartmentModal = ({ open, onClose, onAddApartment }) => {
       postal_code: "",
       prefix: "",
       phone: "",
-    }); // Resetto i valori del form
+    });
     onClose(); // Chiudo la modale
   };
 

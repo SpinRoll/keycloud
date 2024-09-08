@@ -47,21 +47,27 @@ function SignIn() {
           variant="h6"
           sx={{
             color: theme.palette.text.primary,
-            marginTop: pxToRem(20),
             textAlign: "center",
           }}>
           Sign in
         </Typography>
 
         {/* Form */}
-        <Box component="form" noValidate sx={{ mt: pxToRem(16) }}>
+        <Box component="form" noValidate>
           <CustomTextField label="Email" name="email" autoFocus />
           <CustomTextField label="Password" name="password" type="password" />
-          <CustomButton type="submit">Sign in</CustomButton>
-
-          <CustomButton variant="outlined" onClick={handleDebugClick}>
-            Debug: Vai alla Dashboard
-          </CustomButton>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: pxToRem(16),
+              mt: pxToRem(8),
+            }}>
+            <CustomButton type="submit">Sign in</CustomButton>
+            <CustomButton variant="outlined" onClick={handleDebugClick}>
+              Debug: Vai alla Dashboard
+            </CustomButton>
+          </Box>
 
           <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>
             {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
