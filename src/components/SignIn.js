@@ -9,7 +9,7 @@ import { useTheme } from "@mui/material/styles";
 import { pxToRem } from "../utils/pxToRem";
 import { ThemeContext } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom"; // Importa useNavigate
-
+ 
 function SignIn() {
   const theme = useTheme();
   const { toggleTheme, mode } = useContext(ThemeContext);
