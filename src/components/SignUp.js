@@ -1,14 +1,6 @@
 // src/components/SignUp.js
 import React, { useContext } from "react";
-import {
-  Container,
-  Box,
-  Typography,
-  Checkbox,
-  FormControlLabel,
-  Link,
-  IconButton,
-} from "@mui/material";
+import { Container, Box, Typography, Link, IconButton } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
 import Logo from "./logo/Logo";
 import CustomTextField from "./customComponents/CustomTextField";
@@ -60,18 +52,19 @@ function SignUp() {
           <CustomTextField label="Full name" name="fullName" autoFocus />
           <CustomTextField label="Email" name="email" />
           <CustomTextField label="Password" name="password" type="password" />
-          <FormControlLabel
-            control={<Checkbox value="allowExtraEmails" color="primary" />}
-            label="I want to receive updates via email."
-            sx={{ color: theme.palette.text.primary }}
-          />
           <Box
             sx={{
               display: "flex",
               flexDirection: "column",
               gap: pxToRem(16),
             }}>
-            <CustomButton type="submit">Sign up</CustomButton>
+            <CustomButton
+              sx={{
+                mt: pxToRem(16),
+              }}
+              type="submit">
+              Sign up
+            </CustomButton>
             <CustomButton variant="outlined" onClick={handleDebugClick}>
               Debug: Vai alla Dashboard
             </CustomButton>

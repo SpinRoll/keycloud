@@ -6,13 +6,14 @@ import {
   Route,
   Navigate,
 } from "react-router-dom"; // Importo i componenti necessari da react-router-dom per la navigazione
-import SignUp from "./components/SignUp"; // Importo il componente SignUp per la registrazione
-import SignIn from "./components/SignIn"; // Importo il componente SignIn per l'autenticazione
-import Dashboard from "./components/Dashboard"; // Importo il componente Dashboard
-import Apartments from "./components/apartments/Apartments"; // Importo il componente Apartments
-import ApartmentDetail from "./components/apartments/ApartmentDetail"; // Importo il componente ApartmentDetail per i dettagli degli appartamenti
-import Header from "./components/header/Header"; // Importo il componente Header per la barra di navigazione
-import PricingPlans from "./components/pricing/PricingPlans"; // Importa PricingPlans
+import SignUp from "./components/SignUp";
+import SignIn from "./components/SignIn";
+import Dashboard from "./components/Dashboard";
+import Apartments from "./components/apartments/Apartments";
+import ApartmentDetail from "./components/apartments/ApartmentDetail";
+import Header from "./components/header/Header";
+import PricingPlans from "./components/pricing/PricingPlans";
+import UserPage from "./components/user/UserPage";
 import routes from "./routes"; // Importo l'oggetto routes per definire le route
 
 function App() {
@@ -45,6 +46,8 @@ function App() {
 
           {/* Percorso per visualizzare i piani tariffari */}
           <Route path={routes.PRICING} element={<PricingPlans />} />
+          {/* Percorso per visualizzare UserPage */}
+          <Route path={routes.USER_PAGE} element={<UserPage />} />
         </Routes>
       </div>
     </Router>
