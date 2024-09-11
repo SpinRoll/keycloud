@@ -1,23 +1,13 @@
-import React, { useState, useEffect } from "react"; // Importo React e useState per gestire lo stato
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Box,
-  IconButton,
-  Switch,
-  FormControlLabel,
-  TextField,
-  Tooltip, // Importo Tooltip da Material-UI per mostrare messaggi su hover
-} from "@mui/material"; // Importo i componenti Material-UI necessari per creare la modale
-import { pxToRem } from "../../utils/pxToRem"; // Importo la funzione pxToRem per convertire px in rem
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday"; // Importo l'icona CalendarTodayIcon
-import ContentCopyIcon from "@mui/icons-material/ContentCopy"; // Importo l'icona ContentCopyIcon
-import DeleteIcon from "@mui/icons-material/Delete"; // Importo l'icona DeleteIcon
-import CustomButton from "../customComponents/CustomButton"; // Importo il componente CustomButton per i pulsanti personalizzati
-import CustomTextField from "../customComponents/CustomTextField"; // Importo il componente CustomTextField per i campi di input personalizzati
-import { useTheme } from "@mui/material/styles"; // Importo useTheme per utilizzare il tema corrente
-import { useTranslation } from "react-i18next"; // Importo il hook useTranslation per la gestione delle traduzioni
+// src/components/modals/EditApartmentModal.js
+import React, { useState, useEffect } from "react";
+import { Dialog, DialogContent, DialogTitle, Box } from "@mui/material";
+import { pxToRem } from "../../utils/pxToRem";
+import LinkDurationField from "../customComponents/LinkDurationField";
+import FixedLinkSwitch from "../customComponents/FixedLinkSwitch";
+import DatePickers from "../customComponents/DatePickers";
+import GenerateLinkButton from "../customComponents/GenerateLinkButton";
+import CopyLinkField from "../customComponents/CopyLinkField";
+import ActionButtons from "../customComponents/ActionButtons";
 
 const EditApartmentModal = ({
   open,
@@ -26,50 +16,61 @@ const EditApartmentModal = ({
   onLinkGenerated,
   disabled,
 }) => {
-  const theme = useTheme(); // Uso il tema corrente
-  const { t } = useTranslation(); // Uso il hook useTranslation per ottenere la funzione di traduzione
-  const [localGeneratedLink, setLocalGeneratedLink] = useState(""); // Stato locale per il link generato
+  const [localGeneratedLink, setLocalGeneratedLink] = useState("");
+  const [selectedCheckInDate, setSelectedCheckInDate] = useState(null);
+  const [selectedCheckOutDate, setSelectedCheckOutDate] = useState(null);
+  const [linkDuration, setLinkDuration] = useState("1 gg");
+  const [isFixedLink, setIsFixedLink] = useState(false);
 
-  // Sincronizzo il link generato locale con quello dell'appartamento quando la modale si apre o cambia
   useEffect(() => {
     if (apartment) {
-      setLocalGeneratedLink(apartment.generatedLink || ""); // Inizializzo il link locale con quello dell'appartamento
+      setLocalGeneratedLink(apartment.generatedLink || "");
     }
   }, [apartment]);
 
-  // Funzione per generare un link random per l'appartamento corrente
   const generateRandomLink = () => {
     if (apartment) {
-      const randomString = Math.random().toString(36).substring(2, 10); // Genero una stringa casuale
-      const newLink = `HTTP://bitfly.es/${randomString}`; // Creo il link completo
-      setLocalGeneratedLink(newLink); // Aggiorno lo stato locale con il nuovo link generato
-      onLinkGenerated(apartment.id, newLink); // Aggiorno l'appartamento con il nuovo link generato
+      const newLink = `HTTP://q=IDapt=${apartment.id}`;
+      setLocalGeneratedLink(newLink);
+      onLinkGenerated(apartment.id, newLink);
     }
   };
 
-  // Funzione per copiare il link generato negli appunti
   const copyToClipboard = () => {
     if (localGeneratedLink) {
-      // Verifica se il link generato è disponibile
       navigator.clipboard
-        .writeText(localGeneratedLink) // Copia il link negli appunti
-        .then(() => {
-          console.log("Link copiato negli appunti!"); // Messaggio di conferma
-        })
-        .catch((err) => {
-          console.error("Errore durante la copia negli appunti: ", err); // Messaggio di errore
-        });
+        .writeText(localGeneratedLink)
+        .catch((err) =>
+          console.error("Errore durante la copia negli appunti: ", err)
+        );
     }
   };
 
-  // Controllo per abilitare/disabilitare il pulsante "Generate"
+  const calculateLinkDuration = (checkIn, checkOut) => {
+    if (checkIn && checkOut) {
+      if (checkOut.isBefore(checkIn)) {
+        setLinkDuration("Data non valida");
+      } else {
+        const duration = checkOut.diff(checkIn, "day");
+        setLinkDuration(`${duration} gg`);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!isFixedLink) {
+      calculateLinkDuration(selectedCheckInDate, selectedCheckOutDate);
+    } else {
+      setLinkDuration("∞");
+    }
+  }, [selectedCheckInDate, selectedCheckOutDate, isFixedLink]);
+
   const isGenerateButtonDisabled = disabled || localGeneratedLink !== "";
 
   return (
     <Dialog open={open} onClose={onClose}>
-      {/* Titolo della modale che mostra il nome dell'appartamento selezionato o un titolo di default */}
       <DialogTitle sx={{ fontSize: pxToRem(24), textAlign: "center" }}>
-        {apartment ? `${t("edit")} ${apartment.name}` : t("edit_apartment")}
+        {apartment ? `Edit ${apartment.name}` : "Edit Apartment"}
       </DialogTitle>
 
       <DialogContent
@@ -82,95 +83,31 @@ const EditApartmentModal = ({
         }}>
         {apartment && (
           <>
-            <CustomTextField
-              label={t("link_duration")}
-              variant="outlined"
-              defaultValue="1 gg"
+            <LinkDurationField linkDuration={linkDuration} />
+            <FixedLinkSwitch
+              isFixedLink={isFixedLink}
+              onChange={(e) => setIsFixedLink(e.target.checked)}
             />
-
-            <Box sx={{ display: "flex", gap: pxToRem(8) }}>
-              <CustomButton variant="contained">-</CustomButton>
-              <CustomButton variant="contained">+</CustomButton>
-            </Box>
-
-            <FormControlLabel
-              control={<Switch color="primary" />}
-              label={t("fixed_link")}
-            />
-
-            <CustomTextField
-              label={t("select_period")}
-              variant="outlined"
-              InputProps={{ endAdornment: <CalendarTodayIcon /> }}
-            />
-
-            {/* Bottone per generare un nuovo link con Tooltip per il pulsante disabilitato */}
-            <Tooltip
-              title={
-                isGenerateButtonDisabled ? t("cannot_generate_again") : "" // Messaggio di avviso quando il pulsante è disabilitato
-              }>
-              <Box>
-                <CustomButton
-                  variant="contained"
-                  onClick={generateRandomLink}
-                  disabled={isGenerateButtonDisabled} // Controllo per disabilitare il pulsante
-                  sx={{
-                    ...(isGenerateButtonDisabled && {
-                      border: `1px solid ${theme.colors.red}`, // Aggiungo un bordo rosso se disabilitato
-                      "&:hover": {
-                        cursor: "not-allowed", // Imposta il cursore su "not-allowed"
-                        border: `1px solid ${theme.colors.red}`, // Mantieni il bordo rosso su hover
-                      },
-                    }),
-                  }}>
-                  {t("generate")}
-                </CustomButton>
-              </Box>
-            </Tooltip>
-
-            {/* Campo di input per visualizzare il link generato e un pulsante per copiarlo */}
-            <Box
-              sx={{ display: "flex", alignItems: "center", gap: pxToRem(8) }}>
-              <TextField
-                variant="outlined"
-                value={localGeneratedLink} // Visualizza il link generato dell'appartamento
-                InputProps={{
-                  readOnly: true, // Impedisce la modifica diretta dell'input
-                }}
-              />
-              <IconButton onClick={copyToClipboard}>
-                <ContentCopyIcon />
-              </IconButton>
-            </Box>
             <Box
               sx={{
-                display: "flex",
+                display: isFixedLink ? "none" : "flex",
                 flexDirection: "column",
                 gap: pxToRem(16),
               }}>
-              <CustomButton variant="contained" color="primary">
-                {t("save")}
-              </CustomButton>
-
-              <CustomButton variant="outlined" color="primary">
-                {t("edit")}
-              </CustomButton>
-
-              <CustomButton
-                variant="outlined"
-                sx={{
-                  color: theme.colors.red,
-                  borderColor: theme.colors.red,
-                  "&:hover": {
-                    backgroundColor: theme.colors.lightRed,
-                    borderColor: theme.colors.lightRed,
-                    color: theme.colors.red,
-                  },
-                }}
-                startIcon={<DeleteIcon />}>
-                {t("delete_apartment")}
-              </CustomButton>
+              <DatePickers
+                checkInDate={selectedCheckInDate}
+                setCheckInDate={setSelectedCheckInDate}
+                checkOutDate={selectedCheckOutDate}
+                setCheckOutDate={setSelectedCheckOutDate}
+                isDisabled={isFixedLink}
+              />
             </Box>
+            <GenerateLinkButton
+              onClick={generateRandomLink}
+              isDisabled={isGenerateButtonDisabled}
+            />
+            <CopyLinkField link={localGeneratedLink} onCopy={copyToClipboard} />
+            <ActionButtons />
           </>
         )}
       </DialogContent>
@@ -178,4 +115,4 @@ const EditApartmentModal = ({
   );
 };
 
-export default EditApartmentModal; // Esporto il componente per l'uso in altre parti dell'applicazione
+export default EditApartmentModal;
