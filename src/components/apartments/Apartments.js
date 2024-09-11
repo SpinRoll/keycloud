@@ -52,6 +52,17 @@ const Apartments = () => {
   const [openEdit, setOpenEdit] = useState(false); // Stato per gestire l'apertura della modale di modifica
   const [selectedApartment, setSelectedApartment] = useState(null); // Stato per l'appartamento selezionato da modificare
 
+  // Funzione per gestire la generazione del link di un appartamento
+  const handleLinkGenerated = (apartmentId, newLink) => {
+    setApartments((prevApartments) =>
+      prevApartments.map((apartment) =>
+        apartment.id === apartmentId
+          ? { ...apartment, generatedLink: newLink }
+          : apartment
+      )
+    );
+  };
+
   // Funzione per aprire le modali di aggiunta o modifica
   const handleOpenModal = (type, apartment = null) => {
     setSelectedApartment(apartment); // Imposta l'appartamento selezionato per la modifica
@@ -165,6 +176,7 @@ const Apartments = () => {
         open={openEdit}
         onClose={handleClose}
         apartment={selectedApartment}
+        onLinkGenerated={handleLinkGenerated}
       />
     </Container>
   );

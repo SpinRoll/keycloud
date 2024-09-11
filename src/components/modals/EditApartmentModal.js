@@ -1,5 +1,4 @@
-// src/components/modals/EditApartmentModal.js
-import React, { useState } from "react"; // Importo React e useState per gestire lo stato
+import React, { useState, useEffect } from "react"; // Importo React e useState per gestire lo stato
 import {
   Dialog,
   DialogContent,
@@ -20,25 +19,40 @@ import CustomTextField from "../customComponents/CustomTextField"; // Importo il
 import { useTheme } from "@mui/material/styles"; // Importo useTheme per utilizzare il tema corrente
 import { useTranslation } from "react-i18next"; // Importo il hook useTranslation per la gestione delle traduzioni
 
-const EditApartmentModal = ({ open, onClose, apartment, disabled }) => {
+const EditApartmentModal = ({
+  open,
+  onClose,
+  apartment,
+  onLinkGenerated,
+  disabled,
+}) => {
   const theme = useTheme(); // Uso il tema corrente
   const { t } = useTranslation(); // Uso il hook useTranslation per ottenere la funzione di traduzione
+  const [localGeneratedLink, setLocalGeneratedLink] = useState(""); // Stato locale per il link generato
 
-  const [generatedLink, setGeneratedLink] = useState(""); // Stato per il link generato
+  // Sincronizzo il link generato locale con quello dell'appartamento quando la modale si apre o cambia
+  useEffect(() => {
+    if (apartment) {
+      setLocalGeneratedLink(apartment.generatedLink || ""); // Inizializzo il link locale con quello dell'appartamento
+    }
+  }, [apartment]);
 
-  // Funzione per generare un link random
+  // Funzione per generare un link random per l'appartamento corrente
   const generateRandomLink = () => {
-    const randomString = Math.random().toString(36).substring(2, 10); // Genero una stringa casuale
-    const newLink = `HTTP://bitfly.es/${randomString}`; // Creo il link completo
-    setGeneratedLink(newLink); // Aggiorno lo stato con il nuovo link generato
+    if (apartment) {
+      const randomString = Math.random().toString(36).substring(2, 10); // Genero una stringa casuale
+      const newLink = `HTTP://bitfly.es/${randomString}`; // Creo il link completo
+      setLocalGeneratedLink(newLink); // Aggiorno lo stato locale con il nuovo link generato
+      onLinkGenerated(apartment.id, newLink); // Aggiorno l'appartamento con il nuovo link generato
+    }
   };
 
   // Funzione per copiare il link generato negli appunti
   const copyToClipboard = () => {
-    if (generatedLink) {
+    if (localGeneratedLink) {
       // Verifica se il link generato è disponibile
       navigator.clipboard
-        .writeText(generatedLink) // Copia il link negli appunti
+        .writeText(localGeneratedLink) // Copia il link negli appunti
         .then(() => {
           console.log("Link copiato negli appunti!"); // Messaggio di conferma
         })
@@ -49,7 +63,7 @@ const EditApartmentModal = ({ open, onClose, apartment, disabled }) => {
   };
 
   // Controllo per abilitare/disabilitare il pulsante "Generate"
-  const isGenerateButtonDisabled = disabled || generatedLink !== "";
+  const isGenerateButtonDisabled = disabled || localGeneratedLink !== "";
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -95,7 +109,7 @@ const EditApartmentModal = ({ open, onClose, apartment, disabled }) => {
               title={
                 isGenerateButtonDisabled ? t("cannot_generate_again") : "" // Messaggio di avviso quando il pulsante è disabilitato
               }>
-              <span>
+              <Box>
                 <CustomButton
                   variant="contained"
                   onClick={generateRandomLink}
@@ -111,7 +125,7 @@ const EditApartmentModal = ({ open, onClose, apartment, disabled }) => {
                   }}>
                   {t("generate")}
                 </CustomButton>
-              </span>
+              </Box>
             </Tooltip>
 
             {/* Campo di input per visualizzare il link generato e un pulsante per copiarlo */}
@@ -119,7 +133,7 @@ const EditApartmentModal = ({ open, onClose, apartment, disabled }) => {
               sx={{ display: "flex", alignItems: "center", gap: pxToRem(8) }}>
               <TextField
                 variant="outlined"
-                value={generatedLink} // Visualizza il link generato nello stato
+                value={localGeneratedLink} // Visualizza il link generato dell'appartamento
                 InputProps={{
                   readOnly: true, // Impedisce la modifica diretta dell'input
                 }}
