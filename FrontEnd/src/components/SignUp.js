@@ -1,5 +1,5 @@
 // src/components/SignUp.js
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { Container, Box, Typography, Link, IconButton } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
 import Logo from "./logo/Logo";
@@ -8,21 +8,42 @@ import CustomButton from "./customComponents/CustomButton";
 import { useTheme } from "@mui/material/styles";
 import { pxToRem } from "../utils/pxToRem";
 import { ThemeContext } from "../context/ThemeContext";
-import { useNavigate } from "react-router-dom"; // Importa useNavigate
+import { useNavigate } from "react-router-dom";
+import axios from "axios"; // Importa axios
 
 function SignUp() {
   const theme = useTheme();
   const { toggleTheme, mode } = useContext(ThemeContext);
-  const navigate = useNavigate(); // Usa useNavigate per la navigazione
+  const navigate = useNavigate();
 
-  // Funzione per navigare alla pagina di sign-in
+  const [formData, setFormData] = useState({
+    nome: "",
+    cognome: "",
+    email: "",
+    password: "",
+  });
+
   const handleSignInClick = () => {
     navigate("/sign-in");
   };
 
-  // Funzione di Debug per accedere alla Dashboard
-  const handleDebugClick = () => {
-    navigate("/dashboard");
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/signup",
+        formData
+      );
+      console.log("User registered:", response.data);
+      navigate("/dashboard"); // Naviga alla Dashboard dopo il successo
+    } catch (error) {
+      console.error("Errore durante la registrazione:", error.response.data);
+    }
   };
 
   return (
@@ -48,25 +69,34 @@ function SignUp() {
           Sign up
         </Typography>
 
-        <Box component="form" noValidate>
-          <CustomTextField label="Full name" name="fullName" autoFocus />
-          <CustomTextField label="Email" name="email" />
-          <CustomTextField label="Password" name="password" type="password" />
+        <Box component="form" noValidate onSubmit={handleSignUp}>
+          <CustomTextField
+            label="Name"
+            name="nome"
+            autoFocus
+            onChange={handleInputChange}
+          />
+          <CustomTextField
+            label="Surname"
+            name="cognome"
+            autoFocus
+            onChange={handleInputChange}
+          />
+          <CustomTextField
+            label="Email"
+            name="email"
+            onChange={handleInputChange}
+          />
+          <CustomTextField
+            label="Password"
+            name="password"
+            type="password"
+            onChange={handleInputChange}
+          />
           <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: pxToRem(16),
-            }}>
-            <CustomButton
-              sx={{
-                mt: pxToRem(16),
-              }}
-              type="submit">
+            sx={{ display: "flex", flexDirection: "column", gap: pxToRem(16) }}>
+            <CustomButton sx={{ mt: pxToRem(16) }} type="submit">
               Sign up
-            </CustomButton>
-            <CustomButton variant="outlined" onClick={handleDebugClick}>
-              Debug: Vai alla Dashboard
             </CustomButton>
           </Box>
           <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>
@@ -80,31 +110,10 @@ function SignUp() {
             <Link
               variant="body2"
               sx={{ color: theme.palette.primary.main, cursor: "pointer" }}
-              onClick={handleSignInClick} // Usa handleSignInClick per navigare
-            >
+              onClick={handleSignInClick}>
               Sign in
             </Link>
           </Typography>
-
-          <Box sx={{ mt: pxToRem(24) }}>
-            <CustomButton
-              variant="contained"
-              sx={{
-                backgroundColor: theme.colors.googleButton,
-                color: "#FFFFFF",
-                marginBottom: pxToRem(16),
-              }}>
-              Sign up with Google
-            </CustomButton>
-            <CustomButton
-              variant="contained"
-              sx={{
-                backgroundColor: theme.colors.facebookButton,
-                color: "#FFFFFF",
-              }}>
-              Sign up with Facebook
-            </CustomButton>
-          </Box>
         </Box>
       </Box>
     </Container>

@@ -1,5 +1,6 @@
 // src/components/apartments/Apartments.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Container,
   Box,
@@ -19,44 +20,48 @@ import EditApartmentModal from "../modals/EditApartmentModal"; // Importa il com
 import AddApartmentModal from "../modals/AddApartmentModal"; // Importa il componente modale
 import { useTranslation } from "react-i18next";
 
-// Dichiaro un array di oggetti per rappresentare gli appartamenti con alcuni dati di esempio
-const initialApartments = [
-  {
-    id: 1,
-    name: "Appartamento A",
-    location: "Roma",
-    period: "7gg da 5 lug",
-    status: "expired",
-  },
-  {
-    id: 2,
-    name: "Appartamento B",
-    location: "Milano",
-    period: "14 al 18 sett.",
-    status: "active",
-  },
-  {
-    id: 3,
-    name: "Appartamento C",
-    location: "Firenze",
-    period: "-",
-    status: "inactive",
-  },
-];
-
 const Apartments = () => {
   const theme = useTheme(); // Uso il tema corrente di Material-UI per ottenere i colori
   const { t } = useTranslation(); // Uso il hook useTranslation per ottenere la funzione di traduzione
-  const [apartments, setApartments] = useState(initialApartments); // Stato per la lista degli appartamenti
+  const [apartments, setApartments] = useState([]); // Stato per la lista degli appartamenti
   const [openAdd, setOpenAdd] = useState(false); // Stato per gestire l'apertura della modale di aggiunta
   const [openEdit, setOpenEdit] = useState(false); // Stato per gestire l'apertura della modale di modifica
   const [selectedApartment, setSelectedApartment] = useState(null); // Stato per l'appartamento selezionato da modificare
+
+  // Funzione per ottenere gli appartamenti dell'utente autenticato
+  useEffect(() => {
+    const fetchApartments = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Assicurati che il token JWT sia presente in localStorage
+
+        if (!token) {
+          console.error("Token non trovato! Effettua il login.");
+          return;
+        }
+
+        const response = await axios.get("/api/apartments", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // Assicurati che l'intestazione sia formattata correttamente
+          },
+        });
+
+        setApartments(response.data);
+      } catch (error) {
+        console.error(
+          "Errore nel recupero degli appartamenti:",
+          error.response ? error.response.data : error.message
+        );
+      }
+    };
+
+    fetchApartments();
+  }, []);
 
   // Funzione per gestire la generazione del link di un appartamento
   const handleLinkGenerated = (apartmentId, newLink) => {
     setApartments((prevApartments) =>
       prevApartments.map((apartment) =>
-        apartment.id === apartmentId
+        apartment._id === apartmentId
           ? { ...apartment, generatedLink: newLink }
           : apartment
       )
@@ -113,7 +118,7 @@ const Apartments = () => {
         <List sx={{ width: "100%" }}>
           {apartments.map((apartment) => (
             <ListItem
-              key={apartment.id}
+              key={apartment._id}
               button
               onClick={() => handleOpenModal("edit", apartment)} // Apre la modale di modifica per l'appartamento selezionato
               sx={{
@@ -123,12 +128,17 @@ const Apartments = () => {
               }}>
               {/* Mostra il nome e il periodo dell'appartamento */}
               <ListItemText
-                primary={<Typography variant="h6">{apartment.name}</Typography>}
+                primary={<Typography variant="h6">{apartment.nome}</Typography>}
                 secondary={
                   <Typography
                     variant="body2"
                     sx={{ color: theme.palette.text.secondary }}>
-                    Periodo: {apartment.period}
+                    Periodo:{" "}
+                    {`${new Date(
+                      apartment.data_inizio
+                    ).toLocaleDateString()} - ${new Date(
+                      apartment.data_fine
+                    ).toLocaleDateString()}`}
                   </Typography>
                 }
               />
@@ -140,7 +150,7 @@ const Apartments = () => {
                   fontWeight: "bold",
                   marginRight: pxToRem(10),
                 }}>
-                {apartment.status.toUpperCase()}
+                {apartment.status ? apartment.status.toUpperCase() : "UNKNOWN"}
               </Typography>
               <ListItemSecondaryAction>
                 <IconButton>
