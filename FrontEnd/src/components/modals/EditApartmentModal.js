@@ -8,17 +8,19 @@ import DatePickers from "../customComponents/DatePickers";
 import GenerateLinkButton from "../customComponents/GenerateLinkButton";
 import CopyLinkField from "../customComponents/CopyLinkField";
 import ActionButtons from "../customComponents/ActionButtons";
+import axios from "axios"; // Importa axios per le richieste HTTP
 
 const EditApartmentModal = ({
   open,
   onClose,
   apartment,
   onLinkGenerated,
+  onApartmentUpdated, // Callback per aggiornare l'appartamento
   disabled,
 }) => {
   const [localGeneratedLink, setLocalGeneratedLink] = useState("");
-  const [selectedCheckInDate, setSelectedCheckInDate] = useState(null);
-  const [selectedCheckOutDate, setSelectedCheckOutDate] = useState(null);
+  const [selectedCheckInDate, setSelectedCheckInDate] = useState(apartment ? new Date(apartment.data_inizio) : null); // Usa data_inizio
+  const [selectedCheckOutDate, setSelectedCheckOutDate] = useState(apartment ? new Date(apartment.data_fine) : null); // Usa data_fine
   const [linkDuration, setLinkDuration] = useState("1 gg");
   const [isFixedLink, setIsFixedLink] = useState(false);
 
@@ -67,10 +69,46 @@ const EditApartmentModal = ({
 
   const isGenerateButtonDisabled = disabled || localGeneratedLink !== "";
 
+  const handleSaveChanges = async () => {
+    try {
+      const token = localStorage.getItem("token"); // Recupera il token JWT dal localStorage
+      if (!token) {
+        console.error("Nessun token trovato. Utente non autenticato.");
+        return;
+      }
+
+      // Effettua la richiesta al backend per aggiornare l'appartamento
+      const response = await axios.put(
+        `http://localhost:5000/api/apartments/${apartment._id}`, // Assicurati che il percorso dell'API sia corretto
+        {
+          data_inizio: selectedCheckInDate,
+          data_fine: selectedCheckOutDate,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Aggiungi il token JWT nell'intestazione
+          },
+        }
+      );
+
+      // Gestisci la risposta dal server
+      if (response.status === 200) {
+        console.log("Appartamento aggiornato con successo:", response.data);
+        onApartmentUpdated(response.data); // Chiamata di callback per aggiornare la lista degli appartamenti
+        onClose(); // Chiudi la modale
+      }
+    } catch (error) {
+      console.error(
+        "Errore durante l'aggiornamento dell'appartamento:",
+        error.response ? error.response.data : error.message
+      );
+    }
+  };
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle sx={{ fontSize: pxToRem(24), textAlign: "center" }}>
-        {apartment ? `Edit ${apartment.name}` : "Edit Apartment"}
+        {apartment ? `Edit ${apartment.nome}` : "Edit Apartment"}
       </DialogTitle>
 
       <DialogContent
@@ -107,7 +145,7 @@ const EditApartmentModal = ({
               isDisabled={isGenerateButtonDisabled}
             />
             <CopyLinkField link={localGeneratedLink} onCopy={copyToClipboard} />
-            <ActionButtons />
+            <ActionButtons onSave={handleSaveChanges} onCancel={onClose} /> {/* Usa ActionButtons per salvare o cancellare */}
           </>
         )}
       </DialogContent>

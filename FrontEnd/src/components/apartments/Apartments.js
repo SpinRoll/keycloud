@@ -39,13 +39,13 @@ const Apartments = () => {
           return;
         }
 
-        const response = await axios.get("/api/apartments", {
+        const response = await axios.get("http://localhost:5000/api/apartments", { // Assicurati che il percorso dell'API sia corretto
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // Assicurati che l'intestazione sia formattata correttamente
+            Authorization: `Bearer ${token}`, // Aggiungi il token JWT nell'intestazione
           },
         });
 
-        setApartments(response.data);
+        setApartments(response.data); // Imposta la lista degli appartamenti
       } catch (error) {
         console.error(
           "Errore nel recupero degli appartamenti:",
@@ -115,51 +115,59 @@ const Apartments = () => {
           sx={{ marginBottom: pxToRem(24) }}>
           {t("apartments")}
         </Typography>
-        <List sx={{ width: "100%" }}>
-          {apartments.map((apartment) => (
-            <ListItem
-              key={apartment._id}
-              button
-              onClick={() => handleOpenModal("edit", apartment)} // Apre la modale di modifica per l'appartamento selezionato
-              sx={{
-                borderBottom: `1px solid ${theme.palette.divider}`,
-                display: "flex",
-                alignItems: "center",
-              }}>
-              {/* Mostra il nome e il periodo dell'appartamento */}
-              <ListItemText
-                primary={<Typography variant="h6">{apartment.nome}</Typography>}
-                secondary={
-                  <Typography
-                    variant="body2"
-                    sx={{ color: theme.palette.text.secondary }}>
-                    Periodo:{" "}
-                    {`${new Date(
-                      apartment.data_inizio
-                    ).toLocaleDateString()} - ${new Date(
-                      apartment.data_fine
-                    ).toLocaleDateString()}`}
-                  </Typography>
-                }
-              />
-              {/* Mostra lo stato dell'appartamento con il colore corrispondente */}
-              <Typography
-                variant="body2"
+
+        {/* Controllo se ci sono appartamenti disponibili */}
+        {apartments.length === 0 ? (
+          <Typography
+            variant="body1"
+            sx={{ marginTop: pxToRem(16), color: theme.palette.text.secondary }}
+          >
+            {t("no_apartments_message")} {/* Messaggio che informa l'utente che non ci sono appartamenti */}
+          </Typography>
+        ) : (
+          <List sx={{ width: "100%" }}>
+            {apartments.map((apartment) => (
+              <ListItem
+                key={apartment._id}
+                button
+                onClick={() => handleOpenModal("edit", apartment)} // Apre la modale di modifica per l'appartamento selezionato
                 sx={{
-                  color: getStatusColor(apartment.status),
-                  fontWeight: "bold",
-                  marginRight: pxToRem(10),
+                  borderBottom: `1px solid ${theme.palette.divider}`,
+                  display: "flex",
+                  alignItems: "center",
                 }}>
-                {apartment.status ? apartment.status.toUpperCase() : "UNKNOWN"}
-              </Typography>
-              <ListItemSecondaryAction>
-                <IconButton>
-                  <ArrowForwardIosIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List>
+                {/* Mostra il nome e il periodo dell'appartamento */}
+                <ListItemText
+                  primary={<Typography variant="h6">{apartment.nome}</Typography>}
+                  secondary={
+                    <Typography
+                      variant="body2"
+                      sx={{ color: theme.palette.text.secondary }}>
+                      Periodo:{" "}
+                      {`${apartment.data_inizio ? new Date(apartment.data_inizio).toLocaleDateString() : "N/A"} - ${apartment.data_fine ? new Date(apartment.data_fine).toLocaleDateString() : "N/A"
+                        }`}
+                    </Typography>
+                  }
+                />
+                {/* Mostra lo stato dell'appartamento con il colore corrispondente */}
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: getStatusColor(apartment.status),
+                    fontWeight: "bold",
+                    marginRight: pxToRem(10),
+                  }}>
+                  {apartment.status ? apartment.status.toUpperCase() : "UNKNOWN"}
+                </Typography>
+                <ListItemSecondaryAction>
+                  <IconButton>
+                    <ArrowForwardIosIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
+        )}
       </Box>
       {/* Pulsante per aggiungere un nuovo appartamento */}
       <Fab
@@ -187,6 +195,13 @@ const Apartments = () => {
         onClose={handleClose}
         apartment={selectedApartment}
         onLinkGenerated={handleLinkGenerated}
+        onApartmentUpdated={(updatedApartment) => {
+          setApartments((prevApartments) =>
+            prevApartments.map((apartment) =>
+              apartment._id === updatedApartment._id ? updatedApartment : apartment
+            )
+          );
+        }} // Callback per aggiornare l'appartamento
       />
     </Container>
   );
