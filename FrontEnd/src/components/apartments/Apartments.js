@@ -19,6 +19,7 @@ import AddIcon from "@mui/icons-material/Add";
 import EditApartmentModal from "../modals/EditApartmentModal"; // Importa il componente modale
 import AddApartmentModal from "../modals/AddApartmentModal"; // Importa il componente modale
 import { useTranslation } from "react-i18next";
+import dayjs from "dayjs"; // Importa dayjs per la gestione delle date
 
 const Apartments = () => {
   const theme = useTheme(); // Uso il tema corrente di Material-UI per ottenere i colori
@@ -45,7 +46,16 @@ const Apartments = () => {
           },
         });
 
-        setApartments(response.data); // Imposta la lista degli appartamenti
+        const updatedApartments = response.data.map((apartment) => {
+          const { status, color } = getApartmentStatusAndColor(apartment);
+          return {
+            ...apartment,
+            status,
+            color,
+          };
+        });
+
+        setApartments(updatedApartments); // Imposta la lista degli appartamenti
       } catch (error) {
         console.error(
           "Errore nel recupero degli appartamenti:",
@@ -56,6 +66,32 @@ const Apartments = () => {
 
     fetchApartments();
   }, []);
+
+  // Funzione per determinare lo stato e il colore dell'appartamento
+  const getApartmentStatusAndColor = (apartment) => {
+    const today = dayjs(); // Data di oggi
+    const dataInizio = dayjs(apartment.data_inizio);
+    const dataFine = dayjs(apartment.data_fine);
+    let status = "inactive"; // Stato predefinito
+
+    if (!apartment.data_inizio || !apartment.data_fine) {
+      status = "inactive"; // Se non ci sono date, lo stato è "inactive"
+    } else if (dataFine.isBefore(today)) {
+      status = "expired"; // Se la data di fine è minore di oggi, è "expired"
+    } else {
+      status = "active"; // Altrimenti è "active"
+    }
+
+    const colors = {
+      active: theme.palette.success.main,
+      expired: theme.palette.error.main,
+      inactive: theme.palette.warning.main,
+    };
+
+    const color = colors[status] || theme.palette.text.primary; // Colore corrispondente allo stato
+
+    return { status, color };
+  };
 
   // Funzione per gestire la generazione del link di un appartamento
   const handleLinkGenerated = (apartmentId, newLink) => {
@@ -83,18 +119,9 @@ const Apartments = () => {
 
   // Funzione per aggiungere un nuovo appartamento alla lista
   const handleAddApartment = (newApartment) => {
+    newApartment.status = "inactive"; // Stato predefinito per un nuovo appartamento
     setApartments((prevApartments) => [...prevApartments, newApartment]); // Aggiungi il nuovo appartamento alla lista esistente
     handleClose(); // Chiudi la modale dopo aver aggiunto l'appartamento
-  };
-
-  // Funzione per ottenere il colore dello stato dell'appartamento in base al tema
-  const getStatusColor = (status) => {
-    const colors = {
-      active: theme.palette.success.main,
-      expired: theme.palette.error.main,
-      inactive: theme.palette.warning.main,
-    };
-    return colors[status] || theme.palette.text.primary; // Restituisco il colore corrispondente o il colore di testo di default
   };
 
   return (
@@ -153,11 +180,11 @@ const Apartments = () => {
                 <Typography
                   variant="body2"
                   sx={{
-                    color: getStatusColor(apartment.status),
+                    color: apartment.color,
                     fontWeight: "bold",
                     marginRight: pxToRem(10),
                   }}>
-                  {apartment.status ? apartment.status.toUpperCase() : "UNKNOWN"}
+                  {apartment.status ? apartment.status.toUpperCase() : "Inactive"}
                 </Typography>
                 <ListItemSecondaryAction>
                   <IconButton>

@@ -4,11 +4,29 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
+// Funzione per calcolare lo stato dell'appartamento
+const calculateStatus = (data_inizio, data_fine) => {
+  const today = new Date();
+  if (data_inizio && data_fine) {
+    if (new Date(data_fine) < today) {
+      return "expired"; // Lo stato è 'expired' se la data di fine è passata
+    } else if (new Date(data_inizio) <= today && new Date(data_fine) >= today) {
+      return "active"; // Lo stato è 'active' se oggi è compreso tra le date di inizio e fine
+    } else {
+      return "inactive"; // Lo stato è 'inactive' se le date sono nel futuro
+    }
+  }
+  return "inactive"; // Lo stato di default è 'inactive'
+};
+
 // Endpoint per creare un nuovo appartamento
 router.post("/", authMiddleware, async (req, res) => {
-  const { nome, via, numero, piano_scala, citta, cap, prefisso, telefono, link, data_inizio, data_fine } = req.body;
+  const { nome, via, numero, piano_scala, citta, cap, prefisso, telefono, link, data_inizio, data_fine, status } = req.body;
 
   try {
+    // Calcola lo stato di default
+    const status = calculateStatus(data_inizio, data_fine);
+
     const newApartment = new Apartment({
       user_id: req.userId, // Associa l'appartamento all'utente autenticato
       nome,
@@ -22,6 +40,7 @@ router.post("/", authMiddleware, async (req, res) => {
       link,
       data_inizio,
       data_fine,
+      status, // Imposta lo stato calcolato
     });
 
     await newApartment.save();
@@ -29,6 +48,32 @@ router.post("/", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error("Errore durante la creazione dell'appartamento:", error.message);
     res.status(500).json({ message: "Errore durante la creazione dell'appartamento" });
+  }
+});
+
+// Endpoint per aggiornare un appartamento esistente
+router.put("/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  const { data_inizio, data_fine } = req.body;
+
+  try {
+    // Calcola il nuovo stato dell'appartamento
+    const status = calculateStatus(data_inizio, data_fine);
+
+    const updatedApartment = await Apartment.findByIdAndUpdate(
+      id,
+      { data_inizio, data_fine, status }, // Aggiorna anche lo stato
+      { new: true, runValidators: true } // `new: true` restituisce il documento aggiornato
+    );
+
+    if (!updatedApartment) {
+      return res.status(404).json({ message: "Appartamento non trovato" });
+    }
+
+    res.status(200).json(updatedApartment);
+  } catch (error) {
+    console.error("Errore durante l'aggiornamento dell'appartamento:", error.message);
+    res.status(500).json({ message: "Errore durante l'aggiornamento dell'appartamento" });
   }
 });
 
@@ -44,29 +89,5 @@ router.get("/", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Errore nel recupero degli appartamenti" });
   }
 });
-
-// Endpoint per aggiornare un appartamento esistente
-router.put("/:id", authMiddleware, async (req, res) => {
-  const { id } = req.params;
-  const { data_inizio, data_fine } = req.body;
-
-  try {
-    const updatedApartment = await Apartment.findByIdAndUpdate(
-      id,
-      { data_inizio, data_fine },
-      { new: true, runValidators: true } // `new: true` restituisce il documento aggiornato
-    );
-
-    if (!updatedApartment) {
-      return res.status(404).json({ message: "Appartamento non trovato" });
-    }
-
-    res.status(200).json(updatedApartment);
-  } catch (error) {
-    console.error("Errore durante l'aggiornamento dell'appartamento:", error.message);
-    res.status(500).json({ message: "Errore durante l'aggiornamento dell'appartamento" });
-  }
-});
-
 
 module.exports = router;

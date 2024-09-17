@@ -19,6 +19,7 @@ const apartmentSchema = new mongoose.Schema(
     link: { type: String }, // Link
     data_inizio: { type: Date }, // Data di inizio
     data_fine: { type: Date }, // Data di fine
+    status: { type: String, default: "inactive" }, // Stato dell'appartamento (inactive, active, expired)
   },
   {
     timestamps: true, // Aggiunge automaticamente campi createdAt e updatedAt in UTC
