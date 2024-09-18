@@ -29,6 +29,9 @@ app.get("/", (req, res) => {
 const authRoutes = require("./routes/auth");
 app.use("/api/auth", authRoutes); // Usa le rotte di autenticazione
 
+// Aggiungi la rotta per il profilo utente
+app.use("/api/user", authRoutes); // Gestisce le rotte relative all'utente
+
 // Rotte degli appartamenti
 const apartmentRoutes = require("./routes/apartments");
 app.use("/api/apartments", apartmentRoutes); // Usa le rotte degli appartamenti

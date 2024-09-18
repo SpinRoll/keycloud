@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User"); // Assicurati che il percorso sia corretto
+const auth = require("../middleware/authMiddleware"); // Middleware per l'autenticazione
 
 const router = express.Router();
 
@@ -125,6 +126,49 @@ router.post("/token", async (req, res) => {
   } catch (error) {
     console.error("Errore durante il rinnovo del token:", error.message);
     res.status(500).json({ message: "Qualcosa è andato storto." });
+  }
+});
+
+// Endpoint per ottenere i dati del profilo utente
+router.get("/profile", auth, async (req, res) => {
+  try {
+    // Trova l'utente nel database usando l'ID decodificato dal token JWT
+    const user = await User.findById(req.userId).select("-password -refreshToken");
+
+    if (!user) {
+      return res.status(404).json({ message: "Utente non trovato" });
+    }
+
+    res.status(200).json(user); // Restituisci i dati del profilo
+  } catch (error) {
+    console.error("Errore nel recupero del profilo:", error.message);
+    res.status(500).json({ message: "Errore del server" });
+  }
+});
+
+// Route per aggiornare il profilo utente
+router.put("/profile", auth, async (req, res) => {
+  const { nome, cognome } = req.body;
+
+  try {
+    // Trova l'utente nel database usando l'ID utente dal token JWT
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Utente non trovato" });
+    }
+
+    // Aggiorna i campi Nome e Cognome
+    user.nome = nome || user.nome;
+    user.cognome = cognome || user.cognome;
+
+    // Salva le modifiche nel database
+    await user.save();
+
+    res.status(200).json({ message: "Profilo aggiornato con successo", user });
+  } catch (error) {
+    console.error("Errore nell'aggiornamento del profilo:", error.message);
+    res.status(500).json({ message: "Errore del server" });
   }
 });
 
