@@ -8,9 +8,10 @@ import "./i18n"; // Importa i18n per inizializzare le traduzioni
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <React.StrictMode>
-    <ThemeProvider>
-      <App />
-    </ThemeProvider>
-  </React.StrictMode>
+  // React.StrictMode è un componente che aiuta a rilevare problemi potenziali nella tua applicazione.
+  // <React.StrictMode>
+  <ThemeProvider>
+    <App />
+  </ThemeProvider>
+  // </React.StrictMode>
 );

@@ -14,6 +14,7 @@ import ApartmentDetail from "./components/apartments/ApartmentDetail";
 import Header from "./components/header/Header";
 import PricingPlans from "./components/pricing/PricingPlans";
 import UserPage from "./components/user/UserPage";
+import VerifyEmail from "./components/VerifyEmail";
 import routes from "./routes"; // Importo l'oggetto routes per definire le route
 
 function App() {
@@ -48,6 +49,8 @@ function App() {
           <Route path={routes.PRICING} element={<PricingPlans />} />
           {/* Percorso per visualizzare UserPage */}
           <Route path={routes.USER_PAGE} element={<UserPage />} />
+          {/* Percorso per la verifica dell'email */}
+          <Route path={routes.VERIFY_EMAIL} element={<VerifyEmail />} />
         </Routes>
       </div>
     </Router>

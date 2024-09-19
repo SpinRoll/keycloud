@@ -7,6 +7,7 @@ const routes = {
   APARTMENT_DETAIL: "/apartments/:id",
   PRICING: "/pricing",
   USER_PAGE: "/user-page",
+  VERIFY_EMAIL: "/verify-email",
 };
 
 export default routes; // Esporto l'oggetto routes per l'uso in altre parti dell'app

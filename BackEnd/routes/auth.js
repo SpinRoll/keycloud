@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User"); // Assicurati che il percorso sia corretto
 const auth = require("../middleware/authMiddleware"); // Middleware per l'autenticazione
+const sendEmail = require("../utils/sendEmail"); // Funzione per inviare email
 
 const router = express.Router();
 
@@ -168,6 +169,66 @@ router.put("/profile", auth, async (req, res) => {
     res.status(200).json({ message: "Profilo aggiornato con successo", user });
   } catch (error) {
     console.error("Errore nell'aggiornamento del profilo:", error.message);
+    res.status(500).json({ message: "Errore del server" });
+  }
+});
+
+// Route per richiedere il cambiamento dell'email
+router.put("/change-email", auth, async (req, res) => {
+  const { newEmail } = req.body;
+
+  try {
+    // Controlla se l'email esiste già
+    const emailExists = await User.findOne({ email: newEmail });
+    if (emailExists) {
+      return res.status(400).json({ message: "Email già in uso" });
+    }
+
+    // Aggiorna il campo email_temp con la nuova email
+    const user = await User.findById(req.userId);
+    user.email_temp = newEmail;
+    await user.save();
+
+    // Invia l'email di verifica
+    const emailVerificationToken = jwt.sign(
+      { userId: req.userId, newEmail },
+      process.env.JWT_EMAIL_SECRET,
+      { expiresIn: "1h" }
+    );
+
+    const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`;
+    await sendEmail(newEmail, "Verifica la tua nuova email", `Clicca qui per verificare la tua email: ${verificationLink}`);
+
+    res.status(200).json({ message: "Email di verifica inviata alla nuova email" });
+  } catch (error) {
+    console.error("Errore durante l'invio dell'email di verifica:", error.message);
+    res.status(500).json({ message: "Errore del server" });
+  }
+});
+
+
+// Route per verificare l'email
+router.put("/verify-email", async (req, res) => {
+  const { token } = req.query;
+
+  try {
+    // Decodifica il token di verifica dell'email
+    const { userId, newEmail } = jwt.verify(token, process.env.JWT_EMAIL_SECRET);
+
+    // Trova l'utente e aggiorna l'email
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "Utente non trovato" });
+    }
+
+    // Aggiorna l'email dell'utente con quella temporanea
+    user.email = user.email_temp;
+    user.email_temp = null; // Pulisci il campo temporaneo
+    await user.save();
+
+    res.status(200).json({ message: "Email aggiornata con successo" });
+  } catch (error) {
+    console.error("Errore durante la verifica dell'email:", error.message);
     res.status(500).json({ message: "Errore del server" });
   }
 });

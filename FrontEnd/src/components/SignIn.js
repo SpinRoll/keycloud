@@ -33,7 +33,7 @@ function SignIn() {
         "http://localhost:5000/api/auth/signin",
         formData
       );
-      console.log("User logged in:", response.data);
+      // console.log("User logged in:", response.data);
       // Memorizza il token JWT nel localStorage o sessionStorage
       localStorage.setItem("token", response.data.accessToken); // Cambiato da `token` a `accessToken`
       localStorage.setItem("refreshToken", response.data.refreshToken); // Salva anche il refresh token
