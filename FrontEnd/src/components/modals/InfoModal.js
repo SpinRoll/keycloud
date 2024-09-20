@@ -9,7 +9,7 @@ import { pxToRem } from "../../utils/pxToRem"; // Funzione per la conversione de
 const InfoModal = ({ open, onClose, dialogMessage, theme, t }) => {
   // Funzione unificata per determinare icona e titolo
   const renderIconAndTitle = () => {
-    if (dialogMessage === t('error_email_change') || dialogMessage === t('error_profile_update')) {
+    if (dialogMessage === t('error_email_change') || dialogMessage === t('error_profile_update') || dialogMessage === t('email_already_sent')) {
       return {
         icon: <WarningIcon sx={{ fontSize: pxToRem(32), color: theme.palette.warning.main }} />,
         title: t('warning'),

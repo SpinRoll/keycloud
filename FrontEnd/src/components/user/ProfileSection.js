@@ -1,4 +1,3 @@
-// src/components/user/ProfileSection.js
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Avatar } from "@mui/material";
 import { pxToRem } from "../../utils/pxToRem";
@@ -23,6 +22,7 @@ const ProfileSection = () => {
   const [emailChangeLoading, setEmailChangeLoading] = useState(false); // Stato per il cambio email
   const [openDialog, setOpenDialog] = useState(false); // Stato per la modale
   const [dialogMessage, setDialogMessage] = useState(""); // Stato per il messaggio della modale
+  const [lastRequestedEmail, setLastRequestedEmail] = useState(null); // Stato per controllare l'ultima email richiesta
 
   // Funzione per aprire la modale
   const openModal = (message) => {
@@ -80,6 +80,12 @@ const ProfileSection = () => {
 
   // Funzione per inviare la richiesta di cambio email
   const updateEmail = async () => {
+    // Controlla se l'email è già stata richiesta
+    if (lastRequestedEmail === profileData.email) {
+      openModal(t("email_already_sent"));
+      return;
+    }
+
     setEmailChangeLoading(true);
     try {
       // Richiesta API per cambiare l'email
@@ -92,6 +98,8 @@ const ProfileSection = () => {
           },
         }
       );
+      // Aggiorna lo stato dell'ultima email richiesta
+      setLastRequestedEmail(profileData.email);
       openModal(t("verify_email_sent"));
     } catch (error) {
       console.error(t("error_email_change"), error);
@@ -203,6 +211,7 @@ const ProfileSection = () => {
           </CustomButton>
         </Box>
       </Box>
+
       {/* Bottoni di salvataggio */}
       <Box sx={{ display: "flex", justifyContent: "space-between", gap: pxToRem(8) }}>
         {/* Bottone per aggiornare Nome e Cognome */}
@@ -216,6 +225,7 @@ const ProfileSection = () => {
           {loading ? <LoadingSpinner size={20} /> : t("save")}
         </CustomButton>
       </Box>
+
       {/* Modale per mostrare i messaggi */}
       <InfoModal
         open={openDialog}

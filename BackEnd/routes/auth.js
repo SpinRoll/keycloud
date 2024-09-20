@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User"); // Assicurati che il percorso sia corretto
 const auth = require("../middleware/authMiddleware"); // Middleware per l'autenticazione
 const sendEmail = require("../utils/sendEmail"); // Funzione per inviare email
+const nodemailer = require("nodemailer");
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ const generateAccessToken = (user) => {
   return jwt.sign(
     { email: user.email, id: user._id },
     process.env.JWT_ACCESS_SECRET, // Usa una variabile di ambiente per la chiave segreta dell'access token
-    { expiresIn: "15m" } // Durata dell'access token
+    { expiresIn: "7d" } // Durata dell'access token
   );
 };
 
@@ -232,5 +233,83 @@ router.put("/verify-email", async (req, res) => {
     res.status(500).json({ message: "Errore del server" });
   }
 });
+
+// ENDPOINT recupero della password
+router.post("/recover-email", async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Utente non trovato" });
+    }
+
+    // Crea un token JWT per il reset password
+    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_RESET_SECRET, {
+      // Durata del token
+      expiresIn: process.env.JWT_RESET_EXPIRATION,
+    });
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+
+    // Configura nodemailer per inviare l'email
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Recupero Password",
+      text: `Clicca qui per resettare la tua password: ${resetLink}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({ message: "Email di recupero inviata" });
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      // Se il token è scaduto
+      return res.status(401).json({ message: "Il link di reset è scaduto." });
+    }
+    console.error("Errore nel recupero della password:", error);
+    res.status(500).json({ message: "Errore del server" });
+  }
+});
+
+// Endpoint per il reset della password
+router.post("/reset-password", async (req, res) => {
+  const { token, password } = req.body;
+
+  try {
+    // Verifica il token
+    const decoded = jwt.verify(token, process.env.JWT_RESET_SECRET);
+
+    // Trova l'utente
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({ message: "Utente non trovato" });
+    }
+
+    // Hash della nuova password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Aggiorna la password dell'utente
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password resettata con successo" });
+  } catch (error) {
+    console.error("Errore durante il reset della password:", error);
+    res.status(500).json({ message: "Errore nel reset della password" });
+  }
+});
+
+
 
 module.exports = router;

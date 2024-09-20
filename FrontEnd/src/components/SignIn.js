@@ -100,6 +100,25 @@ function SignIn() {
             type="password"
             onChange={handleInputChange}
           />
+          {/* Recover email */}
+          <Typography
+            component="p"
+            variant="body2"
+            sx={{
+              color: theme.palette.text.primary,
+              mt: pxToRem(8),
+              mb: pxToRem(16),
+            }}
+          >
+            Hai dimenticato la password?{" "}
+            <Link
+              variant="body2"
+              sx={{ color: theme.palette.primary.main, cursor: "pointer" }}
+              href="/recover-email"
+            >
+              Recupera password
+            </Link>
+          </Typography>
           {error && (
             <Typography color="error" variant="body2" sx={{ mt: 2 }}>
               {error}

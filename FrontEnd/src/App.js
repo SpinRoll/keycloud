@@ -15,6 +15,8 @@ import Header from "./components/header/Header";
 import PricingPlans from "./components/pricing/PricingPlans";
 import UserPage from "./components/user/UserPage";
 import VerifyEmail from "./components/VerifyEmail";
+import RecoverEmail from "./components/RecoverEmail";
+import ResetPassword from "./components/ResetPassword";
 import routes from "./routes"; // Importo l'oggetto routes per definire le route
 
 function App() {
@@ -29,12 +31,11 @@ function App() {
         <Routes>
           {/* Ridirige alla pagina di registrazione come percorso iniziale */}
           <Route path="/" element={<Navigate to={routes.SIGN_UP} />} />
+          {/* Percorso per l'autenticazione */}
+          <Route path={routes.SIGN_IN} element={<SignIn />} />
 
           {/* Percorso per la registrazione */}
           <Route path={routes.SIGN_UP} element={<SignUp />} />
-
-          {/* Percorso per l'autenticazione */}
-          <Route path={routes.SIGN_IN} element={<SignIn />} />
 
           {/* Percorso per la dashboard principale */}
           <Route path={routes.DASHBOARD} element={<Dashboard />} />
@@ -51,6 +52,11 @@ function App() {
           <Route path={routes.USER_PAGE} element={<UserPage />} />
           {/* Percorso per la verifica dell'email */}
           <Route path={routes.VERIFY_EMAIL} element={<VerifyEmail />} />
+          {/* Percorso recover email */}
+          <Route path={routes.RECOVER_EMAIL} element={<RecoverEmail />} />
+          {/* Percorso reset password */}
+          <Route path={routes.RESET_PASSWORD} element={<ResetPassword />} />
+
         </Routes>
       </div>
     </Router>
