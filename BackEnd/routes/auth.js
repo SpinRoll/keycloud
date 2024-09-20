@@ -135,7 +135,9 @@ router.post("/token", async (req, res) => {
 router.get("/profile", auth, async (req, res) => {
   try {
     // Trova l'utente nel database usando l'ID decodificato dal token JWT
-    const user = await User.findById(req.userId).select("-password -refreshToken");
+    const user = await User.findById(req.userId).select(
+      "-password -refreshToken"
+    );
 
     if (!user) {
       return res.status(404).json({ message: "Utente non trovato" });
@@ -198,15 +200,23 @@ router.put("/change-email", auth, async (req, res) => {
     );
 
     const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`;
-    await sendEmail(newEmail, "Verifica la tua nuova email", `Clicca qui per verificare la tua email: ${verificationLink}`);
+    await sendEmail(
+      newEmail,
+      "Verifica la tua nuova email",
+      `Clicca qui per verificare la tua email: ${verificationLink}`
+    );
 
-    res.status(200).json({ message: "Email di verifica inviata alla nuova email" });
+    res
+      .status(200)
+      .json({ message: "Email di verifica inviata alla nuova email" });
   } catch (error) {
-    console.error("Errore durante l'invio dell'email di verifica:", error.message);
+    console.error(
+      "Errore durante l'invio dell'email di verifica:",
+      error.message
+    );
     res.status(500).json({ message: "Errore del server" });
   }
 });
-
 
 // Route per verificare l'email
 router.put("/verify-email", async (req, res) => {
@@ -214,7 +224,10 @@ router.put("/verify-email", async (req, res) => {
 
   try {
     // Decodifica il token di verifica dell'email
-    const { userId, newEmail } = jwt.verify(token, process.env.JWT_EMAIL_SECRET);
+    const { userId, newEmail } = jwt.verify(
+      token,
+      process.env.JWT_EMAIL_SECRET
+    );
 
     // Trova l'utente e aggiorna l'email
     const user = await User.findById(userId);
@@ -245,10 +258,14 @@ router.post("/recover-email", async (req, res) => {
     }
 
     // Crea un token JWT per il reset password
-    const resetToken = jwt.sign({ id: user._id }, process.env.JWT_RESET_SECRET, {
-      // Durata del token
-      expiresIn: process.env.JWT_RESET_EXPIRATION,
-    });
+    const resetToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_RESET_SECRET,
+      {
+        // Durata del token
+        expiresIn: process.env.JWT_RESET_EXPIRATION,
+      }
+    );
 
     const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
@@ -309,7 +326,5 @@ router.post("/reset-password", async (req, res) => {
     res.status(500).json({ message: "Errore nel reset della password" });
   }
 });
-
-
 
 module.exports = router;

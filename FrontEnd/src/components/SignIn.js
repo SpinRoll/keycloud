@@ -37,6 +37,7 @@ function SignIn() {
       // Memorizza il token JWT nel localStorage o sessionStorage
       localStorage.setItem("token", response.data.accessToken); // Cambiato da `token` a `accessToken`
       localStorage.setItem("refreshToken", response.data.refreshToken); // Salva anche il refresh token
+
       navigate("/dashboard"); // Naviga alla Dashboard dopo il successo
     } catch (error) {
       console.error(
@@ -52,11 +53,6 @@ function SignIn() {
   // Funzione per navigare alla pagina di sign-up
   const handleSignUpClick = () => {
     navigate("/sign-up");
-  };
-
-  // Funzione di Debug per accedere alla Dashboard
-  const handleDebugClick = () => {
-    navigate("/dashboard");
   };
 
   return (
@@ -108,14 +104,12 @@ function SignIn() {
               color: theme.palette.text.primary,
               mt: pxToRem(8),
               mb: pxToRem(16),
-            }}
-          >
+            }}>
             Hai dimenticato la password?{" "}
             <Link
               variant="body2"
               sx={{ color: theme.palette.primary.main, cursor: "pointer" }}
-              href="/recover-email"
-            >
+              href="/recover-email">
               Recupera password
             </Link>
           </Typography>
@@ -132,9 +126,6 @@ function SignIn() {
               mt: pxToRem(8),
             }}>
             <CustomButton type="submit">Sign in</CustomButton>
-            <CustomButton variant="outlined" onClick={handleDebugClick}>
-              Debug: Vai alla Dashboard
-            </CustomButton>
           </Box>
 
           <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>

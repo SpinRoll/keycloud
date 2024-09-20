@@ -6,9 +6,11 @@ import { useTheme } from "@mui/material/styles"; // Importa useTheme per acceder
 import { pxToRem } from "../../utils/pxToRem";
 import { useTranslation } from "react-i18next"; // Importa il hook useTranslation
 import { useNavigate } from "react-router-dom"; // Importa useNavigate per la navigazione
+import { useLocation } from "react-router-dom"; // Importa useLocation per ottenere l'URL corrente
 
 const UserProfileMenuItem = ({ onClose }) => {
   const theme = useTheme(); // Usa il tema corrente
+  const location = useLocation(); // Ottieni l'URL corrente
   const { t } = useTranslation(); // Usa il hook useTranslation per ottenere la funzione di traduzione
   const navigate = useNavigate(); // Usa useNavigate per la navigazione
 
@@ -18,10 +20,19 @@ const UserProfileMenuItem = ({ onClose }) => {
     onClose(); // Chiude il menu
   };
 
+  // Definisci le rotte su cui il logout non deve essere disponibile
+  const isAuthPage =
+    location.pathname === "/sign-in" || location.pathname === "/sign-up";
+
   return (
     <MenuItem
       onClick={handleNavigateToProfile}
-      sx={{ display: "flex", alignItems: "center", gap: pxToRem(10) }}>
+      sx={{
+        alignItems: "center",
+        gap: pxToRem(10),
+        display: isAuthPage ? "none" : "flex",
+        cursor: isAuthPage ? "not-allowed" : "pointer", // Mostra un cursore disabilitato
+      }}>
       <IconButton>
         <AccountCircle
           sx={{

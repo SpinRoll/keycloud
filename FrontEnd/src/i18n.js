@@ -23,7 +23,8 @@ i18n
           italian: "Italiano",
           dashboard: "Dashboard",
           apartments: "Apartments",
-          no_apartments_message: "No apartments available. Add a new apartment!",
+          no_apartments_message:
+            "No apartments available. Add a new apartment!",
           pricing_plans: "Pricing Plans",
           our_pricing_plans: "Our Pricing Plans",
           basic_plan: "Basic",
@@ -56,7 +57,8 @@ i18n
           email_address: "Email Address",
           verify_email: "Verifying email...",
           change_email: "Change Email",
-          error_email_change: "You must choose another email, email already in use, try again!",
+          error_email_change:
+            "You must choose another email, email already in use, try again!",
           verify_email_sent: "Verification email sent. Check your inbox!",
           success_email_changed: "Email verified successfully!",
           success_profile_updated: "Profile updated successfully!",
@@ -67,7 +69,8 @@ i18n
           notification: "Info",
           warning: "Warning",
           ok: "OK",
-          email_already_sent: "You have already made the request for this email. Email already sent",
+          email_already_sent:
+            "You have already made the request for this email. Email already sent",
           success_recovery_email: "Email sent. Check your inbox.",
           error_recovery_email: "Error sending email, try again!",
           back_to_sign_in: "Back to Sign-In",
@@ -82,6 +85,7 @@ i18n
           confirm_password: "Confirm Password",
           new_password: "New Password",
           reset_link_expired: "Reset link expired. Please request a new one.",
+          logout: "Logout",
         },
       },
       it: {
@@ -94,7 +98,8 @@ i18n
           italian: "Italiano",
           dashboard: "Dashboard",
           apartments: "Appartamenti",
-          no_apartments_message: "Non ci sono appartamenti disponibili. Aggiungi un nuovo appartamento!",
+          no_apartments_message:
+            "Non ci sono appartamenti disponibili. Aggiungi un nuovo appartamento!",
           pricing_plans: "Piani di Pagamento",
           our_pricing_plans: "I nostri piani tariffari",
           basic_plan: "Base",
@@ -127,19 +132,24 @@ i18n
           email_address: "Indirizzo Email",
           verify_email: "Verifica dell'email in corso...",
           change_email: "Cambia Email",
-          error_email_change: "Devi scegliere un'altra email, l'email è già in uso, riprova!",
-          verify_email_sent: "Email di verifica inviata. Controlla la tua casella di posta!",
+          error_email_change:
+            "Devi scegliere un'altra email, l'email è già in uso, riprova!",
+          verify_email_sent:
+            "Email di verifica inviata. Controlla la tua casella di posta!",
           success_email_changed: "Email verificata con successo!",
           success_profile_updated: "Profilo aggiornato con successo!",
-          error_profile_update: "Errore durante l'aggiornamento del profilo, riprova!",
+          error_profile_update:
+            "Errore durante l'aggiornamento del profilo, riprova!",
           profile: "Profilo",
           billing: "Fatturazione",
           password: "Password",
           notification: "Info",
           warning: "Attenzione",
           ok: "OK",
-          email_already_sent: "Hai fatto di gia la richiesta per questa email. Email già inviata",
-          success_recovery_email: "Email inviata. Controlla la tua casella di posta.",
+          email_already_sent:
+            "Hai fatto di gia la richiesta per questa email. Email già inviata",
+          success_recovery_email:
+            "Email inviata. Controlla la tua casella di posta.",
           error_recovery_email: "Errore nell'invio dell'email, riprova!",
           back_to_sign_in: "Torna al login",
           recover_email: "Recupero Password",
@@ -148,11 +158,14 @@ i18n
           email_required: "Email obbligatoria",
           passwords_do_not_match: "Le password non corrispondono",
           password_reset_success: "Password reimpostata con successo!",
-          error_reset_password: "Errore durante il reset della password, riprova!",
+          error_reset_password:
+            "Errore durante il reset della password, riprova!",
           reset_password: "Reimposta Password",
           confirm_password: "Conferma Password",
           new_password: "Nuova Password",
-          reset_link_expired: "Link di reset scaduto. Si prega di richiederne uno nuovo.",
+          reset_link_expired:
+            "Link di reset scaduto. Si prega di richiederne uno nuovo.",
+          logout: "Logout",
         },
       },
     },

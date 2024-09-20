@@ -116,8 +116,12 @@ const ProfileSection = () => {
 
   // Funzione per ottenere le iniziali del nome e cognome
   const getInitials = () => {
-    const nomeInitial = profileData.nome ? profileData.nome[0].toUpperCase() : "";
-    const cognomeInitial = profileData.cognome ? profileData.cognome[0].toUpperCase() : "";
+    const nomeInitial = profileData.nome
+      ? profileData.nome[0].toUpperCase()
+      : "";
+    const cognomeInitial = profileData.cognome
+      ? profileData.cognome[0].toUpperCase()
+      : "";
     return `${nomeInitial}${cognomeInitial}`;
   };
 
@@ -151,8 +155,8 @@ const ProfileSection = () => {
             width: pxToRem(60),
             height: pxToRem(60),
             marginRight: pxToRem(16),
-          }}
-        >
+            backgroundColor: theme.palette.secondary.main,
+          }}>
           {getInitials()} {/* Visualizza le iniziali del nome e cognome */}
         </Avatar>
       </Box>
@@ -195,7 +199,12 @@ const ProfileSection = () => {
             onChange={handleInputChange} // Aggiorna lo stato quando l'utente modifica il campo
           />
         </Box>
-        <Box sx={{ display: "flex", alignItems: "center", marginBottom: pxToRem(8), }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: pxToRem(8),
+          }}>
           {/* Bottone per inviare la richiesta di cambio email */}
           <CustomButton
             variant="contained"
@@ -207,13 +216,22 @@ const ProfileSection = () => {
             onClick={updateEmail} // Salva il cambio email
             disabled={emailChangeLoading} // Disabilita il bottone durante il caricamento
           >
-            {emailChangeLoading ? <LoadingSpinner size={20} /> : t("change_email")}
+            {emailChangeLoading ? (
+              <LoadingSpinner size={20} />
+            ) : (
+              t("change_email")
+            )}
           </CustomButton>
         </Box>
       </Box>
 
       {/* Bottoni di salvataggio */}
-      <Box sx={{ display: "flex", justifyContent: "space-between", gap: pxToRem(8) }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          gap: pxToRem(8),
+        }}>
         {/* Bottone per aggiornare Nome e Cognome */}
         <CustomButton
           variant="contained"
@@ -234,7 +252,7 @@ const ProfileSection = () => {
         theme={theme}
         t={t}
       />
-    </Box >
+    </Box>
   );
 };
 
