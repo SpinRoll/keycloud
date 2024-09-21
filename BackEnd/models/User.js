@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema(
     refreshToken: { type: String },
     mfaEnabled: { type: Boolean, default: false }, // Se MFA è abilitato o meno
     mfaSecret: { type: String }, // Chiave segreta per l'autenticazione a due fattori
+    mfaSecret_temp: { type: String }, // Chiave temporanea per la verifica dell'MFA
   },
   {
     timestamps: true, // Aggiunge automaticamente campi createdAt e updatedAt

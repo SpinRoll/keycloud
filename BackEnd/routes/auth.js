@@ -407,7 +407,7 @@ router.post("/mfa/setup", auth, async (req, res) => {
 
     // Genera il segreto MFA
     const secret = speakeasy.generateSecret({
-      name: "KeyCloud", // Nome dell'applicazione
+      name: `KeyCloud (${user.email})`, // Nome dell'applicazione e email dell'utente
     });
 
     // Genera il QR code
@@ -418,13 +418,12 @@ router.post("/mfa/setup", auth, async (req, res) => {
           .json({ message: "Errore nella generazione del QR code." });
       }
 
-      // Salva il segreto MFA nel database dell'utente
-      user.mfaSecret = secret.base32;
-      user.mfaEnabled = true;
+      // Salva il segreto temporaneo nel database (ma non ancora mfaSecret)
+      user.mfaSecret_temp = secret.base32;
       await user.save();
 
-      // Ritorna il QR code da scansionare
-      res.json({ secret: secret.base32, qrCode: data });
+      // Ritorna il QR code e il segreto temporaneo
+      res.json({ mfaSecret_temp: secret.base32, qrCode: data });
     });
   } catch (error) {
     console.error("Errore nella configurazione MFA:", error);
@@ -432,7 +431,7 @@ router.post("/mfa/setup", auth, async (req, res) => {
   }
 });
 
-// Endpoint per verificare il codice MFA durante il sign-in
+// Endpoint per verificare il codice MFA e salvare il segreto MFA nel database
 router.post("/mfa/verify", auth, async (req, res) => {
   try {
     const { token } = req.body; // Il token MFA inviato dall'utente
@@ -444,24 +443,32 @@ router.post("/mfa/verify", auth, async (req, res) => {
       return res.status(404).json({ message: "Utente non trovato." });
     }
 
-    if (!user.mfaEnabled) {
+    // Verifica che l'utente abbia un segreto temporaneo
+    if (!user.mfaSecret_temp) {
       return res
         .status(400)
-        .json({ message: "MFA non abilitato per questo utente." });
+        .json({ message: "Nessun segreto MFA trovato per la verifica." });
     }
 
-    // Verifica il codice MFA usando speakeasy
+    // Verifica il codice MFA usando il segreto temporaneo
     const verified = speakeasy.totp.verify({
-      secret: user.mfaSecret, // Il segreto salvato nel database
+      secret: user.mfaSecret_temp, // Usa il segreto temporaneo per la verifica
       encoding: "base32",
       token: token, // Il token inviato dall'utente
+      window: 1, // Aumenta la tolleranza temporale per evitare problemi di sincronizzazione
     });
 
     if (!verified) {
       return res.status(400).json({ message: "Codice MFA non valido." });
     }
 
-    // Se il codice è corretto, continua il processo di autenticazione
+    // Se il codice è corretto, salva il segreto MFA nel database
+    user.mfaSecret = user.mfaSecret_temp; // Sposta il segreto temporaneo nel campo mfaSecret
+    user.mfaSecret_temp = null; // Pulisci il campo temporaneo
+    user.mfaEnabled = true;
+    await user.save();
+
+    // Invia una risposta di successo
     res.json({ message: "MFA verificato con successo!" });
   } catch (error) {
     console.error("Errore durante la verifica MFA:", error);
@@ -469,31 +476,40 @@ router.post("/mfa/verify", auth, async (req, res) => {
   }
 });
 
-// Endpoint per disattivare l'MFA
+// Endpoint per disabilitare MFA
 router.post("/mfa/disable", auth, async (req, res) => {
   try {
-    // Trova l'utente autenticato tramite il middleware auth
     const user = await User.findById(req.userId);
 
     if (!user) {
       return res.status(404).json({ message: "Utente non trovato." });
     }
 
-    // Controlla se l'MFA è già disabilitato
-    if (!user.mfaEnabled) {
-      return res.status(400).json({ message: "MFA è già disabilitato." });
-    }
-
-    // Disattiva MFA rimuovendo il segreto e impostando mfaEnabled su false
-    user.mfaSecret = "";
     user.mfaEnabled = false;
-
+    user.mfaSecret = null; // Rimuovi il segreto MFA dal database
     await user.save();
 
-    // Ritorna un messaggio di successo
     res.json({ message: "MFA disabilitato con successo." });
   } catch (error) {
-    console.error("Errore nella disattivazione dell'MFA:", error);
+    console.error("Errore durante la disattivazione MFA:", error);
+    res.status(500).json({ message: "Errore del server." });
+  }
+});
+
+// Endpoint per controllare lo stato MFA dell'utente
+router.get("/mfa/status", auth, async (req, res) => {
+  try {
+    // Trova l'utente autenticato
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Utente non trovato." });
+    }
+
+    // Ritorna lo stato MFA (abilitato o meno)
+    res.json({ mfaEnabled: user.mfaEnabled });
+  } catch (error) {
+    console.error("Errore durante il controllo dello stato MFA:", error);
     res.status(500).json({ message: "Errore del server." });
   }
 });

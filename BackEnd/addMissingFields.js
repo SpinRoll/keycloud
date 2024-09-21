@@ -4,22 +4,17 @@ const User = require("./models/User"); // Assicurati che il percorso sia corrett
 
 // Connessione a MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGODB_URI, {})
   .then(() => console.log("Connesso a MongoDB"))
   .catch((err) => console.error("Errore di connessione a MongoDB:", err));
 
 // Funzione per aggiungere i campi mancanti agli utenti
 const addMissingFields = async () => {
   try {
-    // Trova tutti gli utenti che non hanno il campo email_temp, mfaEnabled o mfaSecret
+    // Trova tutti gli utenti che non hanno il campo mfaSecret_temp
     const usersWithoutFields = await User.find({
       $or: [
-        { email_temp: { $exists: false } }, // Campo email_temp mancante
-        { mfaEnabled: { $exists: false } }, // Campo mfaEnabled mancante
-        { mfaSecret: { $exists: false } }, // Campo mfaSecret mancante
+        { mfaSecret_temp: { $exists: false } }, // Campo mfaSecret_temp mancante
       ],
     });
 
@@ -30,9 +25,7 @@ const addMissingFields = async () => {
           { _id: user._id },
           {
             $set: {
-              email_temp: user.email_temp || null, // Aggiungi email_temp se mancante
-              mfaEnabled: user.mfaEnabled || false, // Aggiungi mfaEnabled se mancante
-              mfaSecret: user.mfaSecret || null, // Aggiungi mfaSecret se mancante
+              mfaSecret_temp: user.mfaSecret_temp || null, // Aggiungi mfaSecret_temp se mancante
             },
           }
         );
@@ -57,3 +50,4 @@ const addMissingFields = async () => {
 
 // Avvia lo script
 addMissingFields();
+// Questo script si connette al database MongoDB e aggiunge i campi mancanti agli utenti.

@@ -88,6 +88,23 @@ i18n
           logout: "Logout",
           current_password: "Current Password",
           new_password_again: "Repeat New Password",
+          two_factor_auth_title: "Two-Factor Authentication Settings (MFA)",
+          two_factor_auth_description:
+            "Enable two-factor authentication to increase the security of your account.",
+          enable_mfa_button: "Enable MFA",
+          qr_code_success:
+            "QR Code generated successfully! Scan the code with your authentication app.",
+          mfa_code_label: "MFA Code",
+          verify_mfa_button: "Verify MFA",
+          mfa_verified_success: "MFA successfully verified!",
+          mfa_verify_error:
+            "Error verifying MFA code. Please check the code entered.",
+          mfa_setup_error:
+            "Error enabling MFA. Please check your connection and try again.",
+          mfa_verification_error:
+            "Error verifying MFA code. Please check the code and try again.",
+          disabled_mfa_label: "MFA Disabled",
+          enabled_mfa_label: "MFA Enabled",
         },
       },
       it: {
@@ -170,6 +187,24 @@ i18n
           logout: "Logout",
           current_password: "Password Corrente",
           new_password_again: "Ripeti Nuova Password",
+          two_factor_auth_title:
+            "Impostazioni autenticazione a due fattori (MFA)",
+          two_factor_auth_description:
+            "Abilita l'autenticazione a due fattori per aumentare la sicurezza del tuo account.",
+          enable_mfa_button: "Abilita MFA",
+          qr_code_success:
+            "QR Code generato correttamente! Scansiona il codice con la tua app di autenticazione.",
+          mfa_code_label: "Codice MFA",
+          verify_mfa_button: "Verifica MFA",
+          mfa_verified_success: "MFA verificato con successo!",
+          mfa_verify_error:
+            "Errore nella verifica del codice MFA. Controlla il codice inserito.",
+          mfa_setup_error:
+            "Errore durante l'abilitazione MFA. Assicurati che la connessione sia attiva e riprova.",
+          mfa_verification_error:
+            "Errore durante la verifica del codice MFA. Controlla il codice e riprova.",
+          disabled_mfa_label: "MFA Disabilitato",
+          enabled_mfa_label: "MFA Abilitato",
         },
       },
     },
