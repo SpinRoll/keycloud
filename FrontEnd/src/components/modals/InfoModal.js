@@ -26,7 +26,10 @@ const InfoModal = ({ open, onClose, dialogMessage }) => {
       dialogMessage === t("email_already_sent") ||
       dialogMessage === t("mfa_setup_error") ||
       dialogMessage === t("mfa_verification_error") ||
-      dialogMessage === t("mfa_verify_error")
+      dialogMessage === t("mfa_verify_error") ||
+      dialogMessage === t("actual_password_notsame") ||
+      dialogMessage === t("new_passwords_not_match") ||
+      dialogMessage === t("error_retrieving_profile_data")
     ) {
       return {
         icon: (

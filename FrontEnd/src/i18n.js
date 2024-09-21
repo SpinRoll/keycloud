@@ -120,6 +120,9 @@ i18n
           signup_button: "Sign Up",
           already_have_account: "Already have an account?",
           signin_link: "Sign In",
+          actual_password_notsame: "The current password is not correct",
+          new_passwords_not_match: "The new passwords do not match",
+          error_retrieving_profile_data: "Error retrieving profile data",
         },
       },
       it: {
@@ -235,6 +238,10 @@ i18n
           signup_button: "Registrati",
           already_have_account: "Hai già un account?",
           signin_link: "Accedi",
+          actual_password_notsame: "La password corrente non è corretta",
+          new_passwords_not_match: "Le nuove password non corrispondono",
+          error_retrieving_profile_data:
+            "Errore nel recupero dei dati del profilo",
         },
       },
     },

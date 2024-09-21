@@ -1,12 +1,11 @@
-import React, { useState } from "react";
-import { Box, Typography } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, TextField } from "@mui/material"; // Uso il componente TextField di MUI
 import { pxToRem } from "../../utils/pxToRem";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import CustomButton from "../customComponents/CustomButton";
-import axios from "axios";
 import InfoModal from "../modals/InfoModal";
-import CustomTextField from "../customComponents/CustomTextField";
+import axios from "axios";
 
 const PasswordSection = () => {
   const theme = useTheme();
@@ -18,6 +17,11 @@ const PasswordSection = () => {
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [dialogMessage, setDialogMessage] = useState("");
+  const [profileData, setProfileData] = useState({
+    nome: "",
+    cognome: "",
+    email: "",
+  });
 
   // Funzione per aprire la modale
   const openModal = (message) => {
@@ -30,18 +34,41 @@ const PasswordSection = () => {
     setOpenDialog(false);
   };
 
+  // Funzione per ottenere i dati del profilo
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get("/api/user/profile", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`, // Invia il token JWT
+        },
+      });
+      setProfileData(response.data);
+    } catch (error) {
+      console.error("Errore nel recupero del profilo:", error);
+      openModal(t("error_retrieving_profile_data"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Effettua il caricamento dei dati del profilo al montaggio del componente
+  useEffect(() => {
+    fetchProfile();
+    // eslint-disable-next-line
+  }, []);
+
   // Funzione per inviare la richiesta di aggiornamento password
-  const handleChangePassword = async () => {
-    // Controlli lato frontend
+  const handleChangePassword = async (e) => {
+    e.preventDefault(); // Previene il comportamento predefinito del form
     if (newPassword !== confirmNewPassword) {
-      openModal("Le nuove password non corrispondono");
+      openModal(t("new_passwords_not_match"));
       return;
     }
 
     setLoading(true);
-
-    // Recupera l'ID utente dal localStorage
     const userId = localStorage.getItem("userId");
+
     if (!userId) {
       openModal(
         "Impossibile ottenere l'ID dell'utente. Effettua nuovamente l'accesso."
@@ -51,18 +78,16 @@ const PasswordSection = () => {
     }
 
     try {
-      // Invia la richiesta di aggiornamento password
-      // eslint-disable-next-line
-      const response = await axios.put("/api/auth/change-password", {
+      await axios.put("/api/auth/change-password", {
         userId,
         currentPassword,
         newPassword,
       });
 
-      openModal("Password aggiornata con successo");
+      openModal(t("password_reset_success"));
     } catch (error) {
       if (error.response && error.response.data.message) {
-        openModal(error.response.data.message);
+        openModal(t("actual_password_notsame"));
       } else {
         openModal("Errore durante l'aggiornamento della password");
       }
@@ -74,7 +99,7 @@ const PasswordSection = () => {
   return (
     <Box>
       <Typography variant="h6" sx={{ color: theme.palette.text.secondary }}>
-        {t("my_account")} &gt; {t("password")}
+        {`${profileData.nome} ${profileData.cognome}`} > {t("password")}
       </Typography>
       <Typography
         variant="h3"
@@ -82,50 +107,64 @@ const PasswordSection = () => {
         {t("password")}
       </Typography>
 
-      {/* Campo per la password corrente */}
-      <Box sx={{ marginBottom: pxToRem(8) }}>
-        <CustomTextField
-          variant="outlined"
-          type="password"
-          fullWidth
-          label={t("current_password")}
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
+      {/* Form per gestire il cambio di password */}
+      <form onSubmit={handleChangePassword}>
+        {/* Campo nascosto per l'email/nome utente */}
+        <input
+          type="hidden"
+          name="email"
+          value={profileData.email} // Utilizza l'email dell'utente come nome utente
+          readOnly
         />
-      </Box>
 
-      {/* Campo per la nuova password */}
-      <Box sx={{ marginBottom: pxToRem(8) }}>
-        <CustomTextField
-          variant="outlined"
-          type="password"
-          fullWidth
-          label={t("new_password")}
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-        />
-      </Box>
+        {/* Campo per la password corrente */}
+        <Box sx={{ marginBottom: pxToRem(16) }}>
+          <TextField
+            variant="outlined"
+            type="password"
+            fullWidth
+            label={t("current_password")}
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            autoComplete="current-password" // Attributo autocomplete per la password corrente
+          />
+        </Box>
 
-      {/* Campo per confermare la nuova password */}
-      <Box sx={{ marginBottom: pxToRem(24) }}>
-        <CustomTextField
-          variant="outlined"
-          type="password"
-          fullWidth
-          label={t("new_password_again")}
-          value={confirmNewPassword}
-          onChange={(e) => setConfirmNewPassword(e.target.value)}
-        />
-      </Box>
+        {/* Campo per la nuova password */}
+        <Box sx={{ marginBottom: pxToRem(16) }}>
+          <TextField
+            variant="outlined"
+            type="password"
+            fullWidth
+            label={t("new_password")}
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            autoComplete="new-password" // Attributo autocomplete per la nuova password
+          />
+        </Box>
 
-      {/* Bottone per salvare le modifiche */}
-      <CustomButton
-        variant="contained"
-        color="primary"
-        onClick={handleChangePassword}
-        disabled={loading}>
-        {t("save")}
-      </CustomButton>
+        {/* Campo per confermare la nuova password */}
+        <Box sx={{ marginBottom: pxToRem(24) }}>
+          <TextField
+            variant="outlined"
+            type="password"
+            fullWidth
+            label={t("new_password_again")}
+            value={confirmNewPassword}
+            onChange={(e) => setConfirmNewPassword(e.target.value)}
+            autoComplete="new-password" // Attributo autocomplete per confermare la nuova password
+          />
+        </Box>
+
+        {/* Bottone per salvare le modifiche */}
+        <CustomButton
+          variant="contained"
+          color="primary"
+          type="submit" // Aggiungi il type submit per il pulsante
+          disabled={loading}>
+          {t("save")}
+        </CustomButton>
+      </form>
 
       {/* Modale per mostrare i messaggi */}
       <InfoModal
