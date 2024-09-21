@@ -10,6 +10,7 @@ const routes = {
   VERIFY_EMAIL: "/verify-email",
   RECOVER_EMAIL: "/recover-email",
   RESET_PASSWORD: "/reset-password",
+  MFA_SETUP: "/mfa-setup",
 };
 
 export default routes; // Esporto l'oggetto routes per l'uso in altre parti dell'app

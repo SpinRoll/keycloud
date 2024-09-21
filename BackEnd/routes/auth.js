@@ -1,10 +1,13 @@
+// BackEnd/routes/auth.js
 const express = require("express");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs"); // Libreria per la crittografia delle password
+const jwt = require("jsonwebtoken"); // Libreria per i token JWT
 const User = require("../models/User"); // Assicurati che il percorso sia corretto
 const auth = require("../middleware/authMiddleware"); // Middleware per l'autenticazione
 const sendEmail = require("../utils/sendEmail"); // Funzione per inviare email
-const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer"); // Libreria per inviare email
+const speakeasy = require("speakeasy"); // Libreria per l'autenticazione a due fattori
+const qrcode = require("qrcode"); // Libreria per generare codici QR
 
 const router = express.Router();
 
@@ -13,7 +16,7 @@ const generateAccessToken = (user) => {
   return jwt.sign(
     { email: user.email, id: user._id },
     process.env.JWT_ACCESS_SECRET, // Usa una variabile di ambiente per la chiave segreta dell'access token
-    { expiresIn: "7d" } // Durata dell'access token
+    { expiresIn: "1h" } // Durata dell'access token
   );
 };
 
@@ -66,7 +69,7 @@ router.post("/signup", async (req, res) => {
 
 // Endpoint di SignIn
 router.post("/signin", async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, mfaToken } = req.body; // Aggiungiamo il campo mfaToken nel body della richiesta
 
   try {
     // Trova l'utente nel database
@@ -75,7 +78,7 @@ router.post("/signin", async (req, res) => {
       return res.status(404).json({ message: "Utente non trovato" });
     }
 
-    // Confronta la password
+    // Verifica la password
     const isPasswordCorrect = await bcrypt.compare(
       password,
       existingUser.password
@@ -84,14 +87,37 @@ router.post("/signin", async (req, res) => {
       return res.status(400).json({ message: "Credenziali non valide" });
     }
 
-    // Genera i token JWT
+    // Controlla se l'MFA è abilitato per l'utente
+    if (existingUser.mfaEnabled) {
+      // Se l'MFA è abilitato, verifica se il token MFA è stato inviato
+      if (!mfaToken) {
+        // Se non c'è il token MFA, richiedilo
+        return res
+          .status(200)
+          .json({ message: "MFA richiesto", mfaRequired: true });
+      }
+
+      // Verifica il codice MFA usando speakeasy
+      const isMfaValid = speakeasy.totp.verify({
+        secret: existingUser.mfaSecret, // Segreto MFA memorizzato per l'utente
+        encoding: "base32",
+        token: mfaToken, // Il codice MFA inviato dall'utente
+      });
+
+      if (!isMfaValid) {
+        return res.status(400).json({ message: "Codice MFA non valido" });
+      }
+    }
+
+    // Se MFA è verificato o non è abilitato, genera i token JWT
     const accessToken = generateAccessToken(existingUser);
     const refreshToken = generateRefreshToken(existingUser);
 
-    // Salva il refresh token nel database dell'utente
+    // Salva il refresh token nel database
     existingUser.refreshToken = refreshToken;
     await existingUser.save();
 
+    // Restituisci i token e i dati dell'utente
     res.status(200).json({ result: existingUser, accessToken, refreshToken });
   } catch (error) {
     console.error("Errore durante il login:", error.message);
@@ -324,6 +350,151 @@ router.post("/reset-password", async (req, res) => {
   } catch (error) {
     console.error("Errore durante il reset della password:", error);
     res.status(500).json({ message: "Errore nel reset della password" });
+  }
+});
+
+// Cambiare la password
+router.put("/change-password", async (req, res) => {
+  const { userId, currentPassword, newPassword } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+
+    // Verifica che l'utente esista
+    if (!user) {
+      return res.status(404).json({ message: "Utente non trovato" });
+    }
+
+    // Verifica che la password corrente corrisponda
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res
+        .status(400)
+        .json({ message: "La password corrente non è corretta" });
+    }
+
+    // Controlli di sicurezza sulla nuova password (puoi aggiungere regole personalizzate qui)
+    if (newPassword.length < 3) {
+      return res
+        .status(400)
+        .json({ message: "La nuova password deve avere almeno 8 caratteri" });
+    }
+
+    // Cripta la nuova password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Aggiorna la password dell'utente
+    user.password = hashedPassword;
+    await user.save();
+
+    res.status(200).json({ message: "Password aggiornata con successo" });
+  } catch (error) {
+    console.error("Errore durante l'aggiornamento della password:", error);
+    res.status(500).json({ message: "Errore del server" });
+  }
+});
+
+// Endpoint per generare il segreto MFA e il QR code
+router.post("/mfa/setup", auth, async (req, res) => {
+  try {
+    // Trova l'utente autenticato
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Utente non trovato." });
+    }
+
+    // Genera il segreto MFA
+    const secret = speakeasy.generateSecret({
+      name: "KeyCloud", // Nome dell'applicazione
+    });
+
+    // Genera il QR code
+    qrcode.toDataURL(secret.otpauth_url, async (err, data) => {
+      if (err) {
+        return res
+          .status(500)
+          .json({ message: "Errore nella generazione del QR code." });
+      }
+
+      // Salva il segreto MFA nel database dell'utente
+      user.mfaSecret = secret.base32;
+      user.mfaEnabled = true;
+      await user.save();
+
+      // Ritorna il QR code da scansionare
+      res.json({ secret: secret.base32, qrCode: data });
+    });
+  } catch (error) {
+    console.error("Errore nella configurazione MFA:", error);
+    res.status(500).json({ message: "Errore del server." });
+  }
+});
+
+// Endpoint per verificare il codice MFA durante il sign-in
+router.post("/mfa/verify", auth, async (req, res) => {
+  try {
+    const { token } = req.body; // Il token MFA inviato dall'utente
+
+    // Trova l'utente autenticato tramite il middleware auth
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Utente non trovato." });
+    }
+
+    if (!user.mfaEnabled) {
+      return res
+        .status(400)
+        .json({ message: "MFA non abilitato per questo utente." });
+    }
+
+    // Verifica il codice MFA usando speakeasy
+    const verified = speakeasy.totp.verify({
+      secret: user.mfaSecret, // Il segreto salvato nel database
+      encoding: "base32",
+      token: token, // Il token inviato dall'utente
+    });
+
+    if (!verified) {
+      return res.status(400).json({ message: "Codice MFA non valido." });
+    }
+
+    // Se il codice è corretto, continua il processo di autenticazione
+    res.json({ message: "MFA verificato con successo!" });
+  } catch (error) {
+    console.error("Errore durante la verifica MFA:", error);
+    res.status(500).json({ message: "Errore del server." });
+  }
+});
+
+// Endpoint per disattivare l'MFA
+router.post("/mfa/disable", auth, async (req, res) => {
+  try {
+    // Trova l'utente autenticato tramite il middleware auth
+    const user = await User.findById(req.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "Utente non trovato." });
+    }
+
+    // Controlla se l'MFA è già disabilitato
+    if (!user.mfaEnabled) {
+      return res.status(400).json({ message: "MFA è già disabilitato." });
+    }
+
+    // Disattiva MFA rimuovendo il segreto e impostando mfaEnabled su false
+    user.mfaSecret = "";
+    user.mfaEnabled = false;
+
+    await user.save();
+
+    // Ritorna un messaggio di successo
+    res.json({ message: "MFA disabilitato con successo." });
+  } catch (error) {
+    console.error("Errore nella disattivazione dell'MFA:", error);
+    res.status(500).json({ message: "Errore del server." });
   }
 });
 

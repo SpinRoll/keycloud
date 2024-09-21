@@ -1,4 +1,3 @@
-// src/components/SignIn.js
 import React, { useContext, useState } from "react";
 import { Container, Box, Typography, Link, IconButton } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
@@ -8,15 +7,22 @@ import CustomButton from "./customComponents/CustomButton";
 import { useTheme } from "@mui/material/styles";
 import { pxToRem } from "../utils/pxToRem";
 import { ThemeContext } from "../context/ThemeContext";
-import { useNavigate } from "react-router-dom"; // Importa useNavigate
-import axios from "axios"; // Importa axios per le richieste HTTP
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function SignIn() {
   const theme = useTheme();
   const { toggleTheme, mode } = useContext(ThemeContext);
-  const navigate = useNavigate(); // Usa useNavigate per la navigazione
-  const [formData, setFormData] = useState({ email: "", password: "" }); // Stato per i dati del modulo
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    mfaToken: "", // Aggiungi un campo per il codice MFA
+  });
+
   const [error, setError] = useState(""); // Stato per gestire gli errori
+  const [mfaRequired, setMfaRequired] = useState(false); // Stato per gestire se l'MFA è richiesto
 
   // Funzione per gestire i cambiamenti degli input
   const handleInputChange = (e) => {
@@ -33,17 +39,20 @@ function SignIn() {
         "http://localhost:5000/api/auth/signin",
         formData
       );
-      // console.log("User logged in:", response.data);
-      // Memorizza il token JWT nel localStorage o sessionStorage
-      localStorage.setItem("token", response.data.accessToken); // Cambiato da `token` a `accessToken`
-      localStorage.setItem("refreshToken", response.data.refreshToken); // Salva anche il refresh token
+
+      // Se MFA è richiesto, chiedi il codice MFA
+      if (response.data.mfaRequired) {
+        setMfaRequired(true);
+        return; // Fermiamo il flusso per chiedere il codice MFA
+      }
+
+      // Memorizza i token JWT nel localStorage
+      localStorage.setItem("token", response.data.accessToken);
+      localStorage.setItem("refreshToken", response.data.refreshToken);
+      localStorage.setItem("userId", response.data.result._id);
 
       navigate("/dashboard"); // Naviga alla Dashboard dopo il successo
     } catch (error) {
-      console.error(
-        "Errore durante il login:",
-        error.response ? error.response.data : error.message
-      );
       setError(
         error.response ? error.response.data.message : "Errore di accesso"
       );
@@ -96,6 +105,17 @@ function SignIn() {
             type="password"
             onChange={handleInputChange}
           />
+
+          {/* Mostra il campo MFA solo se richiesto */}
+          {mfaRequired && (
+            <CustomTextField
+              label="Codice MFA"
+              name="mfaToken"
+              type="text"
+              onChange={handleInputChange}
+            />
+          )}
+
           {/* Recover email */}
           <Typography
             component="p"
@@ -113,11 +133,13 @@ function SignIn() {
               Recupera password
             </Link>
           </Typography>
+
           {error && (
             <Typography color="error" variant="body2" sx={{ mt: 2 }}>
               {error}
             </Typography>
           )}
+
           <Box
             sx={{
               display: "flex",

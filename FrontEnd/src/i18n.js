@@ -86,6 +86,8 @@ i18n
           new_password: "New Password",
           reset_link_expired: "Reset link expired. Please request a new one.",
           logout: "Logout",
+          current_password: "Current Password",
+          new_password_again: "Repeat New Password",
         },
       },
       it: {
@@ -166,6 +168,8 @@ i18n
           reset_link_expired:
             "Link di reset scaduto. Si prega di richiederne uno nuovo.",
           logout: "Logout",
+          current_password: "Password Corrente",
+          new_password_again: "Ripeti Nuova Password",
         },
       },
     },

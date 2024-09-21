@@ -40,11 +40,15 @@ const Apartments = () => {
           return;
         }
 
-        const response = await axios.get("http://localhost:5000/api/apartments", { // Assicurati che il percorso dell'API sia corretto
-          headers: {
-            Authorization: `Bearer ${token}`, // Aggiungi il token JWT nell'intestazione
-          },
-        });
+        const response = await axios.get(
+          "http://localhost:5000/api/apartments",
+          {
+            // Assicurati che il percorso dell'API sia corretto
+            headers: {
+              Authorization: `Bearer ${token}`, // Aggiungi il token JWT nell'intestazione
+            },
+          }
+        );
 
         const updatedApartments = response.data.map((apartment) => {
           const { status, color } = getApartmentStatusAndColor(apartment);
@@ -65,11 +69,13 @@ const Apartments = () => {
     };
 
     fetchApartments();
+    // eslint-disable-next-line
   }, []);
 
   // Funzione per determinare lo stato e il colore dell'appartamento
   const getApartmentStatusAndColor = (apartment) => {
     const today = dayjs(); // Data di oggi
+    // eslint-disable-next-line
     const dataInizio = dayjs(apartment.data_inizio);
     const dataFine = dayjs(apartment.data_fine);
     let status = "inactive"; // Stato predefinito
@@ -147,9 +153,12 @@ const Apartments = () => {
         {apartments.length === 0 ? (
           <Typography
             variant="body1"
-            sx={{ marginTop: pxToRem(16), color: theme.palette.text.secondary }}
-          >
-            {t("no_apartments_message")} {/* Messaggio che informa l'utente che non ci sono appartamenti */}
+            sx={{
+              marginTop: pxToRem(16),
+              color: theme.palette.text.secondary,
+            }}>
+            {t("no_apartments_message")}{" "}
+            {/* Messaggio che informa l'utente che non ci sono appartamenti */}
           </Typography>
         ) : (
           <List sx={{ width: "100%" }}>
@@ -165,14 +174,23 @@ const Apartments = () => {
                 }}>
                 {/* Mostra il nome e il periodo dell'appartamento */}
                 <ListItemText
-                  primary={<Typography variant="h6">{apartment.nome}</Typography>}
+                  primary={
+                    <Typography variant="h6">{apartment.nome}</Typography>
+                  }
                   secondary={
                     <Typography
                       variant="body2"
                       sx={{ color: theme.palette.text.secondary }}>
                       Periodo:{" "}
-                      {`${apartment.data_inizio ? new Date(apartment.data_inizio).toLocaleDateString() : "N/A"} - ${apartment.data_fine ? new Date(apartment.data_fine).toLocaleDateString() : "N/A"
-                        }`}
+                      {`${
+                        apartment.data_inizio
+                          ? new Date(apartment.data_inizio).toLocaleDateString()
+                          : "N/A"
+                      } - ${
+                        apartment.data_fine
+                          ? new Date(apartment.data_fine).toLocaleDateString()
+                          : "N/A"
+                      }`}
                     </Typography>
                   }
                 />
@@ -184,7 +202,9 @@ const Apartments = () => {
                     fontWeight: "bold",
                     marginRight: pxToRem(10),
                   }}>
-                  {apartment.status ? apartment.status.toUpperCase() : "Inactive"}
+                  {apartment.status
+                    ? apartment.status.toUpperCase()
+                    : "Inactive"}
                 </Typography>
                 <ListItemSecondaryAction>
                   <IconButton>
@@ -225,7 +245,9 @@ const Apartments = () => {
         onApartmentUpdated={(updatedApartment) => {
           setApartments((prevApartments) =>
             prevApartments.map((apartment) =>
-              apartment._id === updatedApartment._id ? updatedApartment : apartment
+              apartment._id === updatedApartment._id
+                ? updatedApartment
+                : apartment
             )
           );
         }} // Callback per aggiornare l'appartamento

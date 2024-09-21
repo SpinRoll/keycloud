@@ -17,6 +17,7 @@ import UserPage from "./components/user/UserPage";
 import VerifyEmail from "./components/VerifyEmail";
 import RecoverEmail from "./components/RecoverEmail";
 import ResetPassword from "./components/ResetPassword";
+import TwoFactorSetup from "./components/user/TwoFactorSetup";
 import routes from "./routes"; // Importo l'oggetto routes per definire le route
 
 function App() {
@@ -56,7 +57,8 @@ function App() {
           <Route path={routes.RECOVER_EMAIL} element={<RecoverEmail />} />
           {/* Percorso reset password */}
           <Route path={routes.RESET_PASSWORD} element={<ResetPassword />} />
-
+          {/* Percorso per il setup dell'MFA */}
+          <Route path={routes.MFA_SETUP} element={<TwoFactorSetup />} />
         </Routes>
       </div>
     </Router>

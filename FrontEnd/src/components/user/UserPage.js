@@ -4,9 +4,10 @@ import { Box, Container, List, ListItem, ListItemText } from "@mui/material";
 import { pxToRem } from "../../utils/pxToRem";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
-import ProfileSection from "./ProfileSection"; // Importa i componenti delle sezioni
+import ProfileSection from "./ProfileSection";
 import BillingSection from "./BillingSection";
 import PasswordSection from "./PasswordSection";
+import TwoFactorSetup from "./TwoFactorSetup.js";
 
 const UserPage = () => {
   const theme = useTheme();
@@ -27,6 +28,8 @@ const UserPage = () => {
         return <BillingSection />;
       case "password":
         return <PasswordSection />;
+      case "twofactorsetup":
+        return <TwoFactorSetup />;
       default:
         return <ProfileSection />;
     }
@@ -45,42 +48,44 @@ const UserPage = () => {
             padding: pxToRem(0),
           }}>
           <List component="nav">
-            {["profile", "billing", "password"].map((section) => (
-              <ListItem
-                key={section}
-                sx={{
-                  cursor: "pointer",
-                  padding: pxToRem(16),
-                  backgroundColor:
-                    selectedSection === section
-                      ? theme.colors.secondary
-                      : "inherit",
-                  color:
-                    selectedSection === section
-                      ? theme.palette.background.default
-                      : theme.palette.text.primary,
-                  transition: "all 0.4s ease",
-                  boxShadow:
-                    selectedSection === section
-                      ? `0 0 20px ${theme.colors.secondary}`
-                      : "none",
-                  "&:hover": {
+            {["profile", "billing", "password", "twofactorsetup"].map(
+              (section) => (
+                <ListItem
+                  key={section}
+                  sx={{
+                    cursor: "pointer",
+                    padding: pxToRem(16),
                     backgroundColor:
                       selectedSection === section
                         ? theme.colors.secondary
-                        : "transparent", // Rimuove il grigio e rende l'hover trasparente
-                    transform:
-                      selectedSection === section ? "none" : "scale(1.05)",
-                    // boxShadow:
-                    //   selectedSection === section
-                    //     ? `0 0 20px ${theme.colors.secondary}`
-                    //     : `0 0 10px ${theme.colors.secondary}`, // Aggiunge un'ombra più leggera
-                  },
-                }}
-                onClick={() => handleSectionChange(section)}>
-                <ListItemText primary={t(section)} />
-              </ListItem>
-            ))}
+                        : "inherit",
+                    color:
+                      selectedSection === section
+                        ? theme.palette.background.default
+                        : theme.palette.text.primary,
+                    transition: "all 0.4s ease",
+                    boxShadow:
+                      selectedSection === section
+                        ? `0 0 20px ${theme.colors.secondary}`
+                        : "none",
+                    "&:hover": {
+                      backgroundColor:
+                        selectedSection === section
+                          ? theme.colors.secondary
+                          : "transparent", // Rimuove il grigio e rende l'hover trasparente
+                      transform:
+                        selectedSection === section ? "none" : "scale(1.05)",
+                      // boxShadow:
+                      //   selectedSection === section
+                      //     ? `0 0 20px ${theme.colors.secondary}`
+                      //     : `0 0 10px ${theme.colors.secondary}`, // Aggiunge un'ombra più leggera
+                    },
+                  }}
+                  onClick={() => handleSectionChange(section)}>
+                  <ListItemText primary={t(section)} />
+                </ListItem>
+              )
+            )}
           </List>
         </Box>
 

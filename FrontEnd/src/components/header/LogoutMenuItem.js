@@ -20,7 +20,8 @@ function LogoutMenuItem({ onClose }) {
   const handleLogout = () => {
     // Rimuovi il token e le informazioni dell'utente dal localStorage
     localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("refreshToken");
 
     // Chiudi il menu prima di reindirizzare
     onClose();

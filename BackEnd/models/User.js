@@ -9,13 +9,13 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      match: [/.+@.+\..+/, "Formato email non valido"] // Validazione per il formato email
+      match: [/.+@.+\..+/, "Formato email non valido"], // Validazione per il formato email
     },
     email_temp: {
       type: String,
       unique: true,
       sparse: true, // Campo unico ma permette valori nulli o mancanti
-      match: [/.+@.+\..+/, "Formato email non valido"] // Validazione per il formato email
+      match: [/.+@.+\..+/, "Formato email non valido"], // Validazione per il formato email
     },
     password: { type: String, required: true },
     telefono: { type: String },
@@ -26,6 +26,8 @@ const userSchema = new mongoose.Schema(
     },
     abbonamento_inizio: { type: Date },
     refreshToken: { type: String },
+    mfaEnabled: { type: Boolean, default: false }, // Se MFA è abilitato o meno
+    mfaSecret: { type: String }, // Chiave segreta per l'autenticazione a due fattori
   },
   {
     timestamps: true, // Aggiunge automaticamente campi createdAt e updatedAt
