@@ -10,11 +10,13 @@ import { pxToRem } from "../utils/pxToRem";
 import { ThemeContext } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios"; // Importa axios
+import { useTranslation } from "react-i18next"; // Hook per le traduzioni
 
 function SignUp() {
   const theme = useTheme();
   const { toggleTheme, mode } = useContext(ThemeContext);
   const navigate = useNavigate();
+  const { t } = useTranslation(); // Uso delle traduzioni
 
   const [formData, setFormData] = useState({
     nome: "",
@@ -66,29 +68,28 @@ function SignUp() {
           component="h2"
           variant="h6"
           sx={{ color: theme.palette.text.primary }}>
-          Sign up
+          {t("signup_title")}
         </Typography>
 
         <Box component="form" noValidate onSubmit={handleSignUp}>
           <CustomTextField
-            label="Name"
+            label={t("name_label")}
             name="nome"
             autoFocus
             onChange={handleInputChange}
           />
           <CustomTextField
-            label="Surname"
+            label={t("surname_label")}
             name="cognome"
-            autoFocus
             onChange={handleInputChange}
           />
           <CustomTextField
-            label="Email"
+            label={t("email_label")}
             name="email"
             onChange={handleInputChange}
           />
           <CustomTextField
-            label="Password"
+            label={t("password_label")}
             name="password"
             type="password"
             onChange={handleInputChange}
@@ -96,7 +97,7 @@ function SignUp() {
           <Box
             sx={{ display: "flex", flexDirection: "column", gap: pxToRem(16) }}>
             <CustomButton sx={{ mt: pxToRem(16) }} type="submit">
-              Sign up
+              {t("signup_button")}
             </CustomButton>
           </Box>
           <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>
@@ -106,12 +107,12 @@ function SignUp() {
             component="p"
             variant="body2"
             sx={{ color: theme.palette.text.primary }}>
-            Already have an account?{" "}
+            {t("already_have_account")}{" "}
             <Link
               variant="body2"
               sx={{ color: theme.palette.primary.main, cursor: "pointer" }}
               onClick={handleSignInClick}>
-              Sign in
+              {t("signin_link")}
             </Link>
           </Typography>
         </Box>

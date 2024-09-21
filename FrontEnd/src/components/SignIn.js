@@ -1,3 +1,4 @@
+// src/components/SignIn.js
 import React, { useContext, useState } from "react";
 import { Container, Box, Typography, Link, IconButton } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
@@ -9,11 +10,13 @@ import { pxToRem } from "../utils/pxToRem";
 import { ThemeContext } from "../context/ThemeContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useTranslation } from "react-i18next"; // Hook per le traduzioni
 
 function SignIn() {
   const theme = useTheme();
   const { toggleTheme, mode } = useContext(ThemeContext);
   const navigate = useNavigate();
+  const { t } = useTranslation(); // Uso delle traduzioni
 
   const [formData, setFormData] = useState({
     email: "",
@@ -54,7 +57,7 @@ function SignIn() {
       navigate("/dashboard"); // Naviga alla Dashboard dopo il successo
     } catch (error) {
       setError(
-        error.response ? error.response.data.message : "Errore di accesso"
+        error.response ? error.response.data.message : t("signin_error")
       );
     }
   };
@@ -88,19 +91,19 @@ function SignIn() {
             color: theme.palette.text.primary,
             textAlign: "center",
           }}>
-          Sign in
+          {t("signin_title")}
         </Typography>
 
         {/* Form */}
         <Box component="form" noValidate onSubmit={handleSignIn}>
           <CustomTextField
-            label="Email"
+            label={t("email_label")}
             name="email"
             autoFocus
             onChange={handleInputChange}
           />
           <CustomTextField
-            label="Password"
+            label={t("password_label")}
             name="password"
             type="password"
             onChange={handleInputChange}
@@ -109,7 +112,7 @@ function SignIn() {
           {/* Mostra il campo MFA solo se richiesto */}
           {mfaRequired && (
             <CustomTextField
-              label="Codice MFA"
+              label={t("mfa_code_label")}
               name="mfaToken"
               type="text"
               onChange={handleInputChange}
@@ -125,12 +128,12 @@ function SignIn() {
               mt: pxToRem(8),
               mb: pxToRem(16),
             }}>
-            Hai dimenticato la password?{" "}
+            {t("forgot_password")}{" "}
             <Link
               variant="body2"
               sx={{ color: theme.palette.primary.main, cursor: "pointer" }}
               href="/recover-email">
-              Recupera password
+              {t("recover_password")}
             </Link>
           </Typography>
 
@@ -147,7 +150,7 @@ function SignIn() {
               gap: pxToRem(16),
               mt: pxToRem(8),
             }}>
-            <CustomButton type="submit">Sign in</CustomButton>
+            <CustomButton type="submit">{t("signin_button")}</CustomButton>
           </Box>
 
           <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>
@@ -160,13 +163,12 @@ function SignIn() {
             sx={{
               color: theme.palette.text.primary,
             }}>
-            Don't have an account?{" "}
+            {t("no_account")}{" "}
             <Link
               variant="body2"
               sx={{ color: theme.colors.primary, cursor: "pointer" }}
-              onClick={handleSignUpClick} // Usa handleSignUpClick per navigare
-            >
-              Sign up
+              onClick={handleSignUpClick}>
+              {t("signup_link")}
             </Link>
           </Typography>
         </Box>

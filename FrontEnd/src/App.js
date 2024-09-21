@@ -31,7 +31,7 @@ function App() {
         {/* Definisco le rotte per l'applicazione */}
         <Routes>
           {/* Ridirige alla pagina di registrazione come percorso iniziale */}
-          <Route path="/" element={<Navigate to={routes.SIGN_UP} />} />
+          <Route path="/" element={<Navigate to={routes.SIGN_IN} />} />
           {/* Percorso per l'autenticazione */}
           <Route path={routes.SIGN_IN} element={<SignIn />} />
 
