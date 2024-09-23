@@ -1,0 +1,8 @@
+# railway.toml
+[build]
+  service = "backend"
+
+[services.backend]
+  build = "cd BackEnd && npm install"
+  start = "cd BackEnd && npm start"
+  installCommand = "npm install"
