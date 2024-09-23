@@ -1,8 +1,22 @@
 [phases.setup]
-commands = ["cd BackEnd", "npm install"]
+commands = [
+  "apt-get update",
+  "apt-get install -y curl",
+  "curl -fsSL https://deb.nodesource.com/setup_16.x | bash -",
+  "apt-get install -y nodejs",
+  "cd BackEnd",
+  "npm install"
+]
 
 [phases.build]
-commands = ["cd BackEnd", "npm run build"]
+commands = [
+  "cd BackEnd",
+  "npm run build"
+]
 
 [phases.deploy]
-commands = ["cd BackEnd", "npm start"]
+commands = [
+  "cd BackEnd",
+  "npm start"
+]
+w
