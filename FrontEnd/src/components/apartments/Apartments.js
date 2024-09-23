@@ -1,5 +1,6 @@
 // src/components/apartments/Apartments.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Container,
   Box,
@@ -18,45 +19,91 @@ import AddIcon from "@mui/icons-material/Add";
 import EditApartmentModal from "../modals/EditApartmentModal"; // Importa il componente modale
 import AddApartmentModal from "../modals/AddApartmentModal"; // Importa il componente modale
 import { useTranslation } from "react-i18next";
-
-// Dichiaro un array di oggetti per rappresentare gli appartamenti con alcuni dati di esempio
-const initialApartments = [
-  {
-    id: 1,
-    name: "Appartamento A",
-    location: "Roma",
-    period: "7gg da 5 lug",
-    status: "expired",
-  },
-  {
-    id: 2,
-    name: "Appartamento B",
-    location: "Milano",
-    period: "14 al 18 sett.",
-    status: "active",
-  },
-  {
-    id: 3,
-    name: "Appartamento C",
-    location: "Firenze",
-    period: "-",
-    status: "inactive",
-  },
-];
+import dayjs from "dayjs"; // Importa dayjs per la gestione delle date
 
 const Apartments = () => {
   const theme = useTheme(); // Uso il tema corrente di Material-UI per ottenere i colori
   const { t } = useTranslation(); // Uso il hook useTranslation per ottenere la funzione di traduzione
-  const [apartments, setApartments] = useState(initialApartments); // Stato per la lista degli appartamenti
+  const [apartments, setApartments] = useState([]); // Stato per la lista degli appartamenti
   const [openAdd, setOpenAdd] = useState(false); // Stato per gestire l'apertura della modale di aggiunta
   const [openEdit, setOpenEdit] = useState(false); // Stato per gestire l'apertura della modale di modifica
   const [selectedApartment, setSelectedApartment] = useState(null); // Stato per l'appartamento selezionato da modificare
+
+  // Funzione per ottenere gli appartamenti dell'utente autenticato
+  useEffect(() => {
+    const fetchApartments = async () => {
+      try {
+        const token = localStorage.getItem("token"); // Assicurati che il token JWT sia presente in localStorage
+
+        if (!token) {
+          console.error("Token non trovato! Effettua il login.");
+          return;
+        }
+
+        const response = await axios.get(
+          "http://localhost:5000/api/apartments",
+          {
+            // Assicurati che il percorso dell'API sia corretto
+            headers: {
+              Authorization: `Bearer ${token}`, // Aggiungi il token JWT nell'intestazione
+            },
+          }
+        );
+
+        const updatedApartments = response.data.map((apartment) => {
+          const { status, color } = getApartmentStatusAndColor(apartment);
+          return {
+            ...apartment,
+            status,
+            color,
+          };
+        });
+
+        setApartments(updatedApartments); // Imposta la lista degli appartamenti
+      } catch (error) {
+        console.error(
+          "Errore nel recupero degli appartamenti:",
+          error.response ? error.response.data : error.message
+        );
+      }
+    };
+
+    fetchApartments();
+    // eslint-disable-next-line
+  }, []);
+
+  // Funzione per determinare lo stato e il colore dell'appartamento
+  const getApartmentStatusAndColor = (apartment) => {
+    const today = dayjs(); // Data di oggi
+    // eslint-disable-next-line
+    const dataInizio = dayjs(apartment.data_inizio);
+    const dataFine = dayjs(apartment.data_fine);
+    let status = "inactive"; // Stato predefinito
+
+    if (!apartment.data_inizio || !apartment.data_fine) {
+      status = "inactive"; // Se non ci sono date, lo stato è "inactive"
+    } else if (dataFine.isBefore(today)) {
+      status = "expired"; // Se la data di fine è minore di oggi, è "expired"
+    } else {
+      status = "active"; // Altrimenti è "active"
+    }
+
+    const colors = {
+      active: theme.palette.success.main,
+      expired: theme.palette.error.main,
+      inactive: theme.palette.warning.main,
+    };
+
+    const color = colors[status] || theme.palette.text.primary; // Colore corrispondente allo stato
+
+    return { status, color };
+  };
 
   // Funzione per gestire la generazione del link di un appartamento
   const handleLinkGenerated = (apartmentId, newLink) => {
     setApartments((prevApartments) =>
       prevApartments.map((apartment) =>
-        apartment.id === apartmentId
+        apartment._id === apartmentId
           ? { ...apartment, generatedLink: newLink }
           : apartment
       )
@@ -78,18 +125,9 @@ const Apartments = () => {
 
   // Funzione per aggiungere un nuovo appartamento alla lista
   const handleAddApartment = (newApartment) => {
+    newApartment.status = "inactive"; // Stato predefinito per un nuovo appartamento
     setApartments((prevApartments) => [...prevApartments, newApartment]); // Aggiungi il nuovo appartamento alla lista esistente
     handleClose(); // Chiudi la modale dopo aver aggiunto l'appartamento
-  };
-
-  // Funzione per ottenere il colore dello stato dell'appartamento in base al tema
-  const getStatusColor = (status) => {
-    const colors = {
-      active: theme.palette.success.main,
-      expired: theme.palette.error.main,
-      inactive: theme.palette.warning.main,
-    };
-    return colors[status] || theme.palette.text.primary; // Restituisco il colore corrispondente o il colore di testo di default
   };
 
   return (
@@ -110,46 +148,73 @@ const Apartments = () => {
           sx={{ marginBottom: pxToRem(24) }}>
           {t("apartments")}
         </Typography>
-        <List sx={{ width: "100%" }}>
-          {apartments.map((apartment) => (
-            <ListItem
-              key={apartment.id}
-              button
-              onClick={() => handleOpenModal("edit", apartment)} // Apre la modale di modifica per l'appartamento selezionato
-              sx={{
-                borderBottom: `1px solid ${theme.palette.divider}`,
-                display: "flex",
-                alignItems: "center",
-              }}>
-              {/* Mostra il nome e il periodo dell'appartamento */}
-              <ListItemText
-                primary={<Typography variant="h6">{apartment.name}</Typography>}
-                secondary={
-                  <Typography
-                    variant="body2"
-                    sx={{ color: theme.palette.text.secondary }}>
-                    Periodo: {apartment.period}
-                  </Typography>
-                }
-              />
-              {/* Mostra lo stato dell'appartamento con il colore corrispondente */}
-              <Typography
-                variant="body2"
+
+        {/* Controllo se ci sono appartamenti disponibili */}
+        {apartments.length === 0 ? (
+          <Typography
+            variant="body1"
+            sx={{
+              marginTop: pxToRem(16),
+              color: theme.palette.text.secondary,
+            }}>
+            {t("no_apartments_message")}{" "}
+            {/* Messaggio che informa l'utente che non ci sono appartamenti */}
+          </Typography>
+        ) : (
+          <List sx={{ width: "100%" }}>
+            {apartments.map((apartment) => (
+              <ListItem
+                key={apartment._id}
+                button
+                onClick={() => handleOpenModal("edit", apartment)} // Apre la modale di modifica per l'appartamento selezionato
                 sx={{
-                  color: getStatusColor(apartment.status),
-                  fontWeight: "bold",
-                  marginRight: pxToRem(10),
+                  borderBottom: `1px solid ${theme.palette.divider}`,
+                  display: "flex",
+                  alignItems: "center",
                 }}>
-                {apartment.status.toUpperCase()}
-              </Typography>
-              <ListItemSecondaryAction>
-                <IconButton>
-                  <ArrowForwardIosIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
-        </List>
+                {/* Mostra il nome e il periodo dell'appartamento */}
+                <ListItemText
+                  primary={
+                    <Typography variant="h6">{apartment.nome}</Typography>
+                  }
+                  secondary={
+                    <Typography
+                      variant="body2"
+                      sx={{ color: theme.palette.text.secondary }}>
+                      Periodo:{" "}
+                      {`${
+                        apartment.data_inizio
+                          ? new Date(apartment.data_inizio).toLocaleDateString()
+                          : "N/A"
+                      } - ${
+                        apartment.data_fine
+                          ? new Date(apartment.data_fine).toLocaleDateString()
+                          : "N/A"
+                      }`}
+                    </Typography>
+                  }
+                />
+                {/* Mostra lo stato dell'appartamento con il colore corrispondente */}
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: apartment.color,
+                    fontWeight: "bold",
+                    marginRight: pxToRem(10),
+                  }}>
+                  {apartment.status
+                    ? apartment.status.toUpperCase()
+                    : "Inactive"}
+                </Typography>
+                <ListItemSecondaryAction>
+                  <IconButton>
+                    <ArrowForwardIosIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
+          </List>
+        )}
       </Box>
       {/* Pulsante per aggiungere un nuovo appartamento */}
       <Fab
@@ -177,6 +242,15 @@ const Apartments = () => {
         onClose={handleClose}
         apartment={selectedApartment}
         onLinkGenerated={handleLinkGenerated}
+        onApartmentUpdated={(updatedApartment) => {
+          setApartments((prevApartments) =>
+            prevApartments.map((apartment) =>
+              apartment._id === updatedApartment._id
+                ? updatedApartment
+                : apartment
+            )
+          );
+        }} // Callback per aggiornare l'appartamento
       />
     </Container>
   );

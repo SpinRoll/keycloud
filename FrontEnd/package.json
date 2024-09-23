@@ -12,10 +12,12 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.7.7",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.13",
     "i18next": "^23.14.0",
     "i18next-http-backend": "^2.6.1",
+    "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-country-flag": "^3.1.0",
     "react-dom": "^18.3.1",
@@ -48,5 +50,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "proxy": "http://localhost:5000"
 }

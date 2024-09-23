@@ -1,32 +1,52 @@
 // src/components/logo/Logo.js
-import React from "react"; // Importo React per creare componenti
-import { Box } from "@mui/material"; // Importo Box da Material-UI per gestire il layout e gli stili del logo
-import useMediaQuery from "@mui/material/useMediaQuery"; // Importo useMediaQuery per gestire le query di media per il responsive design
-import { useTheme } from "@mui/material/styles"; // Importo useTheme per accedere al tema corrente
-import { Link } from "react-router-dom"; // Importo Link da react-router-dom per gestire la navigazione interna
-import logoDesktop from "../../assets/logo_desktop.png"; // Importo l'immagine del logo per la visualizzazione desktop
-import logoMobile from "../../assets/logo_mobile.png"; // Importo l'immagine del logo per la visualizzazione mobile
+import React from "react";
+import { Box } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/material/styles";
+import { Link, useLocation } from "react-router-dom"; // Importa useLocation per ottenere l'URL corrente
+import logoDesktop from "../../assets/logo_desktop.png";
+import logoMobile from "../../assets/logo_mobile.png";
 
 function Logo() {
-  const theme = useTheme(); // Uso il tema corrente per applicare le regole di stile e breakpoints
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm")); // Definisco una query per verificare se la visualizzazione è mobile
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const location = useLocation(); // Ottieni l'URL corrente
+
+  // Definisci le rotte su cui il logo non deve essere cliccabile
+  const isAuthPage =
+    location.pathname === "/sign-in" || location.pathname === "/sign-up";
 
   return (
-    // Uso Link per navigare alla home page al clic sul logo
-    <Link to="/" style={{ textDecoration: "none" }}>
-      {/* Componente Box di Material-UI per l'immagine del logo */}
-      <Box
-        component="img" // Specifico che il Box è un'immagine
-        src={isMobile ? logoMobile : logoDesktop} // Utilizzo il logo mobile o desktop in base alla query di media
-        alt="KeyCloud Logo" // Alt text per l'accessibilità
-        sx={{
-          maxWidth: isMobile ? "70px" : "70px", // Imposto la dimensione massima del logo per mobile e desktop
-          width: "100%", // Imposto la larghezza al 100% per rendere il logo reattivo
-          cursor: "pointer", // Aggiungo un cursore a puntatore per indicare che il logo è cliccabile
-        }}
-      />
-    </Link>
+    // Se siamo su una pagina di autenticazione, il logo non è cliccabile
+    <>
+      {isAuthPage ? (
+        // Solo l'immagine senza il Link, non è cliccabile
+        <Box
+          component="img"
+          src={isMobile ? logoMobile : logoDesktop}
+          alt="KeyCloud Logo"
+          sx={{
+            maxWidth: isMobile ? "70px" : "70px",
+            width: "100%",
+          }}
+        />
+      ) : (
+        // Se non siamo su una pagina di autenticazione, il logo è cliccabile
+        <Link to="/dashboard" style={{ textDecoration: "none" }}>
+          <Box
+            component="img"
+            src={isMobile ? logoMobile : logoDesktop}
+            alt="KeyCloud Logo"
+            sx={{
+              maxWidth: isMobile ? "70px" : "70px",
+              width: "100%",
+              cursor: "pointer", // Aggiungi il cursore solo se cliccabile
+            }}
+          />
+        </Link>
+      )}
+    </>
   );
 }
 
-export default Logo; // Esporto il componente Logo per l'uso in altre parti dell'applicazione
+export default Logo;

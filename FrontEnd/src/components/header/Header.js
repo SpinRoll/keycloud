@@ -15,17 +15,16 @@ import Logo from "../logo/Logo";
 import ThemeMenuItem from "./ThemeMenuItem";
 import UserProfileMenuItem from "./UserProfileMenuItem";
 import LanguageMenuItem from "./LanguageMenuItem";
+import LogoutMenuItem from "./LogoutMenuItem"; // Aggiungi il componente LogoutMenuItem
 
 function Header() {
   const [anchorEl, setAnchorEl] = useState(null);
-  const theme = useTheme(); // Usa il tema corrente
+  const theme = useTheme();
 
-  // Funzione per aprire il menu generale
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
 
-  // Funzione per chiudere il menu generale
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
@@ -44,7 +43,6 @@ function Header() {
           backgroundColor: theme.colors.primary,
           color: theme.palette.text.primary,
         }}>
-        {/* Logo a sinistra */}
         <Box
           sx={{
             flexGrow: 1,
@@ -52,20 +50,10 @@ function Header() {
             alignItems: "center",
             justifyContent: "space-between",
           }}>
-          <Box
-            sx={{
-              flex: 1,
-              display: "flex",
-              alignItems: "center",
-            }}>
+          <Box sx={{ flex: 1, display: "flex", alignItems: "center" }}>
             <Logo />
           </Box>
-          <Box
-            sx={{
-              flex: 1,
-              display: "flex",
-              justifyContent: "center",
-            }}>
+          <Box sx={{ flex: 1, display: "flex", justifyContent: "center" }}>
             <Typography
               variant="h6"
               sx={{
@@ -81,7 +69,6 @@ function Header() {
               justifyContent: "flex-end",
               alignItems: "center",
             }}>
-            {/* Icona per il menu generale */}
             <IconButton
               aria-label="menu"
               onClick={handleMenuOpen}
@@ -91,7 +78,6 @@ function Header() {
           </Box>
         </Box>
 
-        {/* Menu a discesa per le altre opzioni */}
         <Menu
           sx={{
             top: pxToRem(15),
@@ -102,6 +88,8 @@ function Header() {
           <ThemeMenuItem onClose={handleMenuClose} />
           <UserProfileMenuItem onClose={handleMenuClose} />
           <LanguageMenuItem onClose={handleMenuClose} />
+          <LogoutMenuItem onClose={handleMenuClose} />{" "}
+          {/* Aggiungi l'opzione Logout */}
         </Menu>
       </Toolbar>
     </AppBar>
