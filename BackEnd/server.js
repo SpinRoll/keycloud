@@ -22,7 +22,7 @@ const mongoURI =
 // Connessione a MongoDB
 mongoose
   .connect(mongoURI)
-  .then(() => console.log("MongoDB connesso"))
+  .then(() => console.log(`MongoDB connesso su ${mongoURI}`))
   .catch((err) =>
     console.error("Errore di connessione a MongoDB:", err.message)
   );
