@@ -4,18 +4,15 @@ commands = [
   "apt-get install -y curl",
   "curl -fsSL https://deb.nodesource.com/setup_16.x | bash -",
   "apt-get install -y nodejs",
-  "cd BackEnd",
-  "npm install"
+  "cd BackEnd && npm install"
 ]
 
 [phases.build]
 commands = [
-  "cd BackEnd",
-  "npm run build"
+  "cd FrontEnd && npm install && npm run build"
 ]
 
 [phases.deploy]
 commands = [
-  "cd BackEnd",
-  "npm start"
+  "cd BackEnd && npm start"
 ]
