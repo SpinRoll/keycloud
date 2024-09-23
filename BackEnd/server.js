@@ -12,9 +12,15 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(bodyParser.json());
 
+// Controlla l'ambiente e usa l'URI corretto
+const mongoURI =
+  process.env.NODE_ENV === "production"
+    ? process.env.MONGODB_URI_PROD
+    : process.env.MONGODB_URI_DEV;
+
 // Connessione a MongoDB
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(mongoURI)
   .then(() => console.log("MongoDB connesso"))
   .catch((err) =>
     console.error("Errore di connessione a MongoDB:", err.message)

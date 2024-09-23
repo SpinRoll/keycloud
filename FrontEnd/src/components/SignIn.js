@@ -38,10 +38,7 @@ function SignIn() {
     setError(""); // Resetta l'errore prima di inviare la richiesta
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/signin",
-        formData
-      );
+      const response = await axios.post("/api/auth/signin", formData);
 
       // Se MFA è richiesto, chiedi il codice MFA
       if (response.data.mfaRequired) {

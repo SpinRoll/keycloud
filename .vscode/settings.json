@@ -1,7 +1,0 @@
-{
-  "files.autoSave": "afterDelay",
-  "editor.tabSize": 2,
-  "editor.fontFamily": "Fira Code",
-  "json.schemas": [],
-  "terminal.integrated.defaultProfile.windows": "Git Bash"
-}
