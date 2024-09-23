@@ -1,0 +1,8 @@
+[phases.setup]
+commands = ["cd BackEnd", "npm install"]
+
+[phases.build]
+commands = ["cd BackEnd", "npm run build"]
+
+[phases.deploy]
+commands = ["cd BackEnd", "npm start"]
