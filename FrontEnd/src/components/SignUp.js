@@ -37,10 +37,7 @@ function SignUp() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/auth/signup",
-        formData
-      );
+      const response = await axios.post("/api/auth/signup", formData);
       console.log("User registered:", response.data);
       navigate("/dashboard"); // Naviga alla Dashboard dopo il successo
     } catch (error) {
