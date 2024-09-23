@@ -3,6 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const path = require("path"); // Importa il modulo path
 require("dotenv").config();
 
 const app = express();
@@ -41,6 +42,13 @@ app.use("/api/user", authRoutes); // Gestisce le rotte relative all'utente
 // Rotte degli appartamenti
 const apartmentRoutes = require("./routes/apartments");
 app.use("/api/apartments", apartmentRoutes); // Usa le rotte degli appartamenti
+
+// Serve il frontend
+app.use(express.static(path.join(__dirname, "../FrontEnd/build"))); // Serve i file statici dal build di React
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../FrontEnd/build", "index.html")); // Qualsiasi altra rotta sarà gestita dal frontend
+});
 
 // Avvia il server
 app.listen(PORT, () => {
