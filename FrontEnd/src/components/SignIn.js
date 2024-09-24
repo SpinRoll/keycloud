@@ -31,6 +31,8 @@ function SignIn() {
   const handleInputChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  // URL dell'API
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
   // Funzione per gestire la richiesta di login
   const handleSignIn = async (e) => {
@@ -38,7 +40,7 @@ function SignIn() {
     setError(""); // Resetta l'errore prima di inviare la richiesta
 
     try {
-      const response = await axios.post("/api/auth/signin", formData);
+      const response = await axios.post(`${API_URL}/api/auth/signin`, formData);
 
       // Se MFA è richiesto, chiedi il codice MFA
       if (response.data.mfaRequired) {

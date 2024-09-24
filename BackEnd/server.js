@@ -10,7 +10,17 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: [
+    "http://localhost:3000", // Permetti il frontend in locale
+    "https://keycloud-production.up.railway.app", // Permetti il frontend in produzione
+  ],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Aggiungi i metodi permessi
+  credentials: true, // Se usi cookie o autenticazione con sessioni
+};
+
+app.use(cors(corsOptions));
+
 app.use(bodyParser.json());
 
 // Controlla l'ambiente e usa l'URI corretto

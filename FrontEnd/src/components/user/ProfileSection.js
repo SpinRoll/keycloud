@@ -35,16 +35,19 @@ const ProfileSection = () => {
     setOpenDialog(false);
   };
 
+  // URL dell'API
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000"; // URL API dinamico
+
   // Funzione per ottenere i dati del profilo
   const fetchProfile = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("/api/user/profile", {
+      const response = await axios.get(`${API_URL}/api/user/profile`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // Invia il token JWT
         },
       });
-      setProfileData(response.data);
+      setProfileData(response.data); // Imposta i dati del profilo
     } catch (error) {
       console.error("Errore nel recupero del profilo:", error);
     } finally {

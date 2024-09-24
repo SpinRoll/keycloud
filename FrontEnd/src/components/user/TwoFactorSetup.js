@@ -29,6 +29,9 @@ const TwoFactorSetup = () => {
     setModalOpen(false);
   };
 
+  // URL dell'API
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000"; // URL API dinamico
+
   // Funzione per abilitare MFA
   const handleEnableMFA = async () => {
     setLoading(true);
@@ -37,11 +40,11 @@ const TwoFactorSetup = () => {
       const token = localStorage.getItem("token"); // Recupera il token JWT
 
       const response = await axios.post(
-        "http://localhost:5000/api/auth/mfa/setup",
+        `${API_URL}/api/auth/mfa/setup`, // URL API dinamico
         {},
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Invia il token JWT
           },
         }
       );

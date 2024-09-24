@@ -33,11 +33,14 @@ function SignUp() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // URL dell'API
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
   const handleSignUp = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await axios.post("/api/auth/signup", formData);
+      const response = await axios.post(`${API_URL}/api/auth/signup`, formData);
       console.log("User registered:", response.data);
       navigate("/dashboard"); // Naviga alla Dashboard dopo il successo
     } catch (error) {
