@@ -115,6 +115,7 @@ const ProfileSection = () => {
   // Usa useEffect per chiamare l'API quando il componente viene montato
   useEffect(() => {
     fetchProfile();
+    // eslint-disable-next-line
   }, []);
 
   // Funzione per ottenere le iniziali del nome e cognome

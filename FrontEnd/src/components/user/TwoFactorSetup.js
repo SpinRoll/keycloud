@@ -66,11 +66,11 @@ const TwoFactorSetup = () => {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        "http://localhost:5000/api/auth/mfa/disable", // Endpoint per disabilitare l'MFA
+        `${API_URL}/api/auth/mfa/disable`, // Endpoint per disabilitare l'MFA
         {},
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Invia il token JWT
           },
         }
       );
@@ -92,13 +92,13 @@ const TwoFactorSetup = () => {
       const token = localStorage.getItem("token"); // Recupera il token JWT
 
       const response = await axios.post(
-        "http://localhost:5000/api/auth/mfa/verify",
+        `${API_URL}/api/auth/mfa/verify`,
         {
           token: mfaCode, // Invia il codice MFA al backend
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Invia il token JWT
           },
         }
       );
@@ -133,10 +133,10 @@ const TwoFactorSetup = () => {
       const token = localStorage.getItem("token"); // Recupera il token JWT
 
       const response = await axios.get(
-        "http://localhost:5000/api/auth/mfa/status",
+        `${API_URL}/api/auth/mfa/status`, // Endpoint per ottenere lo status dell'MFA
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Invia il token JWT
           },
         }
       );
@@ -152,6 +152,7 @@ const TwoFactorSetup = () => {
   // Effettua il controllo dello stato MFA al caricamento della pagina
   useEffect(() => {
     checkMfaStatus();
+    // eslint-disable-next-line
   }, []);
 
   return (
