@@ -37,11 +37,6 @@ mongoose
     console.error("Errore di connessione a MongoDB:", err.message)
   );
 
-// Rotte di esempio
-app.get("/", (req, res) => {
-  res.send("Benvenuto nel backend!");
-});
-
 // Importa le rotte di autenticazione
 const authRoutes = require("./routes/auth");
 app.use("/api/auth", authRoutes); // Usa le rotte di autenticazione
@@ -56,6 +51,12 @@ app.use("/api/apartments", apartmentRoutes); // Usa le rotte degli appartamenti
 // Serve il frontend
 app.use(express.static(path.join(__dirname, "../FrontEnd/build"))); // Serve i file statici dal build di React
 
+// Reindirizza automaticamente alla rotta /sign-in
+app.get("/", (req, res) => {
+  res.redirect("/sign-in");
+});
+
+// Serve qualsiasi altra rotta con l'app React
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../FrontEnd/build", "index.html")); // Qualsiasi altra rotta sarà gestita dal frontend
 });
