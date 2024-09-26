@@ -125,6 +125,8 @@ i18n
           error_retrieving_profile_data: "Error retrieving profile data",
           signin_success: "Sign in successful!",
           welcome: "Welcome Back",
+          signup_success: "Sign up successful!",
+          signup_success_title: "Registration Completed",
         },
       },
       it: {
@@ -246,6 +248,8 @@ i18n
             "Errore nel recupero dei dati del profilo",
           signin_success: "Accesso effettuato con successo!",
           welcome: "Bentornata",
+          signup_success: "Effettuata con successo!",
+          signup_success_title: "Registrazione completata",
         },
       },
     },

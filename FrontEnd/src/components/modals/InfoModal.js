@@ -14,7 +14,8 @@ import { pxToRem } from "../../utils/pxToRem"; // Funzione per la conversione de
 import { useTranslation } from "react-i18next"; // Hook per le traduzioni
 import { useTheme } from "@mui/material/styles"; // Hook per il tema
 
-const InfoModal = ({ open, onClose, dialogMessage }) => {
+const InfoModal = ({ open, onClose, dialogMessage, userName, userSurname }) => {
+  // Aggiunto nome e cognome
   const { t } = useTranslation(); // Traduzioni
   const theme = useTheme(); // Tema
 
@@ -28,7 +29,18 @@ const InfoModal = ({ open, onClose, dialogMessage }) => {
             sx={{ fontSize: pxToRem(32), color: theme.palette.success.main }}
           />
         ),
-        title: t("welcome"), // Titolo Benvenuto per SignIn
+        title: `${t("welcome")}, ${userName} ${userSurname}!`, // Titolo "Benvenuto" personalizzato
+      };
+    }
+    // Se il messaggio è relativo al successo del SignUp
+    else if (dialogMessage === t("signup_success")) {
+      return {
+        icon: (
+          <InfoIcon
+            sx={{ fontSize: pxToRem(32), color: theme.palette.success.main }}
+          />
+        ),
+        title: `${t("signup_success_title")}, ${userName} ${userSurname}!`, // Titolo personalizzato per SignUp
       };
     }
     // Condizioni per messaggi di warning

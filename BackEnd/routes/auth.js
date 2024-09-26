@@ -69,7 +69,7 @@ router.post("/signup", async (req, res) => {
 
 // Endpoint di SignIn
 router.post("/signin", async (req, res) => {
-  const { email, password, mfaToken } = req.body; // Aggiungiamo il campo mfaToken nel body della richiesta
+  const { email, password, mfaToken } = req.body;
 
   try {
     // Trova l'utente nel database
@@ -117,8 +117,13 @@ router.post("/signin", async (req, res) => {
     existingUser.refreshToken = refreshToken;
     await existingUser.save();
 
-    // Restituisci i token e i dati dell'utente
-    res.status(200).json({ result: existingUser, accessToken, refreshToken });
+    // Restituisci i token e i dati dell'utente senza includere la password
+    const { nome, cognome, email, _id, mfaEnabled } = existingUser; // Destrutturazione dei campi necessari
+    res.status(200).json({
+      result: { _id, nome, cognome, email, mfaEnabled }, // Restituisci solo i campi necessari
+      accessToken,
+      refreshToken,
+    });
   } catch (error) {
     console.error("Errore durante il login:", error.message);
     res.status(500).json({ message: "Qualcosa è andato storto." });

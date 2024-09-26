@@ -25,6 +25,8 @@ function SignIn() {
     isModalOpen,
     successMessage,
     handleCloseModal,
+    userName, // De-struttura userName dall'hook
+    userSurname, // De-struttura userSurname dall'hook
   } = useSignIn();
 
   const [formData, setFormData] = useState({
@@ -105,6 +107,8 @@ function SignIn() {
         open={isModalOpen}
         onClose={handleCloseModal}
         dialogMessage={successMessage}
+        userName={userName} // Passa il nome dell'utente
+        userSurname={userSurname} // Passa il cognome dell'utente
       />
     </Container>
   );
