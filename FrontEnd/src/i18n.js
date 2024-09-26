@@ -123,6 +123,8 @@ i18n
           actual_password_notsame: "The current password is not correct",
           new_passwords_not_match: "The new passwords do not match",
           error_retrieving_profile_data: "Error retrieving profile data",
+          signin_success: "Sign in successful!",
+          welcome: "Welcome Back",
         },
       },
       it: {
@@ -242,6 +244,8 @@ i18n
           new_passwords_not_match: "Le nuove password non corrispondono",
           error_retrieving_profile_data:
             "Errore nel recupero dei dati del profilo",
+          signin_success: "Accesso effettuato con successo!",
+          welcome: "Bentornata",
         },
       },
     },

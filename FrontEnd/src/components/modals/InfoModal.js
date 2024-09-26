@@ -20,7 +20,19 @@ const InfoModal = ({ open, onClose, dialogMessage }) => {
 
   // Funzione unificata per determinare icona e titolo
   const renderIconAndTitle = () => {
-    if (
+    // Se il messaggio è relativo al successo del SignIn
+    if (dialogMessage === t("signin_success")) {
+      return {
+        icon: (
+          <InfoIcon
+            sx={{ fontSize: pxToRem(32), color: theme.palette.success.main }}
+          />
+        ),
+        title: t("welcome"), // Titolo Benvenuto per SignIn
+      };
+    }
+    // Condizioni per messaggi di warning
+    else if (
       dialogMessage === t("error_email_change") ||
       dialogMessage === t("error_profile_update") ||
       dialogMessage === t("email_already_sent") ||
@@ -37,16 +49,18 @@ const InfoModal = ({ open, onClose, dialogMessage }) => {
             sx={{ fontSize: pxToRem(32), color: theme.palette.warning.main }}
           />
         ),
-        title: t("warning"),
+        title: t("warning"), // Titolo warning per errori
       };
-    } else {
+    }
+    // Condizioni di default
+    else {
       return {
         icon: (
           <InfoIcon
             sx={{ fontSize: pxToRem(32), color: theme.palette.text.primary }}
           />
         ),
-        title: t("notification"),
+        title: t("notification"), // Titolo di default
       };
     }
   };
