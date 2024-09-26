@@ -2,13 +2,13 @@
 import React, { useContext, useState } from "react";
 import { Container, Box, Typography, Link, IconButton } from "@mui/material";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
-import Logo from "./logo/Logo";
-import SignInForm from "./forms/auth/SignInForm";
-import InfoModal from "./modals/InfoModal";
+import Logo from "components/logo/Logo";
+import SignInForm from "components/forms/auth/SignInForm";
+import InfoModal from "components/modals/InfoModal";
 import { useTheme } from "@mui/material/styles";
-import { pxToRem } from "../utils/pxToRem";
-import { ThemeContext } from "../context/ThemeContext";
-import useSignIn from "../hooks/auth/useSignIn";
+import { pxToRem } from "utils/pxToRem";
+import { ThemeContext } from "context/ThemeContext";
+import useSignIn from "hooks/auth/useSignIn";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
