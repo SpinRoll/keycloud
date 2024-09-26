@@ -1,37 +1,40 @@
 // src/context/ThemeContext.js
-import React, { createContext, useMemo, useState } from "react"; // Importo React e gli hook necessari per creare il contesto e gestire lo stato
-import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles"; // Importo ThemeProvider da Material-UI per applicare il tema all'applicazione
-import CssBaseline from "@mui/material/CssBaseline"; // Importo CssBaseline per resettare i CSS di base
-import theme from "../theme"; // Importo il file di configurazione del tema
+import React, { createContext, useMemo, useState, useEffect } from "react"; // Importo gli hook necessari
+import { ThemeProvider as MuiThemeProvider } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
+import theme from "../theme";
 
 // Creo il contesto per gestire il tema dell'applicazione
-export const ThemeContext = createContext(); // Creo il contesto per il tema
+export const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  // Creo un componente provider per avvolgere l'applicazione e fornire il tema
+  // Funzione per ottenere il tema dal localStorage o usare "dark" di default
+  const getInitialTheme = () => {
+    const savedTheme = localStorage.getItem("theme");
+    return savedTheme ? savedTheme : "dark"; // Di default "dark" se non c'è nulla in localStorage
+  };
 
-  const [mode, setMode] = useState("dark"); // Inizializzo lo stato della modalità tema a "dark" (scuro)
+  // Inizializza lo stato del tema con il valore ottenuto da localStorage
+  const [mode, setMode] = useState(getInitialTheme);
 
-  // Funzione per alternare tra il tema "light" (chiaro) e "dark" (scuro)
+  // Funzione per alternare tra il tema "light" e "dark"
   const toggleTheme = () => {
-    setMode((prevMode) => (prevMode === "light" ? "dark" : "light")); // Se il tema corrente è "light", lo cambio a "dark" e viceversa
+    setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
   };
 
   // Uso useMemo per memorizzare il valore del tema e rigenerarlo solo quando cambia la modalità
-  const themeValue = useMemo(() => theme(mode), [mode]); // Genero il tema dinamicamente in base alla modalità corrente
+  const themeValue = useMemo(() => theme(mode), [mode]);
+
+  // Salva il tema selezionato in localStorage ogni volta che cambia
+  useEffect(() => {
+    localStorage.setItem("theme", mode); // Salva il tema nel localStorage
+  }, [mode]);
 
   return (
-    // Fornisco il contesto del tema e il provider di Material-UI
     <ThemeContext.Provider value={{ toggleTheme, mode }}>
-      {" "}
-      {/* Fornisco la funzione toggleTheme e la modalità corrente al contesto */}
       <MuiThemeProvider theme={themeValue}>
-        {" "}
-        {/* Applico il tema corrente utilizzando il ThemeProvider di Material-UI */}
-        <CssBaseline />{" "}
-        {/* Aggiungo CssBaseline per garantire che gli stili di base siano applicati in modo uniforme */}
-        {children}{" "}
-        {/* Renderizzo i componenti figli all'interno del provider del tema */}
+        <CssBaseline />
+        {children}
       </MuiThemeProvider>
     </ThemeContext.Provider>
   );
