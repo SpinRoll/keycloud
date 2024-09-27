@@ -29,62 +29,29 @@ const generateRefreshToken = (user) => {
   );
 };
 
-// Endpoint di SignUp
-router.post("/signup", async (req, res) => {
-  const { nome, cognome, email, password } = req.body;
-
-  try {
-    console.log("Inizio processo di SignUp...");
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      console.log("Utente già esistente");
-      return res.status(400).json({ message: "Email già in uso" });
-    }
-
-    console.log("Utente non trovato, creo nuovo utente");
-
-    const hashedPassword = await bcrypt.hash(password, 12);
-    console.log("Password crittografata:", hashedPassword);
-
-    const newUser = new User({
-      nome,
-      cognome,
-      email,
-      password: hashedPassword,
-    });
-    await newUser.save();
-    console.log("Nuovo utente salvato nel database");
-
-    const accessToken = generateAccessToken(newUser);
-    const refreshToken = generateRefreshToken(newUser);
-    console.log("Token generati");
-
-    newUser.refreshToken = refreshToken;
-    await newUser.save();
-    console.log("Refresh token salvato nel database");
-
-    res.status(201).json({ result: newUser, accessToken, refreshToken });
-  } catch (error) {
-    console.error("Errore durante la registrazione:", error.message);
-    res.status(500).json({ message: "Qualcosa è andato storto." });
-  }
-});
-
 // Endpoint di SignIn
 router.post("/signin", async (req, res) => {
-  console.log("Dati ricevuti:", req.body);
-
-  // Verifica che req.body non sia vuoto
-  if (!req.body || !req.body.email || !req.body.password) {
-    return res
-      .status(400)
-      .json({ message: "Email e password sono obbligatorie" });
-  }
-
-  const { email, password, mfaToken } = req.body;
-
   try {
+    // Log per vedere cosa c'è in req.body
+    console.log("Dati ricevuti:", req.body);
+
+    // Verifica che req.body esista
+    if (!req.body) {
+      return res
+        .status(400)
+        .json({ message: "Richiesta non valida, il corpo è vuoto." });
+    }
+
+    // Verifica che i campi email e password siano presenti
+    if (!req.body.email || !req.body.password) {
+      return res
+        .status(400)
+        .json({ message: "Email e password sono obbligatorie" });
+    }
+
+    // Destruttura solo dopo aver verificato che i campi esistano
+    const { email, password, mfaToken } = req.body;
+
     console.log("Tentativo di login con email:", email);
 
     // Trova l'utente nel database
@@ -146,9 +113,10 @@ router.post("/signin", async (req, res) => {
     console.log("Refresh token salvato nel database");
 
     // Restituisci i token e i dati dell'utente senza includere la password
-    const { nome, cognome, email, _id, mfaEnabled } = existingUser;
+    // Rinomina "email" per evitare il conflitto
+    const { nome, cognome, email: userEmail, _id, mfaEnabled } = existingUser;
     return res.status(200).json({
-      result: { _id, nome, cognome, email, mfaEnabled },
+      result: { _id, nome, cognome, email: userEmail, mfaEnabled },
       accessToken,
       refreshToken,
     });
@@ -164,6 +132,48 @@ router.post("/signin", async (req, res) => {
       stack: error.stack, // Restituisce lo stack trace per ulteriori dettagli (solo per debug)
       error: error, // Restituisce l'intero oggetto errore
     });
+  }
+});
+
+// Endpoint di SignUp
+router.post("/signup", async (req, res) => {
+  const { nome, cognome, email, password } = req.body;
+
+  try {
+    console.log("Inizio processo di SignUp...");
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      console.log("Utente già esistente");
+      return res.status(400).json({ message: "Email già in uso" });
+    }
+
+    console.log("Utente non trovato, creo nuovo utente");
+
+    const hashedPassword = await bcrypt.hash(password, 12);
+    console.log("Password crittografata:", hashedPassword);
+
+    const newUser = new User({
+      nome,
+      cognome,
+      email,
+      password: hashedPassword,
+    });
+    await newUser.save();
+    console.log("Nuovo utente salvato nel database");
+
+    const accessToken = generateAccessToken(newUser);
+    const refreshToken = generateRefreshToken(newUser);
+    console.log("Token generati");
+
+    newUser.refreshToken = refreshToken;
+    await newUser.save();
+    console.log("Refresh token salvato nel database");
+
+    res.status(201).json({ result: newUser, accessToken, refreshToken });
+  } catch (error) {
+    console.error("Errore durante la registrazione:", error.message);
+    res.status(500).json({ message: "Qualcosa è andato storto." });
   }
 });
 
