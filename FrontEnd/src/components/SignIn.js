@@ -35,10 +35,26 @@ function SignIn() {
     mfaToken: "",
   });
 
-  const handleInputChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    console.log(`Campo aggiornato: ${name}, Valore: ${value}`); // Log per vedere i cambiamenti nei campi
+    setFormData({ ...formData, [name]: value });
+  };
+
+  // Funzione per gestire la sottomissione del form (handleSignIn)
+  const handleSignIn = (e) => {
+    e.preventDefault();
+    console.log("Dati inviati al backend:", formData); // Aggiungi questo log
+    signIn(e, formData, API_URL); // Chiama la funzione di login
+  };
 
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
+  if (!API_URL) {
+    console.error(
+      "REACT_APP_API_URL non è definito! Assicurati che la variabile d'ambiente sia impostata correttamente."
+    );
+  }
 
   return (
     <Container component="main" maxWidth="xs">
@@ -67,7 +83,7 @@ function SignIn() {
         <SignInForm
           formData={formData}
           handleInputChange={handleInputChange}
-          handleSignIn={(e) => signIn(e, formData, API_URL)}
+          handleSignIn={handleSignIn}
           error={error}
           mfaRequired={mfaRequired}
           t={t}

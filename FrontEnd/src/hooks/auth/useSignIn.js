@@ -18,6 +18,8 @@ const useSignIn = () => {
     e.preventDefault();
     setError(""); // Resetta l'errore
 
+    console.log("API_URL:", API_URL); // Log dell'API_URL
+
     try {
       const response = await axios.post(`${API_URL}/api/auth/signin`, formData);
 
@@ -47,6 +49,7 @@ const useSignIn = () => {
         handleCloseModal();
       }, 2000);
     } catch (error) {
+      console.error("Errore durante il login:", error.response || error);
       setError(error.response ? error.response.data.message : "Sign-in error");
     }
   };

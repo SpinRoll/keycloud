@@ -1,8 +1,6 @@
-// server.js
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 const path = require("path"); // Importa il modulo path
 require("dotenv").config();
 
@@ -21,8 +19,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use(bodyParser.json());
-
 // Controlla l'ambiente e usa l'URI corretto
 const mongoURI =
   process.env.NODE_ENV === "production"
@@ -36,6 +32,9 @@ mongoose
   .catch((err) =>
     console.error("Errore di connessione a MongoDB:", err.message)
   );
+
+// **Usa express.json() per il parsing delle richieste JSON**
+app.use(express.json()); // Questo sostituisce body-parser
 
 // Importa le rotte di autenticazione
 const authRoutes = require("./routes/auth");

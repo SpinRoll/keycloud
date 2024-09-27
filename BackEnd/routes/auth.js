@@ -34,16 +34,19 @@ router.post("/signup", async (req, res) => {
   const { nome, cognome, email, password } = req.body;
 
   try {
-    // Controlla se l'utente esiste già
+    console.log("Inizio processo di SignUp...");
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
+      console.log("Utente già esistente");
       return res.status(400).json({ message: "Email già in uso" });
     }
 
-    // Crittografia della password
-    const hashedPassword = await bcrypt.hash(password, 12);
+    console.log("Utente non trovato, creo nuovo utente");
 
-    // Crea un nuovo utente
+    const hashedPassword = await bcrypt.hash(password, 12);
+    console.log("Password crittografata:", hashedPassword);
+
     const newUser = new User({
       nome,
       cognome,
@@ -51,47 +54,67 @@ router.post("/signup", async (req, res) => {
       password: hashedPassword,
     });
     await newUser.save();
+    console.log("Nuovo utente salvato nel database");
 
-    // Genera i token JWT
     const accessToken = generateAccessToken(newUser);
     const refreshToken = generateRefreshToken(newUser);
+    console.log("Token generati");
 
-    // Salva il refresh token nel database dell'utente
     newUser.refreshToken = refreshToken;
     await newUser.save();
+    console.log("Refresh token salvato nel database");
 
     res.status(201).json({ result: newUser, accessToken, refreshToken });
   } catch (error) {
-    console.error("Errore durante la registrazione:", error.message); // Log più dettagliato
+    console.error("Errore durante la registrazione:", error.message);
     res.status(500).json({ message: "Qualcosa è andato storto." });
   }
 });
 
 // Endpoint di SignIn
 router.post("/signin", async (req, res) => {
+  console.log("Dati ricevuti:", req.body);
+
+  // Verifica che req.body non sia vuoto
+  if (!req.body || !req.body.email || !req.body.password) {
+    return res
+      .status(400)
+      .json({ message: "Email e password sono obbligatorie" });
+  }
+
   const { email, password, mfaToken } = req.body;
 
   try {
+    console.log("Tentativo di login con email:", email);
+
     // Trova l'utente nel database
     const existingUser = await User.findOne({ email });
     if (!existingUser) {
+      console.log("Utente non trovato");
       return res.status(404).json({ message: "Utente non trovato" });
     }
+
+    console.log("Utente trovato:", existingUser);
 
     // Verifica la password
     const isPasswordCorrect = await bcrypt.compare(
       password,
       existingUser.password
     );
+    console.log("Confronto password:", isPasswordCorrect);
+
     if (!isPasswordCorrect) {
       return res.status(400).json({ message: "Credenziali non valide" });
     }
 
+    console.log("Password corretta");
+
     // Controlla se l'MFA è abilitato per l'utente
     if (existingUser.mfaEnabled) {
+      console.log("MFA abilitato per questo utente");
       // Se l'MFA è abilitato, verifica se il token MFA è stato inviato
       if (!mfaToken) {
-        // Se non c'è il token MFA, richiedilo
+        console.log("Token MFA non fornito, MFA richiesto");
         return res
           .status(200)
           .json({ message: "MFA richiesto", mfaRequired: true });
@@ -99,34 +122,48 @@ router.post("/signin", async (req, res) => {
 
       // Verifica il codice MFA usando speakeasy
       const isMfaValid = speakeasy.totp.verify({
-        secret: existingUser.mfaSecret, // Segreto MFA memorizzato per l'utente
+        secret: existingUser.mfaSecret,
         encoding: "base32",
-        token: mfaToken, // Il codice MFA inviato dall'utente
+        token: mfaToken,
       });
 
       if (!isMfaValid) {
+        console.log("Codice MFA non valido");
         return res.status(400).json({ message: "Codice MFA non valido" });
       }
+      console.log("Codice MFA valido");
     }
 
     // Se MFA è verificato o non è abilitato, genera i token JWT
+    console.log("Generazione token JWT...");
     const accessToken = generateAccessToken(existingUser);
     const refreshToken = generateRefreshToken(existingUser);
+    console.log("Token JWT generati");
 
     // Salva il refresh token nel database
     existingUser.refreshToken = refreshToken;
     await existingUser.save();
+    console.log("Refresh token salvato nel database");
 
     // Restituisci i token e i dati dell'utente senza includere la password
-    const { nome, cognome, email, _id, mfaEnabled } = existingUser; // Destrutturazione dei campi necessari
-    res.status(200).json({
-      result: { _id, nome, cognome, email, mfaEnabled }, // Restituisci solo i campi necessari
+    const { nome, cognome, email, _id, mfaEnabled } = existingUser;
+    return res.status(200).json({
+      result: { _id, nome, cognome, email, mfaEnabled },
       accessToken,
       refreshToken,
     });
   } catch (error) {
-    console.error("Errore durante il login:", error.message);
-    res.status(500).json({ message: "Qualcosa è andato storto." });
+    // Log dell'errore completo
+    console.error("Errore durante il login:", error);
+
+    // Restituisci un messaggio di errore più dettagliato
+    res.status(500).json({
+      message:
+        error.message ||
+        "Si è verificato un errore sconosciuto durante il login.",
+      stack: error.stack, // Restituisce lo stack trace per ulteriori dettagli (solo per debug)
+      error: error, // Restituisce l'intero oggetto errore
+    });
   }
 });
 
