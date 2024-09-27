@@ -5,6 +5,9 @@ const auth = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
+      console.log(
+        "Autenticazione fallita: Nessun header di autorizzazione trovato."
+      );
       return res
         .status(401)
         .json({ message: "Autenticazione fallita! Nessun token fornito." });

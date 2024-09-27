@@ -19,24 +19,47 @@ const EditApartmentModal = ({
   disabled,
 }) => {
   const [localGeneratedLink, setLocalGeneratedLink] = useState("");
-  const [selectedCheckInDate, setSelectedCheckInDate] = useState(apartment ? dayjs(apartment.data_inizio) : null); // Usa dayjs per formattare
-  const [selectedCheckOutDate, setSelectedCheckOutDate] = useState(apartment ? dayjs(apartment.data_fine) : null); // Usa dayjs per formattare
+  const [selectedCheckInDate, setSelectedCheckInDate] = useState(
+    apartment ? dayjs(apartment.data_inizio) : null
+  ); // Usa dayjs per formattare
+  const [selectedCheckOutDate, setSelectedCheckOutDate] = useState(
+    apartment ? dayjs(apartment.data_fine) : null
+  ); // Usa dayjs per formattare
   const [linkDuration, setLinkDuration] = useState("1 gg");
   const [isFixedLink, setIsFixedLink] = useState(false);
 
   useEffect(() => {
     if (apartment) {
       setLocalGeneratedLink(apartment.generatedLink || "");
-      setSelectedCheckInDate(apartment.data_inizio ? dayjs(apartment.data_inizio) : null);
-      setSelectedCheckOutDate(apartment.data_fine ? dayjs(apartment.data_fine) : null);
+      setSelectedCheckInDate(
+        apartment.data_inizio ? dayjs(apartment.data_inizio) : null
+      );
+      setSelectedCheckOutDate(
+        apartment.data_fine ? dayjs(apartment.data_fine) : null
+      );
     }
   }, [apartment]);
 
-  const generateRandomLink = () => {
+  const generateRandomLink = async () => {
     if (apartment) {
-      const newLink = `HTTP://q=IDapt=${apartment.id}`;
-      setLocalGeneratedLink(newLink);
-      onLinkGenerated(apartment.id, newLink);
+      try {
+        // Make a GET request to the API endpoint with the apartment ID
+        const response = await fetch(
+          `https://key-tick-nice.ngrok-free.app/generate?IDapt=${apartment._id}`
+        );
+
+        // Parse the JSON response
+        const data = await response.json();
+
+        // Extract the 'short_link' from the response
+        const newLink = data.short_link;
+
+        // Update your state or variables with the new link
+        setLocalGeneratedLink(newLink);
+        onLinkGenerated(apartment._id, newLink);
+      } catch (error) {
+        console.error("Error fetching the short link:", error);
+      }
     }
   };
 
@@ -80,8 +103,12 @@ const EditApartmentModal = ({
       }
 
       // Converti le date in formato ISO per la richiesta
-      const dataInizioISO = selectedCheckInDate ? selectedCheckInDate.toISOString() : null;
-      const dataFineISO = selectedCheckOutDate ? selectedCheckOutDate.toISOString() : null;
+      const dataInizioISO = selectedCheckInDate
+        ? selectedCheckInDate.toISOString()
+        : null;
+      const dataFineISO = selectedCheckOutDate
+        ? selectedCheckOutDate.toISOString()
+        : null;
 
       // Effettua la richiesta al backend per aggiornare appartamento
       const response = await axios.put(
@@ -109,7 +136,10 @@ const EditApartmentModal = ({
           const fineDate = dayjs(dataFineISO);
           if (fineDate.isBefore(today)) {
             newStatus = "expired";
-          } else if (inizioDate.isBefore(today) || inizioDate.isSame(today, 'day')) {
+          } else if (
+            inizioDate.isBefore(today) ||
+            inizioDate.isSame(today, "day")
+          ) {
             newStatus = "active";
           }
         }
@@ -168,7 +198,8 @@ const EditApartmentModal = ({
               isDisabled={isGenerateButtonDisabled}
             />
             <CopyLinkField link={localGeneratedLink} onCopy={copyToClipboard} />
-            <ActionButtons onSave={handleSaveChanges} onCancel={onClose} /> {/* Usa ActionButtons per salvare o cancellare */}
+            <ActionButtons onSave={handleSaveChanges} onCancel={onClose} />{" "}
+            {/* Usa ActionButtons per salvare o cancellare */}
           </>
         )}
       </DialogContent>
