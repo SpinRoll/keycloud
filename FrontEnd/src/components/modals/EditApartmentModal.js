@@ -43,22 +43,24 @@ const EditApartmentModal = ({
   const generateRandomLink = async () => {
     if (apartment) {
       try {
-        // Make a GET request to the API endpoint with the apartment ID
-        const response = await fetch(
-          `https://key-tick-nice.ngrok-free.app/generate?IDapt=${apartment._id}`
-        );
+        const apiUrl = `https://key-tick-nice.ngrok-free.app/generate?IDapt=${apartment._id}`;
+        console.log("API URL:", apiUrl); // Verifica l'URL chiamato
 
-        // Parse the JSON response
-        const data = await response.json();
+        const response = await axios.get(apiUrl);
 
-        // Extract the 'short_link' from the response
-        const newLink = data.short_link;
+        // Verifica che la risposta contenga il JSON atteso
+        console.log("Risposta completa dall'API:", response.data);
 
-        // Update your state or variables with the new link
-        setLocalGeneratedLink(newLink);
-        onLinkGenerated(apartment._id, newLink);
+        const newLink = response.data.short_link;
+
+        if (newLink) {
+          setLocalGeneratedLink(newLink);
+          onLinkGenerated(apartment._id, newLink);
+        } else {
+          console.error("Campo short_link non trovato nella risposta");
+        }
       } catch (error) {
-        console.error("Error fetching the short link:", error);
+        console.error("Errore nella chiamata API:", error.message);
       }
     }
   };
