@@ -21,9 +21,9 @@ const AddApartmentModal = ({ open, onClose, onAddApartment }) => {
     cap: "", // Codice postale
     prefisso: "", // Prefisso telefonico
     telefono: "", // Numero di telefono
-    // link: "", // Link all'appartamento
-    // data_inizio: "", // Data di inizio
-    // data_fine: "", // Data di fine
+    link: "", // Link all'appartamento
+    data_inizio: "", // Data di inizio
+    data_fine: "", // Data di fine
   });
 
   // Funzione per gestire i cambiamenti dei campi di input
@@ -68,9 +68,9 @@ const AddApartmentModal = ({ open, onClose, onAddApartment }) => {
           cap: "",
           prefisso: "",
           telefono: "",
-          // link: "",
-          // data_inizio: "",
-          // data_fine: "",
+          link: "",
+          data_inizio: "",
+          data_fine: "",
         });
         onClose(); // Chiudi la modale
       }
