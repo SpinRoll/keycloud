@@ -35,6 +35,9 @@ const AddApartmentModal = ({ open, onClose, onAddApartment }) => {
     }));
   };
 
+  // URL dell'API per le richieste HTTP
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+
   // Funzione per gestire l'aggiunta di un nuovo appartamento
   const handleAdd = async () => {
     try {
@@ -46,7 +49,7 @@ const AddApartmentModal = ({ open, onClose, onAddApartment }) => {
 
       // Effettua la richiesta al backend per salvare il nuovo appartamento
       const response = await axios.post(
-        "http://localhost:5000/api/apartments", // Assicurati che il percorso dell'API sia corretto
+        `${API_URL}/api/apartments`, // Assicurati che il percorso dell'API sia corretto
         formValues,
         {
           headers: {
@@ -75,7 +78,10 @@ const AddApartmentModal = ({ open, onClose, onAddApartment }) => {
         onClose(); // Chiudi la modale
       }
     } catch (error) {
-      console.error("Errore durante l'aggiunta dell'appartamento:", error.response ? error.response.data : error.message);
+      console.error(
+        "Errore durante l'aggiunta dell'appartamento:",
+        error.response ? error.response.data : error.message
+      );
     }
   };
 
