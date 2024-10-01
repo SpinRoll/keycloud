@@ -119,6 +119,24 @@ function SignIn() {
           {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
         </IconButton>
 
+        {/* Recover email */}
+        <Typography
+          component="p"
+          variant="body2"
+          sx={{
+            color: theme.palette.text.primary,
+            mt: pxToRem(8),
+            mb: pxToRem(16),
+          }}>
+          {t("forgot_password")}{" "}
+          <Link
+            variant="body2"
+            sx={{ color: theme.palette.primary.main, cursor: "pointer" }}
+            href="/recover-email">
+            {t("recover_password")}
+          </Link>
+        </Typography>
+
         <Typography
           component="p"
           variant="body2"

@@ -21,7 +21,20 @@ const calculateStatus = (data_inizio, data_fine) => {
 
 // Endpoint per creare un nuovo appartamento
 router.post("/", authMiddleware, async (req, res) => {
-  const { nome, via, numero, piano_scala, citta, cap, prefisso, telefono, link, data_inizio, data_fine, status } = req.body;
+  const {
+    nome,
+    via,
+    numero,
+    piano_scala,
+    citta,
+    cap,
+    prefisso,
+    telefono,
+    link,
+    data_inizio,
+    data_fine,
+    status,
+  } = req.body;
 
   try {
     // Calcola lo stato di default
@@ -46,8 +59,13 @@ router.post("/", authMiddleware, async (req, res) => {
     await newApartment.save();
     res.status(201).json(newApartment);
   } catch (error) {
-    console.error("Errore durante la creazione dell'appartamento:", error.message);
-    res.status(500).json({ message: "Errore durante la creazione dell'appartamento" });
+    console.error(
+      "Errore durante la creazione dell'appartamento:",
+      error.message
+    );
+    res
+      .status(500)
+      .json({ message: "Errore durante la creazione dell'appartamento" });
   }
 });
 
@@ -72,8 +90,13 @@ router.put("/:id", authMiddleware, async (req, res) => {
 
     res.status(200).json(updatedApartment);
   } catch (error) {
-    console.error("Errore durante l'aggiornamento dell'appartamento:", error.message);
-    res.status(500).json({ message: "Errore durante l'aggiornamento dell'appartamento" });
+    console.error(
+      "Errore durante l'aggiornamento dell'appartamento:",
+      error.message
+    );
+    res
+      .status(500)
+      .json({ message: "Errore durante l'aggiornamento dell'appartamento" });
   }
 });
 
@@ -85,7 +108,10 @@ router.get("/", authMiddleware, async (req, res) => {
 
     res.status(200).json(apartments);
   } catch (error) {
-    console.error("Errore durante il recupero degli appartamenti:", error.message);
+    console.error(
+      "Errore durante il recupero degli appartamenti:",
+      error.message
+    );
     res.status(500).json({ message: "Errore nel recupero degli appartamenti" });
   }
 });

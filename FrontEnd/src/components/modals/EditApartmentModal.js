@@ -46,7 +46,11 @@ const EditApartmentModal = ({
         const apiUrl = `https://key-tick-nice.ngrok-free.app/generate?IDapt=${apartment._id}`;
         console.log("API URL:", apiUrl); // Verifica l'URL chiamato
 
-        const response = await axios.get(apiUrl);
+        const response = await axios.get(apiUrl, {
+          headers: {
+            "Ngrok-Skip-Browser-Warning": "true", // Bypassare il warning di Ngrok
+          },
+        });
 
         // Verifica che la risposta contenga il JSON atteso
         console.log("Risposta completa dall'API:", response.data);
@@ -60,7 +64,7 @@ const EditApartmentModal = ({
           console.error("Campo short_link non trovato nella risposta");
         }
       } catch (error) {
-        console.error("Errore nella chiamata API:", error.message);
+        console.error("Errore durante la chiamata API:", error.message);
       }
     }
   };
