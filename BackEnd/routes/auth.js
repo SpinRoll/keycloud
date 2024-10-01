@@ -345,7 +345,7 @@ router.post("/recover-email", async (req, res) => {
       }
     );
 
-    const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+    const resetLink = `/reset-password?token=${resetToken}`;
 
     // Configura nodemailer per inviare l'email
     const transporter = nodemailer.createTransport({
