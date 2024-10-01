@@ -277,7 +277,7 @@ router.put("/change-email", auth, async (req, res) => {
       { expiresIn: "1h" }
     );
 
-    const verificationLink = `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`;
+    const verificationLink = `/verify-email?token=${emailVerificationToken}`;
     await sendEmail(
       newEmail,
       "Verifica la tua nuova email",
