@@ -47,7 +47,7 @@ const RecoverEmail = () => {
 
     try {
       // eslint-disable-next-line
-      const response = await axios.post("http://localhost:5000/api/auth/recover-email", { email });
+      const response = await axios.post("/api/auth/recover-email", { email });
       setMessage(t("success_recovery_email"));
 
       // Attiva il timeout per 30 secondi
@@ -73,17 +73,25 @@ const RecoverEmail = () => {
           flexDirection: "column",
           justifyContent: "center",
           backgroundColor: theme.palette.background.paper,
-          padding: `${pxToRem(20)} ${pxToRem(32.38)} ${pxToRem(28)} ${pxToRem(24)}`,
+          padding: `${pxToRem(20)} ${pxToRem(32.38)} ${pxToRem(28)} ${pxToRem(
+            24
+          )}`,
           borderRadius: pxToRem(8),
           boxShadow: `0px ${pxToRem(0)} ${pxToRem(10)} #635FC7`,
           mt: pxToRem(75),
-        }}
-      >
-        <Typography component="h2" variant="h6" sx={{ color: theme.palette.text.primary }}>
+        }}>
+        <Typography
+          component="h2"
+          variant="h6"
+          sx={{ color: theme.palette.text.primary }}>
           {t("recover_email")}
         </Typography>
 
-        <Box component="form" noValidate onSubmit={handleRecoverEmail} sx={{ mt: pxToRem(8) }}>
+        <Box
+          component="form"
+          noValidate
+          onSubmit={handleRecoverEmail}
+          sx={{ mt: pxToRem(8) }}>
           <CustomTextField
             label="Email"
             name="email"
@@ -92,14 +100,23 @@ const RecoverEmail = () => {
             autoFocus
           />
 
-          {message && <Typography sx={{ color: "green", mt: 2 }}>{message}</Typography>}
-          {error && <Typography sx={{ color: "red", mt: 2 }}>{error}</Typography>}
+          {message && (
+            <Typography sx={{ color: "green", mt: 2 }}>{message}</Typography>
+          )}
+          {error && (
+            <Typography sx={{ color: "red", mt: 2 }}>{error}</Typography>
+          )}
 
-          <CustomButton type="submit" disabled={loading} sx={{ mt: pxToRem(16) }}>
+          <CustomButton
+            type="submit"
+            disabled={loading}
+            sx={{ mt: pxToRem(16) }}>
             {loading ? <LoadingSpinner size={20} /> : t("send_recovery_email")}
           </CustomButton>
 
-          <Link href="/sign-in" sx={{ mt: pxToRem(16), display: "block", textAlign: "center" }}>
+          <Link
+            href="/sign-in"
+            sx={{ mt: pxToRem(16), display: "block", textAlign: "center" }}>
             {t("back_to_sign_in")}
           </Link>
         </Box>

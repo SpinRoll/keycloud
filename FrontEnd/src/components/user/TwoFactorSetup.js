@@ -29,9 +29,6 @@ const TwoFactorSetup = () => {
     setModalOpen(false);
   };
 
-  // URL dell'API
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000"; // URL API dinamico
-
   // Funzione per abilitare MFA
   const handleEnableMFA = async () => {
     setLoading(true);
@@ -40,7 +37,7 @@ const TwoFactorSetup = () => {
       const token = localStorage.getItem("token"); // Recupera il token JWT
 
       const response = await axios.post(
-        `${API_URL}/api/auth/mfa/setup`, // URL API dinamico
+        `/api/auth/mfa/setup`, // URL API dinamico
         {},
         {
           headers: {
@@ -66,7 +63,7 @@ const TwoFactorSetup = () => {
       const token = localStorage.getItem("token");
 
       await axios.post(
-        "http://localhost:5000/api/auth/mfa/disable", // Endpoint per disabilitare l'MFA
+        "/api/auth/mfa/disable", // Endpoint per disabilitare l'MFA
         {},
         {
           headers: {
@@ -92,7 +89,7 @@ const TwoFactorSetup = () => {
       const token = localStorage.getItem("token"); // Recupera il token JWT
 
       const response = await axios.post(
-        "http://localhost:5000/api/auth/mfa/verify",
+        "/api/auth/mfa/verify",
         {
           token: mfaCode, // Invia il codice MFA al backend
         },
@@ -132,14 +129,11 @@ const TwoFactorSetup = () => {
     try {
       const token = localStorage.getItem("token"); // Recupera il token JWT
 
-      const response = await axios.get(
-        "http://localhost:5000/api/auth/mfa/status",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get("/api/auth/mfa/status", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       setMfaEnabled(response.data.mfaEnabled); // Imposta lo stato MFA in base alla risposta
     } catch (err) {

@@ -39,16 +39,16 @@ const Apartments = () => {
           console.error("Token non trovato! Effettua il login.");
           return;
         }
+        // URL dell'API per le richieste HTTP
+        const API_URL =
+          process.env.REACT_APP_API_URL || "http://localhost:5000";
 
-        const response = await axios.get(
-          "http://localhost:5000/api/apartments",
-          {
-            // Assicurati che il percorso dell'API sia corretto
-            headers: {
-              Authorization: `Bearer ${token}`, // Aggiungi il token JWT nell'intestazione
-            },
-          }
-        );
+        const response = await axios.get(`${API_URL}/api/apartments`, {
+          // Assicurati che il percorso dell'API sia corretto
+          headers: {
+            Authorization: `Bearer ${token}`, // Aggiungi il token JWT nell'intestazione
+          },
+        });
 
         const updatedApartments = response.data.map((apartment) => {
           const { status, color } = getApartmentStatusAndColor(apartment);

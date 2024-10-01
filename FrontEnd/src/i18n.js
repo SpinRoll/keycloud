@@ -104,6 +104,7 @@ i18n
           mfa_verification_error:
             "Error verifying MFA code. Please check the code and try again.",
           disabled_mfa_label: "MFA Disabled",
+          mfa_disabled_success: "MFA disabled successfully!",
           enabled_mfa_label: "MFA Enabled",
           signin_title: "Sign In",
           email_label: "Email",
@@ -226,6 +227,7 @@ i18n
           mfa_verification_error:
             "Errore durante la verifica del codice MFA. Controlla il codice e riprova.",
           disabled_mfa_label: "MFA Disabilitato",
+          mfa_disabled_success: "MFA disabilitato con successo!",
           enabled_mfa_label: "MFA Abilitato",
           signin_title: "Accedi",
           email_label: "Email",

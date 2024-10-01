@@ -118,7 +118,7 @@ const EditApartmentModal = ({
 
       // Effettua la richiesta al backend per aggiornare appartamento
       const response = await axios.put(
-        `http://localhost:5000/api/apartments/${apartment._id}`, // Assicurati che il percorso dell'API sia corretto
+        `/api/apartments/${apartment._id}`, // Assicurati che il percorso dell'API sia corretto
         {
           data_inizio: dataInizioISO,
           data_fine: dataFineISO,

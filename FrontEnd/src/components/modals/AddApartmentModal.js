@@ -35,9 +35,6 @@ const AddApartmentModal = ({ open, onClose, onAddApartment }) => {
     }));
   };
 
-  // URL dell'API per le richieste HTTP
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
-
   // Funzione per gestire l'aggiunta di un nuovo appartamento
   const handleAdd = async () => {
     try {
@@ -49,7 +46,7 @@ const AddApartmentModal = ({ open, onClose, onAddApartment }) => {
 
       // Effettua la richiesta al backend per salvare il nuovo appartamento
       const response = await axios.post(
-        `${API_URL}/api/apartments`, // Assicurati che il percorso dell'API sia corretto
+        `/api/apartments`, // Assicurati che il percorso dell'API sia corretto
         formValues,
         {
           headers: {
@@ -86,7 +83,14 @@ const AddApartmentModal = ({ open, onClose, onAddApartment }) => {
   };
 
   return (
-    <Dialog maxWidth="m" open={open} onClose={onClose}>
+    <Dialog
+      maxWidth="m"
+      open={open}
+      onClose={onClose}
+      sx={{
+        borderRadius: pxToRem(8),
+        boxShadow: `0px ${pxToRem(0)} ${pxToRem(10)} #635FC7`,
+      }}>
       <DialogTitle sx={{ fontSize: pxToRem(20), textAlign: "center" }}>
         {t("add_apartment")}
       </DialogTitle>
