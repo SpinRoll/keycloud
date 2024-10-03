@@ -345,14 +345,10 @@ router.post("/recover-email", async (req, res) => {
       }
     );
 
-    // Definisci l'URL in base all'ambiente
-    const isProduction = process.env.NODE_ENV === "production";
+    // Definisci l'URL in base all'ambiente tramite la variabile d'ambiente FRONTEND_URL
+    const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000"; // Valore di fallback se la variabile non è definita
 
-    // Definisco l'URL in base all'ambiente
-    const FRONTEND_URL = isProduction
-      ? "https://keycloud-production.up.railway.app" // URL per la produzione
-      : "http://localhost:3000"; // URL per lo sviluppo
-
+    // Crea il link per il reset della password
     const resetLink = `${FRONTEND_URL}/reset-password?token=${resetToken}`;
 
     // Configura nodemailer per inviare l'email
