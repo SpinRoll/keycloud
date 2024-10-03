@@ -128,6 +128,7 @@ i18n
           welcome: "Welcome Back",
           signup_success: "Sign up successful!",
           signup_success_title: "Registration Completed",
+          linkCopied: "Link copied",
         },
       },
       it: {
@@ -252,6 +253,7 @@ i18n
           welcome: "Bentornata",
           signup_success: "Effettuata con successo!",
           signup_success_title: "Registrazione completata",
+          linkCopied: "Link copiato",
         },
       },
     },

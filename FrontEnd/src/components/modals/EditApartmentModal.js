@@ -3,13 +3,15 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTitle, Box } from "@mui/material";
 import { pxToRem } from "../../utils/pxToRem";
 import LinkDurationField from "../customComponents/LinkDurationField";
+import CustomButton from "../customComponents/CustomButton";
 import FixedLinkSwitch from "../customComponents/FixedLinkSwitch";
 import DatePickers from "../customComponents/DatePickers";
 import GenerateLinkButton from "../customComponents/GenerateLinkButton";
 import CopyLinkField from "../customComponents/CopyLinkField";
-import ActionButtons from "../customComponents/ActionButtons";
+// import ActionButtons from "../customComponents/ActionButtons";
 import axios from "axios"; // Importa axios per le richieste HTTP
 import dayjs from "dayjs"; // Importa dayjs per gestire il formato delle date
+import { useTranslation } from "react-i18next";
 
 const EditApartmentModal = ({
   open,
@@ -20,6 +22,7 @@ const EditApartmentModal = ({
   disabled,
 }) => {
   const [localGeneratedLink, setLocalGeneratedLink] = useState("");
+  const { t } = useTranslation();
   const [selectedCheckInDate, setSelectedCheckInDate] = useState(
     apartment ? dayjs(apartment.data_inizio) : null
   ); // Usa dayjs per formattare
@@ -31,7 +34,7 @@ const EditApartmentModal = ({
 
   useEffect(() => {
     if (apartment) {
-      setLocalGeneratedLink(apartment.generatedLink || "");
+      setLocalGeneratedLink(apartment.link || "");
       setSelectedCheckInDate(
         apartment.data_inizio ? dayjs(apartment.data_inizio) : null
       );
@@ -53,14 +56,12 @@ const EditApartmentModal = ({
           },
         });
 
-        // Verifica che la risposta contenga il JSON atteso
-        console.log("Risposta completa dall'API:", response.data);
-
         const newLink = response.data.short_link;
 
         if (newLink) {
-          setLocalGeneratedLink(newLink);
-          onLinkGenerated(apartment._id, newLink);
+          setLocalGeneratedLink(newLink); // Imposta correttamente il nuovo link generato
+          console.log("Link generato: ", newLink);
+          onLinkGenerated(apartment._id, newLink); // Chiamata di callback opzionale
         } else {
           console.error("Campo short_link non trovato nella risposta");
         }
@@ -117,12 +118,13 @@ const EditApartmentModal = ({
         ? selectedCheckOutDate.toISOString()
         : null;
 
-      // Effettua la richiesta al backend per aggiornare appartamento
+      // Invia il link generato (localGeneratedLink) insieme alle altre informazioni al backend
       const response = await axios.put(
         `/api/apartments/${apartment._id}`, // Assicurati che il percorso dell'API sia corretto
         {
           data_inizio: dataInizioISO,
           data_fine: dataFineISO,
+          link: localGeneratedLink, // Aggiungi il link generato da salvare
         },
         {
           headers: {
@@ -135,7 +137,7 @@ const EditApartmentModal = ({
       if (response.status === 200) {
         console.log("Appartamento aggiornato con successo:", response.data);
 
-        // Calcolo del nuovo stato e colore in base alle nuove date
+        // Calcolo del nuovo stato in base alle date aggiornate
         const today = dayjs();
         let newStatus = "inactive";
         if (dataInizioISO && dataFineISO) {
@@ -152,7 +154,11 @@ const EditApartmentModal = ({
         }
 
         // Aggiungi il nuovo stato all'appartamento aggiornato
-        const updatedApartment = { ...response.data, status: newStatus };
+        const updatedApartment = {
+          ...response.data, // Mantieni tutte le proprietà già esistenti in response.data
+          status: newStatus, // Aggiorna solo lo stato
+          link: localGeneratedLink || response.data.link, // Assicurati che il link generato venga mantenuto o aggiornato
+        };
 
         onApartmentUpdated(updatedApartment); // Chiamata di callback per aggiornare la lista degli appartamenti
         onClose(); // Chiudi la modale
@@ -205,7 +211,13 @@ const EditApartmentModal = ({
               isDisabled={isGenerateButtonDisabled}
             />
             <CopyLinkField link={localGeneratedLink} onCopy={copyToClipboard} />
-            <ActionButtons onSave={handleSaveChanges} onCancel={onClose} />{" "}
+            <CustomButton
+              onClick={handleSaveChanges}
+              variant="contained"
+              color="primary">
+              {t("save")}
+            </CustomButton>
+            {/* <ActionButtons onSave={handleSaveChanges} onCancel={onClose} />{" "} */}
             {/* Usa ActionButtons per salvare o cancellare */}
           </>
         )}
