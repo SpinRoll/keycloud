@@ -1,90 +1,72 @@
-// src/components/header/LanguageSubMenu.js
-import React, { useEffect } from "react"; // Importo React e useEffect per gestire gli effetti collaterali
-import { Menu, MenuItem, Typography } from "@mui/material"; // Importo i componenti Material-UI necessari
-import ReactCountryFlag from "react-country-flag"; // Importo ReactCountryFlag per mostrare le bandiere delle lingue
-import { useTheme } from "@mui/material/styles"; // Importo useTheme per accedere al tema corrente
-import { pxToRem } from "../../utils/pxToRem"; // Funzione di utilità per convertire px in rem
-import { useTranslation } from "react-i18next"; // Importo il hook useTranslation per la gestione delle traduzioni
+import React from "react";
+import { Menu, MenuItem, Typography } from "@mui/material";
+import ReactCountryFlag from "react-country-flag";
+import { useTheme } from "@mui/material/styles";
+import { pxToRem } from "../../utils/pxToRem";
+import { useTranslation } from "react-i18next";
 
 const LanguageSubMenu = ({ anchorEl, onClose }) => {
-  // Creo un componente funzionale che riceve anchorEl e onClose come prop
+  const theme = useTheme();
+  const { i18n, t } = useTranslation();
 
-  const theme = useTheme(); // Uso il tema corrente per applicare gli stili
-  const { i18n, t } = useTranslation(); // Uso useTranslation per ottenere la funzione di traduzione e l'oggetto i18n
-
-  // Funzione per cambiare la lingua
+  // Cambio la lingua e chiudo il menu
   const handleLanguageChange = (lang) => {
-    i18n.changeLanguage(lang); // Uso i18next per cambiare la lingua
-    localStorage.setItem("language", lang); // Salvo la lingua selezionata nel localStorage
-    onClose(); // Chiudo il sotto-menu dopo aver selezionato la lingua
+    i18n.changeLanguage(lang);
+    localStorage.setItem("language", lang); // Salvo la lingua scelta nel localStorage
+    onClose();
   };
-
-  // Effetto per caricare la lingua salvata dal localStorage
-  useEffect(() => {
-    const savedLanguage = localStorage.getItem("language");
-    if (savedLanguage) {
-      i18n.changeLanguage(savedLanguage);
-    }
-  }, [i18n]);
 
   return (
     <Menu
-      anchorEl={anchorEl} // Definisco l'elemento di ancoraggio per posizionare il menu
-      open={Boolean(anchorEl)} // Controllo se il menu è aperto in base all'elemento di ancoraggio
-      onClose={onClose} // Funzione per chiudere il menu
-      sx={{ mt: pxToRem(3) }} // Stile per aggiungere un margine superiore al menu
-    >
-      {/* MenuItem per selezionare la lingua inglese */}
+      anchorEl={anchorEl}
+      open={Boolean(anchorEl)}
+      onClose={onClose}
+      sx={{ mt: pxToRem(3) }}>
+      {/* Lingua Inglese */}
       <MenuItem onClick={() => handleLanguageChange("en")}>
-        {/* Bandiera degli Stati Uniti per indicare la lingua inglese */}
         <ReactCountryFlag
-          countryCode="US" // Codice del paese per gli Stati Uniti
-          svg // Utilizza l'immagine SVG della bandiera
+          countryCode="US"
+          svg
           style={{
-            width: pxToRem(20), // Larghezza della bandiera
-            height: pxToRem(20), // Altezza della bandiera
-            marginRight: pxToRem(8), // Margine a destra per separare la bandiera dal testo
+            width: pxToRem(20),
+            height: pxToRem(20),
+            marginRight: pxToRem(8),
           }}
         />
-        {/* Testo che mostra il nome della lingua inglese */}
         <Typography
           sx={{
             color:
               i18n.language === "en"
-                ? theme.palette.primary.main // Colore primario se la lingua corrente è inglese
-                : theme.palette.text.primary, // Colore del testo normale per le altre lingue
+                ? theme.palette.primary.main
+                : theme.palette.text.primary,
           }}>
-          {t("english")}{" "}
-          {/* Uso la funzione t per ottenere il nome tradotto della lingua */}
+          {t("english")}
         </Typography>
       </MenuItem>
 
-      {/* MenuItem per selezionare la lingua italiana */}
+      {/* Lingua Italiana */}
       <MenuItem onClick={() => handleLanguageChange("it")}>
-        {/* Bandiera dell'Italia per indicare la lingua italiana */}
         <ReactCountryFlag
-          countryCode="IT" // Codice del paese per l'Italia
-          svg // Utilizza l'immagine SVG della bandiera
+          countryCode="IT"
+          svg
           style={{
-            width: pxToRem(20), // Larghezza della bandiera
-            height: pxToRem(20), // Altezza della bandiera
-            marginRight: pxToRem(8), // Margine a destra per separare la bandiera dal testo
+            width: pxToRem(20),
+            height: pxToRem(20),
+            marginRight: pxToRem(8),
           }}
         />
-        {/* Testo che mostra il nome della lingua italiana */}
         <Typography
           sx={{
             color:
               i18n.language === "it"
-                ? theme.palette.primary.main // Colore primario se la lingua corrente è italiano
-                : theme.palette.text.primary, // Colore del testo normale per le altre lingue
+                ? theme.palette.primary.main
+                : theme.palette.text.primary,
           }}>
-          {t("italian")}{" "}
-          {/* Uso la funzione t per ottenere il nome tradotto della lingua */}
+          {t("italian")}
         </Typography>
       </MenuItem>
     </Menu>
   );
 };
 
-export default LanguageSubMenu; // Esporto il componente per l'uso in altre parti dell'app
+export default LanguageSubMenu;

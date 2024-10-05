@@ -1,11 +1,14 @@
 import i18n from "i18next"; // Importo i18next per gestire le traduzioni nell'applicazione
 import { initReactI18next } from "react-i18next"; // Importo il binding per React
 
+// Recupera la lingua dal localStorage o usa "en" come fallback
+const savedLanguage = localStorage.getItem("language") || "en";
+
 i18n
   .use(initReactI18next) // Utilizzo il plugin initReactI18next per integrare i18next con React
   .init({
     fallbackLng: "en", // Definisco la lingua di default (fallback) come inglese
-    lng: "en", // Imposto la lingua iniziale dell'applicazione su inglese
+    lng: savedLanguage,
     supportedLngs: ["en", "it"], // Elenco delle lingue supportate nell'app (inglese e italiano)
     // debug: true, // (Commentato) Abilita il debug per vedere eventuali problemi di configurazione nella console
     interpolation: {
