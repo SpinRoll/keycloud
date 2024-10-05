@@ -115,40 +115,60 @@ function SignIn() {
           mfaRequired={mfaRequired}
         />
 
-        <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>
-          {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
-        </IconButton>
-
         {/* Recover email */}
-        <Typography
-          component="p"
-          variant="body2"
+        <Box
           sx={{
-            color: theme.palette.text.primary,
-            mt: pxToRem(8),
-            mb: pxToRem(16),
+            display: "flex",
+            justifyContent: "felx-start",
+            width: "100%",
           }}>
-          {t("forgot_password")}{" "}
-          <Link
+          <Typography
+            component="p"
             variant="body2"
-            sx={{ color: theme.palette.primary.main, cursor: "pointer" }}
-            href="/recover-email">
-            {t("recover_password")}
-          </Link>
-        </Typography>
+            sx={{
+              color: theme.palette.text.primary,
+              mt: pxToRem(8),
+              mb: pxToRem(16),
+            }}>
+            {t("forgot_password")}{" "}
+            <Link
+              variant="body2"
+              sx={{ color: theme.palette.primary.main, cursor: "pointer" }}
+              href="/recover-email">
+              {t("recover_password")}
+            </Link>
+          </Typography>
+        </Box>
 
-        <Typography
-          component="p"
-          variant="body2"
-          sx={{ color: theme.palette.text.primary }}>
-          {t("no_account")}{" "}
-          <Link
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "felx-start",
+            width: "100%",
+          }}>
+          <Typography
+            component="p"
             variant="body2"
-            sx={{ color: theme.colors.primary, cursor: "pointer" }}
-            onClick={handleSignUpClick}>
-            {t("signup_link")}
-          </Link>
-        </Typography>
+            sx={{ color: theme.palette.text.primary }}>
+            {t("no_account")}{" "}
+            <Link
+              variant="body2"
+              sx={{ color: theme.colors.primary, cursor: "pointer" }}
+              onClick={handleSignUpClick}>
+              {t("signup_link")}
+            </Link>
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "felx-start",
+            width: "100%",
+          }}>
+          <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>
+            {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
+        </Box>
       </Box>
       <InfoModal
         open={isModalOpen}

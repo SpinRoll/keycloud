@@ -1,6 +1,6 @@
 // src/components/forms/auth/SignInForm.js
 import React from "react";
-import { Box, Typography, Link } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import CustomTextField from "../../customComponents/CustomTextField";
 import CustomButton from "../../customComponents/CustomButton";
 import { pxToRem } from "../../../utils/pxToRem";
@@ -53,7 +53,14 @@ const SignInForm = ({
           gap: pxToRem(16),
           mt: pxToRem(8),
         }}>
-        <CustomButton type="submit">{t("signin_button")}</CustomButton>
+        <CustomButton
+          sx={{
+            mt: pxToRem(8),
+            mb: pxToRem(8),
+          }}
+          type="submit">
+          {t("signin_button")}
+        </CustomButton>
       </Box>
     </Box>
   );

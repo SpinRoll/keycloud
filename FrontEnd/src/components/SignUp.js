@@ -78,9 +78,16 @@ function SignUp() {
         />
 
         {/* Icona per alternare il tema */}
-        <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>
-          {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
-        </IconButton>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "felx-start",
+            width: "100%",
+          }}>
+          <IconButton onClick={toggleTheme} sx={{ mt: pxToRem(2) }}>
+            {mode === "dark" ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
+        </Box>
       </Box>
 
       {/* Modal di successo */}

@@ -1,5 +1,5 @@
 // src/components/header/LanguageSubMenu.js
-import React from "react"; // Importo React per creare componenti
+import React, { useEffect } from "react"; // Importo React e useEffect per gestire gli effetti collaterali
 import { Menu, MenuItem, Typography } from "@mui/material"; // Importo i componenti Material-UI necessari
 import ReactCountryFlag from "react-country-flag"; // Importo ReactCountryFlag per mostrare le bandiere delle lingue
 import { useTheme } from "@mui/material/styles"; // Importo useTheme per accedere al tema corrente
@@ -15,8 +15,17 @@ const LanguageSubMenu = ({ anchorEl, onClose }) => {
   // Funzione per cambiare la lingua
   const handleLanguageChange = (lang) => {
     i18n.changeLanguage(lang); // Uso i18next per cambiare la lingua
+    localStorage.setItem("language", lang); // Salvo la lingua selezionata nel localStorage
     onClose(); // Chiudo il sotto-menu dopo aver selezionato la lingua
   };
+
+  // Effetto per caricare la lingua salvata dal localStorage
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("language");
+    if (savedLanguage) {
+      i18n.changeLanguage(savedLanguage);
+    }
+  }, [i18n]);
 
   return (
     <Menu

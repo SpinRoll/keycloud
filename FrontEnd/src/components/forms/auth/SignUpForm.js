@@ -39,7 +39,12 @@ const SignUpForm = ({
       />
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: pxToRem(16) }}>
-        <CustomButton sx={{ mt: pxToRem(16) }} type="submit">
+        <CustomButton
+          sx={{
+            mt: pxToRem(16),
+            mb: pxToRem(16),
+          }}
+          type="submit">
           {t("signup_button")}
         </CustomButton>
       </Box>
