@@ -239,10 +239,15 @@ const Apartments = () => {
         apartment={selectedApartment}
         onLinkGenerated={handleLinkGenerated}
         onApartmentUpdated={(updatedApartment) => {
+          // Ricalcola lo stato e il colore basati sui dati aggiornati
+          const { status, color } =
+            getApartmentStatusAndColor(updatedApartment);
+
+          // Aggiorna l'appartamento con i nuovi valori di stato e colore
           setApartments((prevApartments) =>
             prevApartments.map((apartment) =>
               apartment._id === updatedApartment._id
-                ? updatedApartment
+                ? { ...updatedApartment, status, color } // Aggiorna l'appartamento con il nuovo stato e colore
                 : apartment
             )
           );
