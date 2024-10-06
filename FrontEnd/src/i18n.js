@@ -18,6 +18,11 @@ i18n
       // Risorse di traduzione per le lingue supportate (inglese e italiano)
       en: {
         translation: {
+          confirm_delete: "Confirm Delete",
+          confirm_delete_message:
+            "Are you sure you want to delete the generated link?",
+          cancel: "Cancel",
+          delete: "Delete",
           active: "Active",
           inactive: "Inactive",
           expired: "Expired",
@@ -140,6 +145,11 @@ i18n
       },
       it: {
         translation: {
+          confirm_delete: "Conferma eliminazione",
+          confirm_delete_message:
+            "Sei sicuro di voler eliminare il link generato?",
+          cancel: "Annulla",
+          delete: "Elimina",
           active: "Attivo",
           inactive: "Inattivo",
           expired: "Scaduto",
