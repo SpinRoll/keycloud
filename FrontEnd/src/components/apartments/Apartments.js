@@ -116,6 +116,7 @@ const Apartments = () => {
       return color;
     });
     setApartmentStatusColors(updatedColors);
+    // eslint-disable-next-line
   }, [apartments, i18n.language]); // Aggiorna i colori quando cambia l'elenco degli appartamenti o la lingua
 
   // Funzione per gestire la generazione del link di un appartamento

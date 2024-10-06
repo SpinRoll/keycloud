@@ -31,6 +31,7 @@ router.post("/", authMiddleware, async (req, res) => {
     prefisso,
     telefono,
     link,
+    fixed_link,
     data_inizio,
     data_fine,
     status,
@@ -51,6 +52,7 @@ router.post("/", authMiddleware, async (req, res) => {
       prefisso,
       telefono,
       link,
+      fixed_link,
       data_inizio,
       data_fine,
       status, // Imposta lo stato calcolato
@@ -72,7 +74,7 @@ router.post("/", authMiddleware, async (req, res) => {
 // Endpoint per aggiornare un appartamento esistente
 router.put("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
-  const { data_inizio, data_fine, link, status } = req.body;
+  const { data_inizio, data_fine, link, status, fixed_link } = req.body;
 
   try {
     // Calcola il nuovo stato dell'appartamento
@@ -80,7 +82,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
 
     const updatedApartment = await Apartment.findByIdAndUpdate(
       id,
-      { data_inizio, data_fine, status, link }, // Aggiorna anche lo stato
+      { data_inizio, data_fine, status, link, fixed_link }, // Aggiorna anche lo stato
       { new: true, runValidators: true } // `new: true` restituisce il documento aggiornato
     );
 

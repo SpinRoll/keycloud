@@ -14,7 +14,7 @@ import { pxToRem } from "../../utils/pxToRem"; // Funzione per la conversione de
 import { useTranslation } from "react-i18next"; // Hook per le traduzioni
 import { useTheme } from "@mui/material/styles"; // Hook per il tema
 
-const InfoModal = ({ open, onClose, dialogMessage, userName, userSurname }) => {
+const InfoModal = ({ open, onClose, dialogMessage, onConfirm, userName, userSurname }) => {
   // Aggiunto nome e cognome
   const { t } = useTranslation(); // Traduzioni
   const theme = useTheme(); // Tema

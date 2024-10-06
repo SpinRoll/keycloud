@@ -17,6 +17,7 @@ const apartmentSchema = new mongoose.Schema(
     prefisso: { type: Number, required: true }, // Prefisso telefonico
     telefono: { type: Number, required: true }, // Telefono
     link: { type: String }, // Link
+    fixed_link: { type: Boolean, default: false }, // Link fisso
     data_inizio: { type: Date }, // Data di inizio
     data_fine: { type: Date }, // Data di fine
     status: { type: String, default: "inactive" }, // Stato dell'appartamento (inactive, active, expired)
