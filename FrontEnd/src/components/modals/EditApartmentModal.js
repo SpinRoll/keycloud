@@ -9,6 +9,8 @@ import ShortLinkManager from "./ShortLinkManager";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
+import LoadingSpin from "../customComponents/LoadingSpinner";
+import SnackBarSuccess from "../snackBars/SnackBarSuccess"; // Import del nuovo snackbar
 
 const EditApartmentModal = ({
   open,
@@ -29,6 +31,9 @@ const EditApartmentModal = ({
     apartment?.fixed_link || false
   );
   const [apartmentLink, setApartmentLink] = useState(apartment?.link || ""); // Aggiungi lo stato per il link
+  const [loading, setLoading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false); // Stato per lo Snackbar di successo
+  const [snackbarMessage, setSnackbarMessage] = useState(""); // Messaggio dello Snackbar
 
   useEffect(() => {
     if (apartment) {
@@ -64,6 +69,7 @@ const EditApartmentModal = ({
 
   const handleSaveChanges = async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem("token");
       if (!token) {
         console.error("Nessun token trovato. Utente non autenticato.");
@@ -102,13 +108,26 @@ const EditApartmentModal = ({
         console.log("Appartamento aggiornato con successo:", response.data);
         onApartmentUpdated(response.data); // Chiamata di callback per aggiornare la lista degli appartamenti
         onClose(); // Chiudi la modale
+        setSnackbarMessage(t("save_success")); // Messaggio di successo
+        setSnackbarOpen(true); // Mostra lo snackbar
+      } else {
+        setSnackbarMessage(t("save_error")); // Messaggio di errore generico
+        setSnackbarOpen(true); // Mostra lo snackbar di errore
       }
     } catch (error) {
       console.error(
         "Errore durante l'aggiornamento dell'appartamento:",
         error.response ? error.response.data : error.message
       );
+      setSnackbarMessage(t("save_error")); // Messaggio di errore
+      setSnackbarOpen(true); // Mostra lo snackbar
+    } finally {
+      setLoading(false); // Fine caricamento
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false); // Chiudi lo snackbar
   };
 
   const handleLinkGenerated = (newLink) => {
@@ -122,66 +141,78 @@ const EditApartmentModal = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle sx={{ fontSize: pxToRem(24), textAlign: "center" }}>
-        {apartment ? `Edit ${apartment.nome}` : "Edit Apartment"}
-      </DialogTitle>
+    <>
+      {loading ? (
+        <LoadingSpin size={40} />
+      ) : (
+        <Dialog width="m" open={open} onClose={onClose}>
+          <DialogTitle sx={{ fontSize: pxToRem(24), textAlign: "center" }}>
+            {apartment ? `Edit ${apartment.nome}` : "Edit Apartment"}
+          </DialogTitle>
 
-      <DialogContent
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          gap: pxToRem(8),
-          width: pxToRem(300),
-          padding: pxToRem(16),
-        }}>
-        {apartment && (
-          <>
-            <LinkDurationField linkDuration={linkDuration} />
-            <FixedLinkSwitch
-              isFixedLink={isFixedLink}
-              onChange={(e) => {
-                const isChecked = e.target.checked;
-                setIsFixedLink(isChecked);
+          <DialogContent
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: pxToRem(8),
+              padding: pxToRem(16),
+            }}>
+            {apartment && (
+              <>
+                <LinkDurationField linkDuration={linkDuration} />
+                <FixedLinkSwitch
+                  isFixedLink={isFixedLink}
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    setIsFixedLink(isChecked);
 
-                if (isChecked) {
-                  setSelectedCheckInDate(null);
-                  setSelectedCheckOutDate(null);
-                }
-              }}
-            />
-            <Box
-              sx={{
-                display: isFixedLink ? "none" : "flex",
-                flexDirection: "column",
-                gap: pxToRem(16),
-              }}>
-              <DatePickers
-                checkInDate={selectedCheckInDate}
-                setCheckInDate={setSelectedCheckInDate}
-                checkOutDate={selectedCheckOutDate}
-                setCheckOutDate={setSelectedCheckOutDate}
-                isDisabled={isFixedLink}
-              />
-            </Box>
+                    if (isChecked) {
+                      setSelectedCheckInDate(null);
+                      setSelectedCheckOutDate(null);
+                    }
+                  }}
+                />
+                <Box
+                  sx={{
+                    display: isFixedLink ? "none" : "flex",
+                    flexDirection: "column",
+                    gap: pxToRem(16),
+                  }}>
+                  <DatePickers
+                    checkInDate={selectedCheckInDate}
+                    setCheckInDate={setSelectedCheckInDate}
+                    checkOutDate={selectedCheckOutDate}
+                    setCheckOutDate={setSelectedCheckOutDate}
+                    isDisabled={isFixedLink}
+                  />
+                </Box>
 
-            {/* Utilizzo del nuovo componente ShortLinkManager */}
-            <ShortLinkManager
-              apartment={apartment}
-              onLinkGenerated={handleLinkGenerated}
-              onLinkDeleted={handleLinkDeleted}
-            />
+                {/* Utilizzo del nuovo componente ShortLinkManager */}
+                <ShortLinkManager
+                  apartment={apartment}
+                  onLinkGenerated={handleLinkGenerated}
+                  onLinkDeleted={handleLinkDeleted}
+                />
 
-            <CustomButton
-              onClick={handleSaveChanges}
-              variant="contained"
-              color="primary">
-              {t("save")}
-            </CustomButton>
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
+                <CustomButton
+                  onClick={handleSaveChanges}
+                  variant="contained"
+                  color="primary">
+                  {t("save")}
+                </CustomButton>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Snackbar per il messaggio di successo */}
+      <SnackBarSuccess
+        open={snackbarOpen}
+        onClose={handleSnackbarClose}
+        messageKey={snackbarMessage} // Passa "save_success" o "save_error"
+      />
+    </>
   );
 };
 

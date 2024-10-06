@@ -4,6 +4,7 @@ import CustomButton from "./CustomButton";
 import { Box, Tooltip } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
+import { pxToRem } from "../../utils/pxToRem";
 
 const GenerateLinkButton = ({ onClick, isDisabled }) => {
   const theme = useTheme();
@@ -17,6 +18,8 @@ const GenerateLinkButton = ({ onClick, isDisabled }) => {
           onClick={onClick}
           disabled={isDisabled}
           sx={{
+            marginTop: pxToRem(8),
+            marginBottom: pxToRem(8),
             ...(isDisabled && {
               border: `1px solid ${theme.colors.red}`,
               "&:hover": {

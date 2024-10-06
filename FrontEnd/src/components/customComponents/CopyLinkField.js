@@ -1,4 +1,3 @@
-// src/components/customComponents/CopyLinkField.js
 import React, { useState } from "react";
 import { Box, TextField, IconButton, Tooltip } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -13,19 +12,21 @@ const CopyLinkField = ({ link, onCopy }) => {
 
   // Gestisco il click per copiare il link e mostro il tooltip
   const handleCopyClick = () => {
-    onCopy(); // Eseguo la funzione di copia
-    setIsCopied(true); // Aggiorno lo stato a "copiato"
-    setTooltipOpen(true); // Mostro il tooltip
+    if (link) {
+      onCopy(); // Eseguo la funzione di copia solo se il link non è vuoto
+      setIsCopied(true); // Aggiorno lo stato a "copiato"
+      setTooltipOpen(true); // Mostro il tooltip
 
-    // Nascondo il tooltip dopo 1.5 secondi
-    setTimeout(() => {
-      setTooltipOpen(false);
-    }, 1500);
+      // Nascondo il tooltip dopo 1.5 secondi
+      setTimeout(() => {
+        setTooltipOpen(false);
+      }, 1500);
 
-    // Ripristino l'icona standard dopo 3 secondi
-    setTimeout(() => {
-      setIsCopied(false);
-    }, 3000);
+      // Ripristino l'icona standard dopo 3 secondi
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 3000);
+    }
   };
 
   return (
@@ -42,16 +43,22 @@ const CopyLinkField = ({ link, onCopy }) => {
         disableHoverListener // Disabilito il comportamento predefinito di apertura al passaggio del mouse
         sx={{ fontSize: pxToRem(14) }} // Applico la conversione per il font-size
       >
-        <IconButton onClick={handleCopyClick} sx={{ fontSize: pxToRem(24) }}>
-          {/* Cambio l'icona in base allo stato "copiato" */}
-          {isCopied ? (
-            <CheckCircleIcon
-              style={{ color: "green", fontSize: pxToRem(24) }}
-            /> // Icona verde di conferma
-          ) : (
-            <ContentCopyIcon style={{ fontSize: pxToRem(24) }} /> // Icona standard per copiare
-          )}
-        </IconButton>
+        <Box>
+          {/* Disabilito il bottone se il link è vuoto */}
+          <IconButton
+            onClick={handleCopyClick}
+            disabled={!link} // Bottone disabilitato se il link è vuoto
+            sx={{ fontSize: pxToRem(24) }}>
+            {/* Cambio l'icona in base allo stato "copiato" */}
+            {isCopied ? (
+              <CheckCircleIcon
+                style={{ color: "green", fontSize: pxToRem(24) }}
+              /> // Icona verde di conferma
+            ) : (
+              <ContentCopyIcon style={{ fontSize: pxToRem(24) }} /> // Icona standard per copiare
+            )}
+          </IconButton>
+        </Box>
       </Tooltip>
     </Box>
   );

@@ -18,6 +18,14 @@ i18n
       // Risorse di traduzione per le lingue supportate (inglese e italiano)
       en: {
         translation: {
+          generate_success: "Link generated successfully!",
+          delete_link_success: "Link deleted successfully!",
+          delete_link_error: "Error deleting link!",
+          generate_error: "Error 1 request every 20 seconds!",
+          copy_success: "Link copied!",
+          copy_error: "Error copying link!",
+          save_success: "Save successful!",
+          save_error: "Error saving data. Please try again!",
           confirm_delete: "Confirm Delete",
           confirm_delete_message:
             "Are you sure you want to delete the generated link?",
@@ -145,6 +153,14 @@ i18n
       },
       it: {
         translation: {
+          generate_success: "Link generato con successo!",
+          generate_error: "Errore 1 richiesta ogni 20 secondi!",
+          delete_link_success: "Link eliminato con successo!",
+          copy_success: "Link copiato!",
+          copy_error: "Errore durante la copia del link!",
+          delete_link_error: "Errore durante l'eliminazione del link!",
+          save_success: "Salvato con successo",
+          save_error: "Errore durante il salvataggio",
           confirm_delete: "Conferma eliminazione",
           confirm_delete_message:
             "Sei sicuro di voler eliminare il link generato?",
