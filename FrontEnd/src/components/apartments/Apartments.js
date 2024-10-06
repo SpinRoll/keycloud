@@ -1,4 +1,3 @@
-// src/components/apartments/Apartments.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -23,8 +22,9 @@ import dayjs from "dayjs"; // Importa dayjs per la gestione delle date
 
 const Apartments = () => {
   const theme = useTheme(); // Uso il tema corrente di Material-UI per ottenere i colori
-  const { t } = useTranslation(); // Uso il hook useTranslation per ottenere la funzione di traduzione
+  const { t, i18n } = useTranslation(); // Uso il hook useTranslation per ottenere la funzione di traduzione
   const [apartments, setApartments] = useState([]); // Stato per la lista degli appartamenti
+  const [apartmentStatusColors, setApartmentStatusColors] = useState([]); // Stato per i colori degli appartamenti
   const [openAdd, setOpenAdd] = useState(false); // Stato per gestire l'apertura della modale di aggiunta
   const [openEdit, setOpenEdit] = useState(false); // Stato per gestire l'apertura della modale di modifica
   const [selectedApartment, setSelectedApartment] = useState(null); // Stato per l'appartamento selezionato da modificare
@@ -40,7 +40,6 @@ const Apartments = () => {
           return;
         }
         const response = await axios.get(`/api/apartments`, {
-          // Assicurati che il percorso dell'API sia corretto
           headers: {
             Authorization: `Bearer ${token}`, // Aggiungi il token JWT nell'intestazione
           },
@@ -66,34 +65,58 @@ const Apartments = () => {
 
     fetchApartments();
     // eslint-disable-next-line
-  }, []);
+  }, [i18n.language]); // Aggiorna quando cambia la lingua
+
+  let active = t("active");
+  let expired = t("expired");
+  let inactive = t("inactive");
+
+  const statusMap = {
+    [active]: "active", // Mappa il valore tradotto alla chiave dello stato
+    [expired]: "expired",
+    [inactive]: "inactive",
+  };
+
+  const colors = {
+    active: theme.palette.success.main,
+    expired: theme.palette.error.main,
+    inactive: theme.palette.warning.main,
+  };
 
   // Funzione per determinare lo stato e il colore dell'appartamento
   const getApartmentStatusAndColor = (apartment) => {
-    const today = dayjs(); // Data di oggi
-    // eslint-disable-next-line
+    const today = dayjs(); // Data e ora attuali
     const dataInizio = dayjs(apartment.data_inizio);
-    const dataFine = dayjs(apartment.data_fine);
-    let status = "inactive"; // Stato predefinito
+    const dataFine = dayjs(apartment.data_fine).endOf("day"); // Fine della giornata per la data di fine
+
+    let status = t("inactive"); // Stato predefinito (traduzione per "inactive")
 
     if (!apartment.data_inizio || !apartment.data_fine) {
-      status = "inactive"; // Se non ci sono date, lo stato è "inactive"
+      status = t("inactive"); // Se non ci sono date, lo stato è "inactive" (tradotto)
     } else if (dataFine.isBefore(today)) {
-      status = "expired"; // Se la data di fine è minore di oggi, è "expired"
-    } else {
-      status = "active"; // Altrimenti è "active"
+      status = t("expired"); // Se la data di fine è prima di oggi, è "expired" (tradotto)
+    } else if (dataInizio.isSame(dataFine, "day")) {
+      status = t("active"); // Se la data di inizio e fine sono uguali, è attivo per tutta la giornata (tradotto)
+    } else if (dataInizio.isBefore(today) && dataFine.isAfter(today)) {
+      status = t("active"); // L'appartamento è attivo (tradotto)
+    } else if (dataInizio.isAfter(today)) {
+      status = t("inactive"); // Se la data di inizio è successiva a oggi, è ancora inattivo (tradotto)
     }
 
-    const colors = {
-      active: theme.palette.success.main,
-      expired: theme.palette.error.main,
-      inactive: theme.palette.warning.main,
-    };
-
-    const color = colors[status] || theme.palette.text.primary; // Colore corrispondente allo stato
+    const translatedStatus = statusMap[status]; // Traduzione dello stato
+    const color = colors[translatedStatus] || theme.palette.text.primary; // Colore corrispondente allo stato
 
     return { status, color };
   };
+
+  // Funzione per aggiornare i colori degli appartamenti in base allo stato
+  useEffect(() => {
+    const updatedColors = apartments.map((apartment) => {
+      const { color } = getApartmentStatusAndColor(apartment);
+      return color;
+    });
+    setApartmentStatusColors(updatedColors);
+  }, [apartments, i18n.language]); // Aggiorna i colori quando cambia l'elenco degli appartamenti o la lingua
 
   // Funzione per gestire la generazione del link di un appartamento
   const handleLinkGenerated = (apartmentId, newLink) => {
@@ -158,7 +181,7 @@ const Apartments = () => {
           </Typography>
         ) : (
           <List sx={{ width: "100%" }}>
-            {apartments.map((apartment) => (
+            {apartments.map((apartment, index) => (
               <ListItem
                 key={apartment._id}
                 button
@@ -177,7 +200,7 @@ const Apartments = () => {
                     <Typography
                       variant="body2"
                       sx={{ color: theme.palette.text.secondary }}>
-                      Periodo:{" "}
+                      {t("period")}{" "}
                       {`${
                         apartment.data_inizio
                           ? new Date(apartment.data_inizio).toLocaleDateString()
@@ -194,7 +217,7 @@ const Apartments = () => {
                 <Typography
                   variant="body2"
                   sx={{
-                    color: apartment.color,
+                    color: apartmentStatusColors[index], // Usa il colore dallo stato
                     fontWeight: "bold",
                     marginRight: pxToRem(10),
                   }}>

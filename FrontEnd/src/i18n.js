@@ -18,6 +18,10 @@ i18n
       // Risorse di traduzione per le lingue supportate (inglese e italiano)
       en: {
         translation: {
+          active: "Active",
+          inactive: "Inactive",
+          expired: "Expired",
+          period: "Period",
           language: "Language",
           dark_mode: "Dark Mode",
           light_mode: "Light Mode",
@@ -136,6 +140,10 @@ i18n
       },
       it: {
         translation: {
+          active: "Attivo",
+          inactive: "Inattivo",
+          expired: "Scaduto",
+          period: "Periodo",
           language: "Lingua",
           dark_mode: "Modalità Scura",
           light_mode: "Modalità Chiara",

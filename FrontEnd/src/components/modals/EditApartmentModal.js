@@ -139,17 +139,17 @@ const EditApartmentModal = ({
 
         // Calcolo del nuovo stato in base alle date aggiornate
         const today = dayjs();
-        let newStatus = "inactive";
+        let newStatus = t("inactive");
         if (dataInizioISO && dataFineISO) {
           const inizioDate = dayjs(dataInizioISO);
           const fineDate = dayjs(dataFineISO);
           if (fineDate.isBefore(today)) {
-            newStatus = "expired";
+            newStatus = t("expired");
           } else if (
             inizioDate.isBefore(today) ||
             inizioDate.isSame(today, "day")
           ) {
-            newStatus = "active";
+            newStatus = t("active");
           }
         }
 
