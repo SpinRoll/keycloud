@@ -8,22 +8,26 @@ const apartmentSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    nome: { type: String, required: true }, // Nome dell'appartamento
-    via: { type: String, required: true }, // Via (Strada)
-    numero: { type: Number, required: true }, // Numero civico
-    piano_scala: { type: String }, // Piano/Scala
-    citta: { type: String, required: true }, // Città
-    cap: { type: Number, required: true }, // CAP (Codice Postale)
-    prefisso: { type: Number, required: true }, // Prefisso telefonico
-    telefono: { type: Number, required: true }, // Telefono
-    link: { type: String }, // Link
-    fixed_link: { type: Boolean, default: false }, // Link fisso
-    data_inizio: { type: Date }, // Data di inizio
-    data_fine: { type: Date }, // Data di fine
-    status: { type: String, default: "inactive" }, // Stato dell'appartamento (inactive, active, expired)
+    abbonamento_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subscription", // Facoltativo, ma utile se vuoi collegare ogni appartamento al piano dell'utente
+    },
+    nome: { type: String, required: true },
+    via: { type: String, required: true },
+    numero: { type: Number, required: true },
+    piano_scala: { type: String },
+    citta: { type: String, required: true },
+    cap: { type: Number, required: true },
+    prefisso: { type: Number, required: true },
+    telefono: { type: Number, required: true },
+    link: { type: String },
+    fixed_link: { type: Boolean, default: false },
+    data_inizio: { type: Date },
+    data_fine: { type: Date },
+    status: { type: String, default: "inactive" },
   },
   {
-    timestamps: true, // Aggiunge automaticamente campi createdAt e updatedAt in UTC
+    timestamps: true,
   }
 );
 
