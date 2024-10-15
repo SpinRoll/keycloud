@@ -1,3 +1,4 @@
+// components/apartments/Apartments.js
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
@@ -275,7 +276,8 @@ const Apartments = () => {
                 : apartment
             )
           );
-        }} // Callback per aggiornare l'appartamento
+          handleClose(); // Chiudi la modale dopo l'aggiornamento
+        }}
       />
     </Container>
   );

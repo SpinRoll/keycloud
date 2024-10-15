@@ -1,3 +1,4 @@
+// routes/apartments.js
 const express = require("express");
 const Apartment = require("../models/Apartment");
 const authMiddleware = require("../middleware/authMiddleware");
@@ -74,7 +75,21 @@ router.post("/", authMiddleware, async (req, res) => {
 // Endpoint per aggiornare un appartamento esistente
 router.put("/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
-  const { data_inizio, data_fine, link, status, fixed_link } = req.body;
+  const {
+    nome,
+    via,
+    numero,
+    piano_scala,
+    citta,
+    cap,
+    prefisso,
+    telefono,
+    data_inizio,
+    data_fine,
+    link,
+    fixed_link,
+    status,
+  } = req.body;
 
   try {
     // Calcola il nuovo stato dell'appartamento
@@ -82,7 +97,21 @@ router.put("/:id", authMiddleware, async (req, res) => {
 
     const updatedApartment = await Apartment.findByIdAndUpdate(
       id,
-      { data_inizio, data_fine, status, link, fixed_link }, // Aggiorna anche lo stato
+      {
+        nome,
+        via,
+        numero,
+        piano_scala,
+        citta,
+        cap,
+        prefisso,
+        telefono,
+        data_inizio,
+        data_fine,
+        link,
+        fixed_link,
+        status,
+      }, // Aggiorna anche lo stato
       { new: true, runValidators: true } // `new: true` restituisce il documento aggiornato
     );
 

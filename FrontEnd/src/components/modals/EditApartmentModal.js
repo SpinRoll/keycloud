@@ -10,7 +10,9 @@ import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 import axios from "axios";
 import LoadingSpin from "../customComponents/LoadingSpinner";
-import SnackBarSuccess from "../snackBars/SnackBarSuccess"; // Import del nuovo snackbar
+import SnackBarSuccess from "../snackBars/SnackBarSuccess";
+import CustomTextField from "../customComponents/CustomTextField";
+import HomeIcon from "@mui/icons-material/Home";
 
 const EditApartmentModal = ({
   open,
@@ -20,6 +22,7 @@ const EditApartmentModal = ({
   disabled,
 }) => {
   const { t } = useTranslation();
+
   const [selectedCheckInDate, setSelectedCheckInDate] = useState(
     apartment ? dayjs(apartment.data_inizio) : null
   );
@@ -30,13 +33,34 @@ const EditApartmentModal = ({
   const [isFixedLink, setIsFixedLink] = useState(
     apartment?.fixed_link || false
   );
-  const [apartmentLink, setApartmentLink] = useState(apartment?.link || ""); // Aggiungi lo stato per il link
+  const [apartmentLink, setApartmentLink] = useState(apartment?.link || "");
   const [loading, setLoading] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false); // Stato per lo Snackbar di successo
-  const [snackbarMessage, setSnackbarMessage] = useState(""); // Messaggio dello Snackbar
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [formValues, setFormValues] = useState({
+    nome: "",
+    via: "",
+    numero: "",
+    piano_scala: "",
+    citta: "",
+    cap: "",
+    prefisso: "",
+    telefono: "",
+  });
 
   useEffect(() => {
     if (apartment) {
+      setFormValues({
+        nome: apartment.nome || "",
+        via: apartment.via || "",
+        numero: apartment.numero || "",
+        piano_scala: apartment.piano_scala || "",
+        citta: apartment.citta || "",
+        cap: apartment.cap || "",
+        prefisso: apartment.prefisso || "",
+        telefono: apartment.telefono || "",
+      });
       setSelectedCheckInDate(
         apartment.data_inizio ? dayjs(apartment.data_inizio) : null
       );
@@ -44,7 +68,7 @@ const EditApartmentModal = ({
         apartment.data_fine ? dayjs(apartment.data_fine) : null
       );
       setIsFixedLink(apartment.fixed_link || false);
-      setApartmentLink(apartment.link || ""); // Inizializza il link
+      setApartmentLink(apartment.link || "");
     }
   }, [apartment]);
 
@@ -57,6 +81,15 @@ const EditApartmentModal = ({
         setLinkDuration(`${duration} gg`);
       }
     }
+  };
+
+  // Funzione per gestire i cambiamenti dei campi di input
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues((prevValues) => ({
+      ...prevValues,
+      [name]: value,
+    }));
   };
 
   useEffect(() => {
@@ -76,7 +109,6 @@ const EditApartmentModal = ({
         return;
       }
 
-      // Converti le date in formato ISO per la richiesta
       const dataInizioISO = isFixedLink
         ? null
         : selectedCheckInDate
@@ -88,14 +120,14 @@ const EditApartmentModal = ({
         ? selectedCheckOutDate.toISOString()
         : null;
 
-      // Invia i dati dell'appartamento e il link aggiornato
       const response = await axios.put(
         `/api/apartments/${apartment._id}`,
         {
+          ...formValues,
           data_inizio: dataInizioISO,
           data_fine: dataFineISO,
           fixed_link: isFixedLink,
-          link: apartmentLink, // Usa il nuovo stato per il link
+          link: apartmentLink,
         },
         {
           headers: {
@@ -106,38 +138,39 @@ const EditApartmentModal = ({
 
       if (response.status === 200) {
         console.log("Appartamento aggiornato con successo:", response.data);
-        onApartmentUpdated(response.data); // Chiamata di callback per aggiornare la lista degli appartamenti
-        onClose(); // Chiudi la modale
-        setSnackbarMessage(t("save_success")); // Messaggio di successo
-        setSnackbarOpen(true); // Mostra lo snackbar
+        onApartmentUpdated(response.data);
+        setSnackbarMessage(t("save_success"));
+        setSnackbarOpen(true);
+        setLoading(false);
+        onClose();
+        closeEditModal();
       } else {
-        setSnackbarMessage(t("save_error")); // Messaggio di errore generico
-        setSnackbarOpen(true); // Mostra lo snackbar di errore
+        setSnackbarMessage(t("save_error"));
+        setSnackbarOpen(true);
+        setLoading(false);
       }
     } catch (error) {
       console.error(
         "Errore durante l'aggiornamento dell'appartamento:",
         error.response ? error.response.data : error.message
       );
-      setSnackbarMessage(t("save_error")); // Messaggio di errore
-      setSnackbarOpen(true); // Mostra lo snackbar
+      setSnackbarMessage(t("save_error"));
+      setSnackbarOpen(true);
     } finally {
-      setLoading(false); // Fine caricamento
+      setLoading(false);
     }
   };
 
   const handleSnackbarClose = () => {
-    setSnackbarOpen(false); // Chiudi lo snackbar
+    setSnackbarOpen(false);
   };
 
-  const handleLinkGenerated = (newLink) => {
-    console.log("Link generato:", newLink);
-    setApartmentLink(newLink); // Aggiorna il link nello stato
+  const openEditModal = () => {
+    setIsEditModalOpen(true);
   };
 
-  const handleLinkDeleted = () => {
-    console.log("Link cancellato");
-    setApartmentLink(""); // Resetta il link nello stato
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
   };
 
   return (
@@ -187,11 +220,10 @@ const EditApartmentModal = ({
                   />
                 </Box>
 
-                {/* Utilizzo del nuovo componente ShortLinkManager */}
                 <ShortLinkManager
                   apartment={apartment}
-                  onLinkGenerated={handleLinkGenerated}
-                  onLinkDeleted={handleLinkDeleted}
+                  onLinkGenerated={(newLink) => setApartmentLink(newLink)}
+                  onLinkDeleted={() => setApartmentLink("")}
                 />
 
                 <CustomButton
@@ -200,17 +232,129 @@ const EditApartmentModal = ({
                   color="primary">
                   {t("save")}
                 </CustomButton>
+                <CustomButton
+                  onClick={openEditModal}
+                  variant="contained"
+                  color="primary">
+                  {t("edit")}
+                </CustomButton>
               </>
             )}
           </DialogContent>
         </Dialog>
       )}
 
+      {/* Modale per la modifica con i campi come in AddApartmentModal */}
+      <Dialog
+        maxWidth="m"
+        open={isEditModalOpen}
+        onClose={closeEditModal}
+        sx={{
+          borderRadius: pxToRem(8),
+          boxShadow: `0px ${pxToRem(0)} ${pxToRem(10)} #635FC7`,
+        }}>
+        <DialogTitle sx={{ fontSize: pxToRem(20), textAlign: "center" }}>
+          {t("edit_apartment")}
+        </DialogTitle>
+
+        <DialogContent
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            gap: pxToRem(8),
+            padding: pxToRem(16),
+          }}>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <HomeIcon sx={{ width: pxToRem(40), height: pxToRem(40) }} />
+          </Box>
+
+          <CustomTextField
+            label={t("name")}
+            variant="outlined"
+            fullWidth
+            name="nome"
+            value={formValues.nome}
+            onChange={handleChange}
+          />
+
+          <Box sx={{ display: "flex", gap: pxToRem(8), width: "100%" }}>
+            <CustomTextField
+              label={t("street")}
+              variant="outlined"
+              fullWidth
+              name="via"
+              value={formValues.via}
+              onChange={handleChange}
+            />
+            <CustomTextField
+              label={t("number")}
+              variant="outlined"
+              fullWidth
+              name="numero"
+              value={formValues.numero}
+              onChange={handleChange}
+            />
+          </Box>
+
+          <CustomTextField
+            label={t("floor_staircase")}
+            variant="outlined"
+            fullWidth
+            name="piano_scala"
+            value={formValues.piano_scala}
+            onChange={handleChange}
+          />
+
+          <CustomTextField
+            label={t("city")}
+            variant="outlined"
+            fullWidth
+            name="citta"
+            value={formValues.citta}
+            onChange={handleChange}
+          />
+
+          <CustomTextField
+            label={t("postal_code")}
+            variant="outlined"
+            fullWidth
+            name="cap"
+            value={formValues.cap}
+            onChange={handleChange}
+          />
+
+          <Box sx={{ display: "flex", gap: pxToRem(8), width: "100%" }}>
+            <CustomTextField
+              label={t("prefix")}
+              variant="outlined"
+              fullWidth
+              name="prefisso"
+              value={formValues.prefisso}
+              onChange={handleChange}
+              sx={{ flex: 1 }}
+            />
+            <CustomTextField
+              label={t("phone")}
+              variant="outlined"
+              fullWidth
+              name="telefono"
+              value={formValues.telefono}
+              onChange={handleChange}
+              sx={{ flex: 3 }}
+            />
+          </Box>
+
+          <CustomButton variant="contained" onClick={handleSaveChanges}>
+            {t("save")}
+          </CustomButton>
+        </DialogContent>
+      </Dialog>
+
       {/* Snackbar per il messaggio di successo */}
       <SnackBarSuccess
         open={snackbarOpen}
         onClose={handleSnackbarClose}
-        messageKey={snackbarMessage} // Passa "save_success" o "save_error"
+        messageKey={snackbarMessage}
       />
     </>
   );
