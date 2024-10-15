@@ -92,6 +92,23 @@ router.put("/:id", authMiddleware, async (req, res) => {
   } = req.body;
 
   try {
+    // Server-side validation
+    if (link && link.trim() !== "") {
+      if (!fixed_link && (!data_inizio || !data_fine)) {
+        return res.status(400).json({
+          message:
+            "Start and end dates are required when fixed link is disabled and a link is generated.",
+        });
+      }
+
+      if (fixed_link && (data_inizio || data_fine)) {
+        return res.status(400).json({
+          message:
+            "Cannot provide dates when fixed link is enabled and a link is generated.",
+        });
+      }
+    }
+
     // Calcola il nuovo stato dell'appartamento
     const status = calculateStatus(data_inizio, data_fine);
 
@@ -144,6 +161,32 @@ router.get("/", authMiddleware, async (req, res) => {
       error.message
     );
     res.status(500).json({ message: "Errore nel recupero degli appartamenti" });
+  }
+});
+
+// Endpoint to delete an apartment
+router.delete("/:id", authMiddleware, async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Find the apartment by ID
+    const apartment = await Apartment.findById(id);
+
+    if (!apartment) {
+      return res.status(404).json({ message: "Apartment not found" });
+    }
+
+    // Check if the authenticated user is the owner of the apartment
+    if (apartment.user_id.toString() !== req.userId) {
+      return res.status(403).json({ message: "Unauthorized action" });
+    }
+
+    // Delete the apartment
+    await Apartment.findByIdAndDelete(id);
+
+    res.status(200).json({ message: "Apartment deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting apartment:", error.message);
+    res.status(500).json({ message: "Error deleting apartment" });
   }
 });
 

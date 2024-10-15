@@ -1,25 +1,24 @@
+// components/modals/EditApartmentModal.js
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogTitle, Box } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
 import { pxToRem } from "../../utils/pxToRem";
-import LinkDurationField from "../customComponents/LinkDurationField";
-import CustomButton from "../customComponents/CustomButton";
-import FixedLinkSwitch from "../customComponents/FixedLinkSwitch";
-import DatePickers from "../customComponents/DatePickers";
+import LinkSettings from "../forms/LinkSettings";
 import ShortLinkManager from "./ShortLinkManager";
-import dayjs from "dayjs";
-import { useTranslation } from "react-i18next";
-import axios from "axios";
+import ApartmentForm from "../forms/ApartmentForm";
 import LoadingSpin from "../customComponents/LoadingSpinner";
 import SnackBarSuccess from "../snackBars/SnackBarSuccess";
-import CustomTextField from "../customComponents/CustomTextField";
-import HomeIcon from "@mui/icons-material/Home";
+import CustomButton from "../customComponents/CustomButton";
+import { useTranslation } from "react-i18next";
+import axios from "axios";
+import dayjs from "dayjs";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 
 const EditApartmentModal = ({
   open,
   onClose,
   apartment,
   onApartmentUpdated,
-  disabled,
+  onApartmentDeleted,
 }) => {
   const { t } = useTranslation();
 
@@ -38,6 +37,7 @@ const EditApartmentModal = ({
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [formValues, setFormValues] = useState({
     nome: "",
     via: "",
@@ -72,24 +72,23 @@ const EditApartmentModal = ({
     }
   }, [apartment]);
 
-  const calculateLinkDuration = (checkIn, checkOut) => {
-    if (checkIn && checkOut) {
-      if (checkOut.isBefore(checkIn)) {
-        setLinkDuration("Data non valida");
-      } else {
-        const duration = checkOut.diff(checkIn, "day");
-        setLinkDuration(`${duration} gg`);
-      }
-    }
-  };
-
-  // Funzione per gestire i cambiamenti dei campi di input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues((prevValues) => ({
       ...prevValues,
       [name]: value,
     }));
+  };
+
+  const calculateLinkDuration = (checkIn, checkOut) => {
+    if (checkIn && checkOut) {
+      if (checkOut.isBefore(checkIn)) {
+        setLinkDuration("Invalid date");
+      } else {
+        const duration = checkOut.diff(checkIn, "day");
+        setLinkDuration(`${duration} days`);
+      }
+    }
   };
 
   useEffect(() => {
@@ -100,12 +99,76 @@ const EditApartmentModal = ({
     }
   }, [selectedCheckInDate, selectedCheckOutDate, isFixedLink]);
 
-  const handleSaveChanges = async () => {
+  const handleDeleteApartment = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("token");
       if (!token) {
-        console.error("Nessun token trovato. Utente non autenticato.");
+        console.error("No token found. User not authenticated.");
+        return;
+      }
+
+      const response = await axios.delete(`/api/apartments/${apartment._id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        setSnackbarMessage(t("delete_success"));
+        setSnackbarOpen(true);
+        setLoading(false);
+        onApartmentDeleted(apartment._id); // Notify parent component about deletion
+        closeDeleteModal();
+        onClose();
+      } else {
+        setSnackbarMessage(t("delete_error"));
+        setSnackbarOpen(true);
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error(
+        "Error deleting apartment:",
+        error.response ? error.response.data : error.message
+      );
+      setSnackbarMessage(t("delete_error"));
+      setSnackbarOpen(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleSaveChanges = async () => {
+    // Validation before saving
+    if (apartmentLink && apartmentLink.trim() !== "") {
+      if (!isFixedLink && (!selectedCheckInDate || !selectedCheckOutDate)) {
+        // Cannot save because fixed_link is false and dates are empty
+        setSnackbarMessage(t("error_dates_required"));
+        setSnackbarOpen(true);
+        return;
+      }
+
+      if (isFixedLink && (selectedCheckInDate || selectedCheckOutDate)) {
+        // Cannot save because fixed_link is true and dates are provided
+        setSnackbarMessage(t("error_fixed_link_dates_conflict"));
+        setSnackbarOpen(true);
+        return;
+      }
+    }
+
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found. User not authenticated.");
         return;
       }
 
@@ -137,7 +200,6 @@ const EditApartmentModal = ({
       );
 
       if (response.status === 200) {
-        console.log("Appartamento aggiornato con successo:", response.data);
         onApartmentUpdated(response.data);
         setSnackbarMessage(t("save_success"));
         setSnackbarOpen(true);
@@ -151,7 +213,7 @@ const EditApartmentModal = ({
       }
     } catch (error) {
       console.error(
-        "Errore durante l'aggiornamento dell'appartamento:",
+        "Error updating apartment:",
         error.response ? error.response.data : error.message
       );
       setSnackbarMessage(t("save_error"));
@@ -173,6 +235,12 @@ const EditApartmentModal = ({
     setIsEditModalOpen(false);
   };
 
+  const isValids =
+    apartmentLink &&
+    apartmentLink.trim() !== "" &&
+    ((isFixedLink && !selectedCheckInDate && !selectedCheckOutDate) ||
+      (!isFixedLink && selectedCheckInDate && selectedCheckOutDate));
+
   return (
     <>
       {loading ? (
@@ -180,7 +248,7 @@ const EditApartmentModal = ({
       ) : (
         <Dialog width="m" open={open} onClose={onClose}>
           <DialogTitle sx={{ fontSize: pxToRem(24), textAlign: "center" }}>
-            {apartment ? `Edit ${apartment.nome}` : "Edit Apartment"}
+            {apartment ? `${t("edit")} ${apartment.nome}` : t("edit_apartment")}
           </DialogTitle>
 
           <DialogContent
@@ -192,44 +260,30 @@ const EditApartmentModal = ({
             }}>
             {apartment && (
               <>
-                <LinkDurationField linkDuration={linkDuration} />
-                <FixedLinkSwitch
+                <LinkSettings
+                  linkDuration={linkDuration}
                   isFixedLink={isFixedLink}
-                  onChange={(e) => {
-                    const isChecked = e.target.checked;
-                    setIsFixedLink(isChecked);
-
-                    if (isChecked) {
-                      setSelectedCheckInDate(null);
-                      setSelectedCheckOutDate(null);
-                    }
-                  }}
+                  setIsFixedLink={setIsFixedLink}
+                  selectedCheckInDate={selectedCheckInDate}
+                  setSelectedCheckInDate={setSelectedCheckInDate}
+                  selectedCheckOutDate={selectedCheckOutDate}
+                  setSelectedCheckOutDate={setSelectedCheckOutDate}
                 />
-                <Box
-                  sx={{
-                    display: isFixedLink ? "none" : "flex",
-                    flexDirection: "column",
-                    gap: pxToRem(16),
-                  }}>
-                  <DatePickers
-                    checkInDate={selectedCheckInDate}
-                    setCheckInDate={setSelectedCheckInDate}
-                    checkOutDate={selectedCheckOutDate}
-                    setCheckOutDate={setSelectedCheckOutDate}
-                    isDisabled={isFixedLink}
-                  />
-                </Box>
 
                 <ShortLinkManager
                   apartment={apartment}
                   onLinkGenerated={(newLink) => setApartmentLink(newLink)}
                   onLinkDeleted={() => setApartmentLink("")}
+                  isFixedLink={isFixedLink}
+                  selectedCheckInDate={selectedCheckInDate}
+                  selectedCheckOutDate={selectedCheckOutDate}
                 />
 
                 <CustomButton
                   onClick={handleSaveChanges}
                   variant="contained"
-                  color="primary">
+                  color="primary"
+                  disabled={!isValids}>
                   {t("save")}
                 </CustomButton>
                 <CustomButton
@@ -238,13 +292,21 @@ const EditApartmentModal = ({
                   color="primary">
                   {t("edit")}
                 </CustomButton>
+
+                {/* Add the Delete button */}
+                <CustomButton
+                  onClick={openDeleteModal}
+                  variant="contained"
+                  color="error">
+                  {t("delete")}
+                </CustomButton>
               </>
             )}
           </DialogContent>
         </Dialog>
       )}
 
-      {/* Modale per la modifica con i campi come in AddApartmentModal */}
+      {/* Edit Apartment Details Modal */}
       <Dialog
         maxWidth="m"
         open={isEditModalOpen}
@@ -264,93 +326,23 @@ const EditApartmentModal = ({
             gap: pxToRem(8),
             padding: pxToRem(16),
           }}>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <HomeIcon sx={{ width: pxToRem(40), height: pxToRem(40) }} />
-          </Box>
-
-          <CustomTextField
-            label={t("name")}
-            variant="outlined"
-            fullWidth
-            name="nome"
-            value={formValues.nome}
-            onChange={handleChange}
+          <ApartmentForm
+            formValues={formValues}
+            handleChange={handleChange}
+            handleSave={handleSaveChanges}
           />
-
-          <Box sx={{ display: "flex", gap: pxToRem(8), width: "100%" }}>
-            <CustomTextField
-              label={t("street")}
-              variant="outlined"
-              fullWidth
-              name="via"
-              value={formValues.via}
-              onChange={handleChange}
-            />
-            <CustomTextField
-              label={t("number")}
-              variant="outlined"
-              fullWidth
-              name="numero"
-              value={formValues.numero}
-              onChange={handleChange}
-            />
-          </Box>
-
-          <CustomTextField
-            label={t("floor_staircase")}
-            variant="outlined"
-            fullWidth
-            name="piano_scala"
-            value={formValues.piano_scala}
-            onChange={handleChange}
-          />
-
-          <CustomTextField
-            label={t("city")}
-            variant="outlined"
-            fullWidth
-            name="citta"
-            value={formValues.citta}
-            onChange={handleChange}
-          />
-
-          <CustomTextField
-            label={t("postal_code")}
-            variant="outlined"
-            fullWidth
-            name="cap"
-            value={formValues.cap}
-            onChange={handleChange}
-          />
-
-          <Box sx={{ display: "flex", gap: pxToRem(8), width: "100%" }}>
-            <CustomTextField
-              label={t("prefix")}
-              variant="outlined"
-              fullWidth
-              name="prefisso"
-              value={formValues.prefisso}
-              onChange={handleChange}
-              sx={{ flex: 1 }}
-            />
-            <CustomTextField
-              label={t("phone")}
-              variant="outlined"
-              fullWidth
-              name="telefono"
-              value={formValues.telefono}
-              onChange={handleChange}
-              sx={{ flex: 3 }}
-            />
-          </Box>
-
-          <CustomButton variant="contained" onClick={handleSaveChanges}>
-            {t("save")}
-          </CustomButton>
         </DialogContent>
       </Dialog>
 
-      {/* Snackbar per il messaggio di successo */}
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        open={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        onConfirm={handleDeleteApartment}
+        apartmentName={apartment?.nome || ""}
+      />
+
+      {/* Snackbar for success message */}
       <SnackBarSuccess
         open={snackbarOpen}
         onClose={handleSnackbarClose}

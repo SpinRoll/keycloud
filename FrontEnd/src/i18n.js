@@ -149,6 +149,16 @@ i18n
           signup_success: "Sign up successful!",
           signup_success_title: "Registration Completed",
           linkCopied: "Link copied",
+          delete_confirmation_message:
+            "Are you sure you want to delete {{name}}?",
+          yes: "Yes",
+          no: "No",
+          delete_success: "Apartment deleted successfully.",
+          delete_error: "Error deleting apartment.",
+          error_dates_required:
+            "Please provide start and end dates or enable fixed link.",
+          error_fixed_link_dates_conflict:
+            "Cannot provide dates when fixed link is enabled.",
         },
       },
       it: {
@@ -291,6 +301,16 @@ i18n
           signup_success: "Effettuata con successo!",
           signup_success_title: "Registrazione completata",
           linkCopied: "Link copiato",
+          delete_confirmation_message:
+            "Sei sicuro di voler eliminare {{name}}?",
+          yes: "Si",
+          no: "No",
+          delete_success: "Appartamento eliminato con successo",
+          delete_error: " Errore durante l'eliminazione dell'appartamento",
+          error_dates_required:
+            "Si prega di fornire le date di inizio e fine o di attivare un link fisso.",
+          error_fixed_link_dates_conflict:
+            "Non è possibile fornire date quando è abilitato il collegamento fisso.",
         },
       },
     },

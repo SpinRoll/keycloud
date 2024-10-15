@@ -17,7 +17,14 @@ import { useTranslation } from "react-i18next";
 import LoadingSpin from "../customComponents/LoadingSpinner"; // Importa lo spinner
 import SnackBarSuccess from "../snackBars/SnackBarSuccess"; // Importa lo snackbar
 
-const ShortLinkManager = ({ apartment, onLinkGenerated, onLinkDeleted }) => {
+const ShortLinkManager = ({
+  apartment,
+  onLinkGenerated,
+  onLinkDeleted,
+  isFixedLink,
+  selectedCheckInDate,
+  selectedCheckOutDate,
+}) => {
   const [localGeneratedLink, setLocalGeneratedLink] = useState(
     apartment?.link || ""
   );
@@ -97,6 +104,7 @@ const ShortLinkManager = ({ apartment, onLinkGenerated, onLinkDeleted }) => {
 
       // Cancella il link localmente e aggiorna il backend
       setLocalGeneratedLink(""); // Reset locale
+      onLinkDeleted(); // Notifica il padre che il link è stato cancellato
 
       // Aggiorna il backend con il link vuoto
       const response = await axios.put(
