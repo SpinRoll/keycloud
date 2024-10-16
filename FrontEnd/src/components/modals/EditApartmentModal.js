@@ -1,8 +1,9 @@
 // components/modals/EditApartmentModal.js
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+import { Dialog, DialogContent, DialogTitle, Button, Box } from "@mui/material";
 import { pxToRem } from "../../utils/pxToRem";
 import LinkSettings from "../forms/LinkSettings";
+import { useTheme } from "@mui/material/styles";
 import ShortLinkManager from "./ShortLinkManager";
 import ApartmentForm from "../forms/ApartmentForm";
 import LoadingSpin from "../customComponents/LoadingSpinner";
@@ -21,7 +22,8 @@ const EditApartmentModal = ({
   onApartmentDeleted,
 }) => {
   const { t } = useTranslation();
-
+  // eslint-disable-next-line
+  const theme = useTheme();
   const [selectedCheckInDate, setSelectedCheckInDate] = useState(
     apartment ? dayjs(apartment.data_inizio) : null
   );
@@ -278,28 +280,37 @@ const EditApartmentModal = ({
                   selectedCheckInDate={selectedCheckInDate}
                   selectedCheckOutDate={selectedCheckOutDate}
                 />
+                <Box
+                  sx={{
+                    display: "flex",
+                    gap: pxToRem(16),
+                    justifyContent: "center",
+                    flexDirection: "column",
+                  }}>
+                  {/* Save button */}
+                  <CustomButton
+                    onClick={handleSaveChanges}
+                    variant="contained"
+                    color="primary"
+                    disabled={!isValids}>
+                    {t("save")}
+                  </CustomButton>
+                  {/* Edit button */}
+                  <CustomButton
+                    onClick={openEditModal}
+                    variant="contained"
+                    color="primary">
+                    {t("edit")}
+                  </CustomButton>
 
-                <CustomButton
-                  onClick={handleSaveChanges}
-                  variant="contained"
-                  color="primary"
-                  disabled={!isValids}>
-                  {t("save")}
-                </CustomButton>
-                <CustomButton
-                  onClick={openEditModal}
-                  variant="contained"
-                  color="primary">
-                  {t("edit")}
-                </CustomButton>
-
-                {/* Add the Delete button */}
-                <CustomButton
-                  onClick={openDeleteModal}
-                  variant="contained"
-                  color="error">
-                  {t("delete")}
-                </CustomButton>
+                  {/* Delete button */}
+                  <Button
+                    onClick={openDeleteModal}
+                    variant="outlined"
+                    color="error">
+                    {t("delete")}
+                  </Button>
+                </Box>
               </>
             )}
           </DialogContent>
