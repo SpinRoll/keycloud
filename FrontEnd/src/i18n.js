@@ -159,6 +159,8 @@ i18n
             "Please provide start and end dates or enable fixed link.",
           error_fixed_link_dates_conflict:
             "Cannot provide dates when fixed link is enabled.",
+          session_expired_please_login_again:
+            "Session expired, please login again",
         },
       },
       it: {
@@ -311,6 +313,8 @@ i18n
             "Si prega di fornire le date di inizio e fine o di attivare un link fisso.",
           error_fixed_link_dates_conflict:
             "Non è possibile fornire date quando è abilitato il collegamento fisso.",
+          session_expired_please_login_again:
+            "Sessione scaduta, effettua nuovamente il login",
         },
       },
     },
