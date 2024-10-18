@@ -16,7 +16,7 @@ const generateAccessToken = (user) => {
   return jwt.sign(
     { email: user.email, id: user._id },
     process.env.JWT_ACCESS_SECRET, // Usa una variabile di ambiente per la chiave segreta dell'access token
-    { expiresIn: "1m" } // Durata dell'access token
+    { expiresIn: "3h" } // Durata dell'access token
   );
 };
 
@@ -39,29 +39,33 @@ router.post("/refresh", async (req, res) => {
     }
 
     // Verify the refresh token
-    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, async (err, decoded) => {
-      if (err) {
-        console.error("Errore di verifica del refresh token:", err);
-        return res.status(403).json({ message: "Refresh token non valido." });
+    jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET,
+      async (err, decoded) => {
+        if (err) {
+          console.error("Errore di verifica del refresh token:", err);
+          return res.status(403).json({ message: "Refresh token non valido." });
+        }
+
+        // Find the user associated with the refresh token
+        const user = await User.findById(decoded.id);
+
+        if (!user) {
+          return res.status(404).json({ message: "Utente non trovato." });
+        }
+
+        // Check if the refresh token matches the one stored in the database
+        if (user.refreshToken !== refreshToken) {
+          return res.status(403).json({ message: "Refresh token non valido." });
+        }
+
+        // Generate a new access token
+        const accessToken = generateAccessToken(user);
+
+        res.status(200).json({ accessToken });
       }
-
-      // Find the user associated with the refresh token
-      const user = await User.findById(decoded.id);
-
-      if (!user) {
-        return res.status(404).json({ message: "Utente non trovato." });
-      }
-
-      // Check if the refresh token matches the one stored in the database
-      if (user.refreshToken !== refreshToken) {
-        return res.status(403).json({ message: "Refresh token non valido." });
-      }
-
-      // Generate a new access token
-      const accessToken = generateAccessToken(user);
-
-      res.status(200).json({ accessToken });
-    });
+    );
   } catch (error) {
     console.error("Errore durante il rinnovo del token:", error);
     res.status(500).json({ message: "Errore del server." });
