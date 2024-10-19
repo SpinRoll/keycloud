@@ -238,10 +238,11 @@ const EditApartmentModal = ({
   };
 
   const isValids =
-    apartmentLink &&
-    apartmentLink.trim() !== "" &&
-    ((isFixedLink && !selectedCheckInDate && !selectedCheckOutDate) ||
-      (!isFixedLink && selectedCheckInDate && selectedCheckOutDate));
+    !apartmentLink ||
+    apartmentLink.trim() === "" || // Permette di salvare se il link è vuoto
+    (apartmentLink.trim() !== "" &&
+      ((isFixedLink && !selectedCheckInDate && !selectedCheckOutDate) ||
+        (!isFixedLink && selectedCheckInDate && selectedCheckOutDate)));
 
   return (
     <>
