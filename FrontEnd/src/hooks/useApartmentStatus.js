@@ -10,47 +10,40 @@ const useApartmentStatus = (apartment) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
+  const today = dayjs().utc().startOf("day");
+  const dataInizio = apartment.data_inizio
+    ? dayjs(apartment.data_inizio).utc().startOf("day")
+    : null;
+  const dataFine = apartment.data_fine
+    ? dayjs(apartment.data_fine).utc().endOf("day")
+    : null;
+
+  const hasLink = apartment.link && apartment.link.trim() !== "";
+  const hasDates = dataInizio && dataFine;
+  const isFixedLink = apartment.fixed_link;
+
   let statusCode = "inactive";
   let status = t("inactive");
 
-  const hasLink = apartment.link && apartment.link.trim() !== "";
-  const hasDates = apartment.data_inizio && apartment.data_fine;
-  const isFixedLink = apartment.fixed_link;
-
-  if (hasLink && ((isFixedLink && !hasDates) || (!isFixedLink && hasDates))) {
-    // The apartment is active only if a link is generated and either:
-    // - fixed_link is true and dates are not provided
-    // - OR fixed_link is false and dates are provided
-    // Now, we need to check if the dates have expired
-
-    if (!isFixedLink && hasDates) {
-      const today = dayjs().utc().startOf("day");
-      const dataInizio = dayjs(apartment.data_inizio).utc().startOf("day");
-      const dataFine = dayjs(apartment.data_fine).utc().endOf("day");
-
-      if (today.isBefore(dataInizio)) {
-        // The apartment is not active yet
-        statusCode = "inactive";
-        status = t("inactive");
-      } else if (today.isAfter(dataFine)) {
-        // The apartment has expired
-        statusCode = "expired";
-        status = t("expired");
-      } else {
-        // The apartment is currently active
-        statusCode = "active";
-        status = t("active");
-      }
-    } else {
-      // For fixed links, the apartment is always active
+  if (hasLink) {
+    if (
+      isFixedLink ||
+      (hasDates && !today.isBefore(dataInizio) && !today.isAfter(dataFine))
+    ) {
+      // Se il link è fisso o le date sono valide (oggi è compreso tra data_inizio e data_fine)
       statusCode = "active";
       status = t("active");
+    } else if (hasDates && today.isAfter(dataFine)) {
+      // Se le date sono presenti ma la data di fine è passata
+      statusCode = "expired";
+      status = t("expired");
+    } else {
+      // Qualsiasi altro caso con link non valido o date future
+      statusCode = "inactive";
+      status = t("inactive");
     }
   } else if (hasDates) {
-    // The link is not generated, but we can determine if it's expired or inactive
-    const today = dayjs().utc().startOf("day");
-    const dataFine = dayjs(apartment.data_fine).utc().endOf("day");
-
+    // Nessun link ma ci sono date, controlliamo se è scaduto
     if (today.isAfter(dataFine)) {
       statusCode = "expired";
       status = t("expired");
@@ -59,7 +52,7 @@ const useApartmentStatus = (apartment) => {
       status = t("inactive");
     }
   } else {
-    // No link and no dates
+    // Caso in cui non c'è né link né date
     statusCode = "inactive";
     status = t("inactive");
   }

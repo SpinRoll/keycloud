@@ -6,18 +6,43 @@ const authMiddleware = require("../middleware/authMiddleware");
 const router = express.Router();
 
 // Funzione per calcolare lo stato dell'appartamento
-const calculateStatus = (data_inizio, data_fine) => {
+const calculateStatus = (data_inizio, data_fine, fixed_link, link) => {
   const today = new Date();
-  if (data_inizio && data_fine) {
-    if (new Date(data_fine) < today) {
-      return "expired"; // Lo stato è 'expired' se la data di fine è passata
-    } else if (new Date(data_inizio) <= today && new Date(data_fine) >= today) {
-      return "active"; // Lo stato è 'active' se oggi è compreso tra le date di inizio e fine
-    } else {
-      return "inactive"; // Lo stato è 'inactive' se le date sono nel futuro
-    }
+
+  // Se il link è vuoto o non esiste, lo stato è 'inactive'
+  if (!link || link.trim() === "") {
+    return "inactive";
   }
-  return "inactive"; // Lo stato di default è 'inactive'
+
+  // Se il link esiste e il fixed_link è true, lo stato è sempre 'active' indipendentemente dalle date
+  if (fixed_link) {
+    return "active";
+  }
+
+  // Se il fixed_link è false o non definito, controllo le date
+  if (data_inizio && data_fine) {
+    const dataInizio = new Date(data_inizio);
+    const dataFine = new Date(data_fine);
+
+    // Se la data di fine è già passata, lo stato è 'expired'
+    if (dataFine < today) {
+      return "expired";
+    }
+
+    // Se siamo tra la data di inizio e la data di fine, lo stato è 'active'
+    if (
+      (dataInizio <= today && dataFine >= today) ||
+      (link && link.trim() !== "")
+    ) {
+      return "active";
+    }
+
+    // Se la data di inizio è nel futuro, lo stato è 'inactive'
+    return "inactive";
+  }
+
+  // Se non ci sono date definite ma il link esiste, lo stato è 'active' per default (caso speciale)
+  return "inactive";
 };
 
 // Endpoint per creare un nuovo appartamento
@@ -40,7 +65,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
   try {
     // Calcola lo stato di default
-    const status = calculateStatus(data_inizio, data_fine);
+    const status = calculateStatus(data_inizio, data_fine, fixed_link, link);
 
     const newApartment = new Apartment({
       user_id: req.userId, // Associa l'appartamento all'utente autenticato
@@ -110,7 +135,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
     }
 
     // Calcola il nuovo stato dell'appartamento
-    const status = calculateStatus(data_inizio, data_fine);
+    const status = calculateStatus(data_inizio, data_fine, fixed_link, link);
 
     const updatedApartment = await Apartment.findByIdAndUpdate(
       id,
