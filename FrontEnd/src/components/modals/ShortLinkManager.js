@@ -156,14 +156,14 @@ const ShortLinkManager = ({
         ) : (
           <GenerateLinkButton
             onClick={generateRandomLink}
-            isDisabled={localGeneratedLink !== ""}
+            // isDisabled={localGeneratedLink !== ""}
           />
         )}
         <Box sx={{ display: "flex", alignItems: "center" }}>
           {/* Campo di copia del link */}
           <CopyLinkField link={localGeneratedLink} onCopy={copyToClipboard} />
           {/* Icona Delete */}
-          <IconButton
+          {/* <IconButton
             onClick={handleDeleteClick}
             disabled={!localGeneratedLink}
             aria-label={t("delete_link")}
@@ -171,7 +171,7 @@ const ShortLinkManager = ({
               color: "error.main",
             }}>
             <DeleteIcon />
-          </IconButton>
+          </IconButton> */}
         </Box>
 
         {/* Dialog di conferma */}
