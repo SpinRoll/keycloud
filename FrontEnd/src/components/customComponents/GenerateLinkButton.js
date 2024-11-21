@@ -2,12 +2,12 @@
 import React from "react";
 import CustomButton from "./CustomButton";
 import { Box } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+// import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import { pxToRem } from "../../utils/pxToRem";
 
 const GenerateLinkButton = ({ onClick, isDisabled }) => {
-  const theme = useTheme();
+  // const theme = useTheme();
   const { t } = useTranslation();
 
   return (

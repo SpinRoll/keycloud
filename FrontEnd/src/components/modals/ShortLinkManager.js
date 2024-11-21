@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {
   Box,
-  IconButton,
+  // IconButton,
   Dialog,
   DialogActions,
   DialogContent,
@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import GenerateLinkButton from "../customComponents/GenerateLinkButton";
 import CopyLinkField from "../customComponents/CopyLinkField";
-import DeleteIcon from "@mui/icons-material/Delete"; // Icona di eliminazione
+// import DeleteIcon from "@mui/icons-material/Delete"; // Icona di eliminazione
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import LoadingSpin from "../customComponents/LoadingSpinner"; // Importa lo spinner
@@ -132,10 +132,10 @@ const ShortLinkManager = ({
     }
   };
 
-  // Funzione per aprire la Dialog di conferma
-  const handleDeleteClick = () => {
-    setOpenConfirmDialog(true);
-  };
+  // // Funzione per aprire la Dialog di conferma
+  // const handleDeleteClick = () => {
+  //   setOpenConfirmDialog(true);
+  // };
 
   // Funzione per chiudere la Dialog senza eliminare il link
   const handleCloseDialog = () => {
