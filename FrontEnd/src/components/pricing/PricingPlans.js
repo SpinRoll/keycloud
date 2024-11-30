@@ -1,116 +1,140 @@
 // src/components/pricing/PricingPlans.js
-import React from "react"; // Importo React per creare componenti
-import { Container, Grid, Card, CardContent, Typography } from "@mui/material"; // Importo i componenti Material-UI necessari
-import { useTheme } from "@mui/material/styles"; // Importo useTheme per accedere al tema corrente
-import CustomButton from "../customComponents/CustomButton"; // Importo CustomButton per pulsanti personalizzati
-import { pxToRem } from "../../utils/pxToRem"; // Importo la funzione pxToRem per convertire px in rem
-import { useTranslation } from "react-i18next"; // Importo il hook useTranslation per la gestione delle traduzioni
+import React from "react";
+import axios from "axios";
+import { Container, Grid, Card, CardContent, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import CustomButton from "../customComponents/CustomButton";
+import { pxToRem } from "../../utils/pxToRem";
+import { useTranslation } from "react-i18next";
+import { useStripe } from "@stripe/react-stripe-js";
+import { useNavigate } from "react-router-dom";
 
 const PricingPlans = () => {
-  const theme = useTheme(); // Uso il tema corrente per applicare gli stili
-  const { t } = useTranslation(); // Uso il hook useTranslation per ottenere la funzione di traduzione
+  const theme = useTheme();
+  const { t } = useTranslation();
 
-  // Definisco i piani tariffari da mostrare
+  const stripe = useStripe();
+  const navigate = useNavigate();
+
+  // Hardcoded plans array with Stripe price IDs
   const plans = [
     {
-      title: t("basic_plan"), // Uso la funzione t per ottenere la traduzione del titolo del piano "Basic"
-      description: t("basic_plan_description"), // Uso la funzione t per ottenere la traduzione della descrizione del piano
-      price: `$99/${t("month")}`, // Prezzo del piano con traduzione per la parola "month"
+      id: "basic",
+      title: t("basic_plan"),
+      description: t("basic_plan_description"),
+      price: `$99/${t("month")}`,
+      priceId: "price_1Q9wdYChJhAOPXlZTdKBvfow", // Replace with your actual Stripe price ID
     },
     {
-      title: t("medium_plan"), // Uso la funzione t per ottenere la traduzione del titolo del piano "Medium"
-      description: t("medium_plan_description"), // Uso la funzione t per ottenere la traduzione della descrizione del piano
-      price: `$199/${t("month")}`, // Prezzo del piano con traduzione per la parola "month"
+      id: "medium",
+      title: t("medium_plan"),
+      description: t("medium_plan_description"),
+      price: `$199/${t("month")}`,
+      priceId: "price_1QDXgXChJhAOPXlZzbqlLSyb", // Replace with your actual Stripe price ID
     },
     {
-      title: t("premium_plan"), // Uso la funzione t per ottenere la traduzione del titolo del piano "Premium"
-      description: t("premium_plan_description"), // Uso la funzione t per ottenere la traduzione della descrizione del piano
-      price: `$399/${t("month")}`, // Prezzo del piano con traduzione per la parola "month"
+      id: "premium",
+      title: t("premium_plan"),
+      description: t("premium_plan_description"),
+      price: `$399/${t("month")}`,
+      priceId: "price_1QDXgnChJhAOPXlZD1uHw5vd", // Replace with your actual Stripe price ID
     },
   ];
 
+  const handleChoosePlan = async (priceId) => {
+    try {
+      const response = await axios.post(
+        "/api/payments/create-checkout-session",
+        {
+          priceId, // Send the priceId to the backend
+        }
+      );
+
+      const { sessionId } = response.data;
+
+      // Redirect to Stripe Checkout
+      const { error } = await stripe.redirectToCheckout({ sessionId });
+
+      if (error) {
+        console.error("Stripe redirect error:", error);
+        // Handle error accordingly
+      }
+    } catch (error) {
+      console.error("Error initiating checkout:", error);
+      // Handle error accordingly
+    }
+  };
+
   return (
-    // Contenitore principale per il layout dei piani tariffari
     <Container>
-      {/* Titolo principale della sezione dei piani tariffari */}
       <Typography
         variant="h4"
         align="center"
         gutterBottom
-        sx={{ color: theme.palette.text.primary }} // Colore del testo primario dal tema
-      >
-        {t("our_pricing_plans")}{" "}
-        {/* Usa la funzione t per ottenere la traduzione del testo "Our Pricing Plans" */}
+        sx={{ color: theme.palette.text.primary }}>
+        {t("our_pricing_plans")}
       </Typography>
 
-      {/* Griglia per visualizzare i piani tariffari */}
       <Grid container spacing={4}>
-        {/* Mappo ogni piano tariffario per creare una Card */}
         {plans.map((plan) => (
-          <Grid item xs={12} sm={6} md={4} key={plan.title}>
-            {/* Card per ogni piano tariffario */}
+          <Grid item xs={12} sm={6} md={4} key={plan.id}>
             <Card
               sx={{
-                backgroundColor: theme.palette.background.default, // Colore di sfondo più chiaro dal tema
+                backgroundColor: theme.palette.background.default,
                 boxShadow: `0px ${pxToRem(0)} ${pxToRem(8)} ${
                   theme.colors.secondary
-                }`, // Ombra per il box
-                borderRadius: pxToRem(8), // Usa pxToRem per i bordi arrotondati
-                transition: "transform 0.3s ease", // Effetto hover per un'animazione di scalatura
+                }`,
+                borderRadius: pxToRem(8),
+                transition: "transform 0.3s ease",
                 "&:hover": {
-                  transform: "scale(1.05)", // Ingrandisce leggermente la card al passaggio del mouse
+                  transform: "scale(1.05)",
                 },
               }}>
               <CardContent>
-                {/* Titolo del piano */}
                 <Typography
                   variant="h5"
                   component="div"
                   sx={{
-                    color: theme.palette.primary.main, // Colore principale del tema
-                    marginBottom: pxToRem(16), // Usa pxToRem per il margine inferiore
-                    fontWeight: "bold", // Testo in grassetto per evidenziare il titolo
+                    color: theme.palette.primary.main,
+                    marginBottom: pxToRem(16),
+                    fontWeight: "bold",
                   }}>
-                  {plan.title} {/* Titolo del piano tradotto */}
+                  {plan.title}
                 </Typography>
 
-                {/* Descrizione del piano */}
                 <Typography
                   variant="body2"
                   sx={{
-                    color: theme.palette.text.primary, // Colore del testo dal tema
-                    marginBottom: pxToRem(8), // Usa pxToRem per il margine inferiore
+                    color: theme.palette.text.primary,
+                    marginBottom: pxToRem(8),
                   }}>
-                  {plan.description} {/* Descrizione del piano tradotta */}
+                  {plan.description}
                 </Typography>
 
-                {/* Prezzo del piano */}
                 <Typography
                   variant="h6"
                   sx={{
-                    color: theme.palette.secondary.main, // Usa il colore secondario per maggiore contrasto
-                    marginTop: pxToRem(12), // Usa pxToRem per il margine superiore
+                    color: theme.palette.secondary.main,
+                    marginTop: pxToRem(12),
                   }}>
-                  {plan.price}{" "}
-                  {/* Prezzo del piano con traduzione per "month" */}
+                  {plan.price}
                 </Typography>
 
-                {/* Pulsante per scegliere il piano */}
                 <CustomButton
-                  variant="contained" // Pulsante con sfondo pieno
-                  fullWidth // Pulsante a larghezza piena
+                  variant="contained"
+                  fullWidth
+                  onClick={() => handleChoosePlan(plan.priceId)}
                   sx={{
-                    backgroundColor: theme.palette.primary.main, // Colore primario più forte
-                    color: theme.colors.pureWhite, // Colore bianco puro per contrasto
-                    marginTop: pxToRem(16), // Usa pxToRem per il margine superiore
+                    backgroundColor: theme.palette.primary.main,
+                    color: theme.colors.pureWhite,
+                    marginTop: pxToRem(16),
                     "&:hover": {
-                      backgroundColor: theme.palette.primary.dark, // Un colore leggermente più scuro per hover
+                      backgroundColor: theme.palette.primary.dark,
                     },
-                    padding: `${pxToRem(10)} ${pxToRem(20)}`, // Usa pxToRem per il padding
-                    fontSize: pxToRem(16), // Usa pxToRem per la dimensione del font
+                    padding: `${pxToRem(10)} ${pxToRem(20)}`,
+                    fontSize: pxToRem(16),
                   }}>
-                  {t("choose_plan")}{" "}
-                  {/* Usa la funzione t per ottenere la traduzione del testo "Choose Plan" */}
+                  {t("choose_plan")}
                 </CustomButton>
               </CardContent>
             </Card>
@@ -121,4 +145,4 @@ const PricingPlans = () => {
   );
 };
 
-export default PricingPlans; // Esporto il componente per l'uso in altre parti dell'app
+export default PricingPlans;

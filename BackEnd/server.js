@@ -37,6 +37,12 @@ mongoose
 // **Usa express.json() per il parsing delle richieste JSON**
 app.use(express.json()); // Questo sostituisce body-parser
 
+const paymentRoutes = require("./routes/paymentRoutes");
+app.use("/api/payments", paymentRoutes);
+
+const subscriptionRoutes = require("./routes/subscriptionRoutes");
+app.use("/api/subscriptions", subscriptionRoutes);
+
 // Importa le rotte di autenticazione
 const authRoutes = require("./routes/auth");
 app.use("/api/auth", authRoutes); // Usa le rotte di autenticazione
