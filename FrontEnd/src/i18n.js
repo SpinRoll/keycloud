@@ -108,7 +108,7 @@ i18n
           logout: "Logout",
           current_password: "Current Password",
           new_password_again: "Repeat New Password",
-          two_factor_auth_title: "Two-Factor Authentication Settings (MFA)",
+          two_factor_auth_title: "MFA",
           two_factor_auth_description:
             "Enable two-factor authentication to increase the security of your account.",
           enable_mfa_button: "Enable MFA",
@@ -261,7 +261,7 @@ i18n
           current_password: "Password Corrente",
           new_password_again: "Ripeti Nuova Password",
           two_factor_auth_title:
-            "Impostazioni autenticazione a due fattori (MFA)",
+            "MFA",
           two_factor_auth_description:
             "Abilita l'autenticazione a due fattori per aumentare la sicurezza del tuo account.",
           enable_mfa_button: "Abilita MFA",

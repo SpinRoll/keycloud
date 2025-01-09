@@ -53,7 +53,11 @@ const UserPage = () => {
     { key: "profile", icon: <AccountCircle />, label: t("profile") },
     { key: "billing", icon: <Payment />, label: t("billing") },
     { key: "password", icon: <Lock />, label: t("password") },
-    { key: "twofactorsetup", icon: <Security />, label: t("twofactorsetup") },
+    {
+      key: "twofactorsetup",
+      icon: <Security />,
+      label: t("two_factor_auth_title"),
+    },
   ];
 
   return (
@@ -133,17 +137,17 @@ const UserPage = () => {
           sx={{
             flexGrow: 1,
             bgcolor: theme.palette.background.default,
-            p: pxToRem(4),
             overflowY: "auto",
             paddingBottom: isMobile ? pxToRem(56) : pxToRem(32), // Spazio per la BottomNavigation
           }}>
           <Box
             sx={{
               bgcolor: theme.palette.background.paper,
-              p: pxToRem(4),
+              p: pxToRem(24),
               borderRadius: pxToRem(8),
-              boxShadow: theme.shadows[3],
+              boxShadow: theme.shadows[1],
               transition: "all 0.3s ease",
+              marginTop: pxToRem(32),
             }}>
             {renderSection()}
           </Box>
