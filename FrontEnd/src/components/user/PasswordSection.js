@@ -98,9 +98,9 @@ const PasswordSection = () => {
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ color: theme.palette.text.secondary }}>
+      {/* <Typography variant="h6" sx={{ color: theme.palette.text.secondary }}>
         {`${profileData.nome} ${profileData.cognome}`} > {t("password")}
-      </Typography>
+      </Typography> */}
       <Typography
         variant="h3"
         sx={{ fontWeight: "bold", marginBottom: pxToRem(24) }}>

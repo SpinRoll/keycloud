@@ -14,9 +14,9 @@ const BillingSection = () => {
   return (
     <Box>
       {/* Titolo e breadcrumb dell'account */}
-      <Typography variant="h6" sx={{ color: theme.palette.text.secondary }}>
+      {/* <Typography variant="h6" sx={{ color: theme.palette.text.secondary }}>
         {t("my_account")} &gt; {t("billing")}
-      </Typography>
+      </Typography> */}
       <Typography
         variant="h3"
         sx={{ fontWeight: "bold", marginBottom: pxToRem(24) }}>

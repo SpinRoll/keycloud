@@ -65,7 +65,7 @@ const UserPage = () => {
       component="main"
       maxWidth="xl"
       sx={{
-        mt: pxToRem(50),
+        mt: pxToRem(77),
         display: "flex",
         flexDirection: "column",
         height: "calc(100vh - 100px)",
@@ -81,15 +81,16 @@ const UserPage = () => {
               [`& .MuiDrawer-paper`]: {
                 width: drawerWidth,
                 boxSizing: "border-box",
+                marginTop: pxToRem(77),
                 backgroundColor: theme.palette.background.paper,
                 borderRight: `1px solid ${theme.palette.divider}`,
               },
             }}>
-            <Box sx={{ textAlign: "center", py: 2 }}>
+            {/* <Box sx={{ textAlign: "center", py: 2 }}>
               <Typography variant="h6" noWrap>
                 {t("userPage.title")}
               </Typography>
-            </Box>
+            </Box> */}
             <List>
               {menuItems.map((item) => (
                 <ListItemButton

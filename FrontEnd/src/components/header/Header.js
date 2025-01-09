@@ -35,6 +35,7 @@ function Header() {
       sx={{
         backgroundColor: theme.colors.primary,
         minHeight: pxToRem(70),
+        zIndex: 9999,
       }}>
       <Toolbar
         sx={{
