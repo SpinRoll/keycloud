@@ -14,7 +14,7 @@ const SignInForm = ({
   mfaRequired,
 }) => {
   return (
-    <Box component="form" noValidate onSubmit={handleSignIn}>
+    <Box component="form" width="100%" noValidate onSubmit={handleSignIn}>
       <CustomTextField
         label={t("email_label")}
         name="email"

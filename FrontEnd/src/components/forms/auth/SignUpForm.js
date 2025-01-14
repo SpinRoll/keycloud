@@ -14,7 +14,7 @@ const SignUpForm = ({
   handleSignInClick,
 }) => {
   return (
-    <Box component="form" noValidate onSubmit={handleSignUp}>
+    <Box component="form" width="100%" noValidate onSubmit={handleSignUp}>
       <CustomTextField
         label={t("name_label")}
         name="nome"
